@@ -1,0 +1,362 @@
+{
+  "project_name": "Personal Almanac V1 - Multi-Calendar & Astronomical Cycles Dashboard",
+  "archetype": "ARCHETYPE 4: SWISS & HIGH-CONTRAST + OBSERVATIONAL PRECISION",
+  "theme": "Light mode baseline (#F8FAFC) with deep slate navy high-contrast hierarchy (#0F172A), crisp 1px borders (#E2E8F0), and vivid thematic multi-spectrum micro-accents for astrological layers.",
+  "design_principles": [
+    "Fusion over Imitation: Swiss editorial grid precision combined with ancient Indonesian cosmological multi-calendar mathematics and live astronomical telemetry.",
+    "Emotion First: The feeling of standing beneath the Bandung night sky while reading centuries of Javanese, Sundanese, Balinese, and Lunar wisdom synchronized to the second.",
+    "Observational Precision: Every card is a high-density, high-clarity instrument. 0% fluff, 100% intentional typography, exact data metrics, and micro-interactive feedback.",
+    "Negative Space & Rhythm: 8px grid pacing, clean 1px border frames, generous internal card padding, zero edge collisions.",
+    "Tactile Micro-Interactions: Smooth spring hover elevations, live ticking astronomical status pulses, interactive date/time scrubbers, and live calculation recalibration."
+  ],
+  "color_system": {
+    "background": {
+      "app": "#F8FAFC",
+      "card": "#FFFFFF",
+      "card_subtle": "#F1F5F9",
+      "card_active": "#0F172A",
+      "card_hover": "#FFFFFF",
+      "overlay": "rgba(15, 23, 42, 0.4)",
+      "badge_neutral": "#F1F5F9"
+    },
+    "typography": {
+      "primary": "#0F172A",
+      "secondary": "#475569",
+      "muted": "#94A3B8",
+      "inverted": "#FFFFFF",
+      "inverted_muted": "#CBD5E1",
+      "accent_text": "#1E293B"
+    },
+    "borders": {
+      "default": "#E2E8F0",
+      "subtle": "#F1F5F9",
+      "active": "#0F172A",
+      "highlight": "#CBD5E1"
+    },
+    "accents": {
+      "sun_amber": "#F59E0B",
+      "sun_amber_bg": "#FEF3C7",
+      "moon_blue": "#2563EB",
+      "moon_blue_bg": "#DBEAFE",
+      "eclipse_purple": "#7C3AED",
+      "eclipse_purple_bg": "#EDE9FE",
+      "sky_cyan": "#0284C7",
+      "sky_cyan_bg": "#E0F2FE",
+      "earth_emerald": "#16A34A",
+      "earth_emerald_bg": "#DCFCE7",
+      "tide_slate": "#64748B",
+      "tide_slate_bg": "#F1F5F9",
+      "jawa_indigo": "#4338CA",
+      "jawa_indigo_bg": "#EEF2FF",
+      "sunda_rose": "#E11D48",
+      "sunda_rose_bg": "#FFE4E6",
+      "bali_teal": "#0D9488",
+      "bali_teal_bg": "#CCFBF1",
+      "hijri_emerald": "#059669",
+      "hijri_emerald_bg": "#D1FAE5"
+    }
+  },
+  "typography_scale": {
+    "font_family_heading": "'Cabinet Grotesk', 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif",
+    "font_family_body": "'Plus Jakarta Sans', 'Inter', system-ui, sans-serif",
+    "font_family_mono": "'JetBrains Mono', 'IBM Plex Mono', monospace",
+    "hierarchy": {
+      "display": {
+        "size": "text-2xl sm:text-3xl font-bold tracking-tight",
+        "css": "font-size: 1.75rem; line-height: 2rem; font-weight: 700; letter-spacing: -0.02em;"
+      },
+      "heading_1": {
+        "size": "text-lg sm:text-xl font-semibold tracking-tight",
+        "css": "font-size: 1.125rem; line-height: 1.5rem; font-weight: 600;"
+      },
+      "heading_2": {
+        "size": "text-base font-semibold",
+        "css": "font-size: 1rem; line-height: 1.375rem; font-weight: 600;"
+      },
+      "body": {
+        "size": "text-sm font-normal leading-relaxed text-slate-700",
+        "css": "font-size: 0.875rem; line-height: 1.25rem; font-weight: 400;"
+      },
+      "caption": {
+        "size": "text-xs font-normal text-slate-500",
+        "css": "font-size: 0.75rem; line-height: 1rem; font-weight: 400;"
+      },
+      "label_uppercase": {
+        "size": "text-[11px] font-bold uppercase tracking-[0.08em] text-slate-500",
+        "css": "font-size: 0.6875rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase;"
+      },
+      "mono_metric": {
+        "size": "font-mono text-sm sm:text-base font-medium tracking-tight",
+        "css": "font-family: monospace; font-weight: 500;"
+      }
+    }
+  },
+  "layout_architecture": {
+    "container_max_width": "max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 py-6",
+    "top_header": {
+      "description": "Sticky/pinned navigation bar with glass backdrop blur (bg-white/90 backdrop-blur-md border-b border-slate-200 z-40). Contains Brand Logo badge, Page Title 'Explore' with historical/live badge, Date + Coordinates location readout, Live WIB Clock with active pulse, and Location Switcher dropdown (Bandung, Jakarta, Yogyakarta, Bali, Surabaya, Medan)."
+    },
+    "main_grid": {
+      "pattern": "12-column responsive layout with 2-column split (Left: 8 cols / 2fr for astronomical & calendar telemetry; Right: 4 cols / 1fr for interactive calendar picker & schedule timeline)",
+      "mobile_break": "grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8",
+      "left_column": "lg:col-span-8 flex flex-col gap-6",
+      "right_column": "lg:col-span-4 flex flex-col gap-6"
+    },
+    "sections": {
+      "natural_layer": {
+        "title": "NATURAL CYCLES & ASTRONOMY",
+        "grid": "grid grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-3.5",
+        "cards": [
+          {
+            "id": "sun_card",
+            "name": "Sun (Surya)",
+            "icon": "Sun",
+            "accent": "amber",
+            "metrics": ["Sunrise: 05:48 WIB", "Sunset: 17:52 WIB", "Golden Hour: 17:15 WIB", "Solar Noon: 11:50 WIB", "Altitude & Day Arc SVG Visualizer"]
+          },
+          {
+            "id": "moon_card",
+            "name": "Moon (Chandra)",
+            "icon": "Moon",
+            "accent": "blue",
+            "metrics": ["Phase: Waxing Gibbous (84%)", "Moon Age: 11.2 Days", "Moonrise: 14:22 WIB", "Moonset: 02:40 WIB", "Illumination Arc Visualizer"]
+          },
+          {
+            "id": "eclipse_card",
+            "name": "Eclipse (Graha)",
+            "icon": "Eclipse",
+            "accent": "purple",
+            "metrics": ["Status: No active eclipse today", "Next Solar: Sep 21, 2025 (Partial)", "Next Lunar: Mar 14, 2025 (Total)", "Penumbra Tracker"]
+          },
+          {
+            "id": "sky_card",
+            "name": "Sky Observation",
+            "icon": "Sparkles",
+            "accent": "cyan",
+            "metrics": ["Visibility: Bortle Class 5", "Constellation: Orion / Crux Visible", "Zenith Quality: 78%", "Cloud Cover: 18%"]
+          },
+          {
+            "id": "earth_space_card",
+            "name": "Earth-Space Cycle",
+            "icon": "Globe",
+            "accent": "emerald",
+            "metrics": ["Day of Year: Day 201 / 365", "Annual Progress: 55.1%", "Equinox Offset: +119 days", "Orbital Velocity: 29.78 km/s"]
+          },
+          {
+            "id": "tide_card",
+            "name": "Tidal Cycle (Pasang Surut)",
+            "icon": "Waves",
+            "accent": "slate",
+            "metrics": ["Region: Southern Java Coastal Basin", "High Tide: 08:30 WIB (+1.4m)", "Low Tide: 14:50 WIB (+0.3m)", "Spring / Neap Phase: Spring Tide"]
+          }
+        ]
+      },
+      "calendar_systems": {
+        "title": "INDONESIAN & WORLD CALENDAR SYSTEMS",
+        "grid": "grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4",
+        "cards": [
+          {
+            "id": "jawa_calendar",
+            "title": "Kalender Jawa (Sultan Agungan)",
+            "weton_highlight": "Kamis Pahing (Neptu 17: 8 + 9)",
+            "details": [
+              "Wuku: Wugu",
+              "Bulan: Sura 1958 JA",
+              "Windu: Sancaya (Tahun Kuntara)",
+              "Pranata Mangsa: Kasa (Kartika)",
+              "Watak Neptu: Lakuning Srengenge (Charismatic & Radiant)"
+            ],
+            "accent": "#4338CA"
+          },
+          {
+            "id": "saka_sunda_calendar",
+            "title": "Kalender Saka Sunda",
+            "highlight": "Poé Kemis - Panca Wara Pon",
+            "details": [
+              "Taun: 1946 Saka Sunda",
+              "Sasih: Hapit Lemah",
+              "Kala Cakra: Purnamakala",
+              "Kolecer Windu: Windu Kencana",
+              "Pangreksa: Bumi & Hawana"
+            ],
+            "accent": "#E11D48"
+          },
+          {
+            "id": "bali_calendar",
+            "title": "Kalender Pawukon & Saka Bali",
+            "highlight": "Wraspati Paing - Wuku Warigadean",
+            "details": [
+              "Taun Saka: 1946 Saka Bali",
+              "Sasih: Kasa (Penanggal 12)",
+              "Ekawara - Dasawara: Luang, Menga, Beteng, Jaya",
+              "Hari Suci / Rerainan: 4 hari menuju Purnama Kasa",
+              "Dewasa Ayu: Rahayu Ayuning Jagat"
+            ],
+            "accent": "#0D9488"
+          },
+          {
+            "id": "hijri_calendar",
+            "title": "Kalender Hijriah (Ummul Qura)",
+            "highlight": "14 Muharram 1446 H",
+            "details": [
+              "Fase: Ayyamul Bidh (13-15)",
+              "Bulan Haram: Asyhurul Hurum",
+              "Next Event: 10 Muharram Asyura Tracker",
+              "Arah Kiblat (Bandung): 295.1° NW"
+            ],
+            "accent": "#059669"
+          },
+          {
+            "id": "kalacakra_engine",
+            "title": "Candra Kala & Cannse Lunar",
+            "highlight": "Chinese Lunar 15th (Wang Ri)",
+            "details": [
+              "Year of the Wood Dragon / Green Wood",
+              "Solar Term: Great Heat (Dàshǔ)",
+              "Lunar Mansion: 22nd Well Constellation",
+              "Status: Active Calculation Engine V1.4"
+            ],
+            "accent": "#F59E0B"
+          },
+          {
+            "id": "system_diagnostics",
+            "title": "Almanac Engine Telemetry",
+            "highlight": "Bandung Observatory Lat: -6.9175, Lon: 107.6191",
+            "details": [
+              "Astro Alg: Meeus VSOP87 + ELP2000-82",
+              "Solar Calculation Error Margin: <0.02s",
+              "Time Zone: Asia/Jakarta (UTC+7 WIB)",
+              "Data Feed: Realtime Solar Sync"
+            ],
+            "accent": "#334155"
+          }
+        ]
+      },
+      "month_calendar_panel": {
+        "title": "DATE EXPLORER & TIME SCRUBBER",
+        "features": [
+          "Interactive Month Grid with previous/next month navigation",
+          "Selected date pill highlight (#0F172A dark navy fill with white text)",
+          "Hover micro-states for day numbers showing weton preview tooltip",
+          "Time Scrubber slider allowing the user to fast-forward time to simulate sun altitude and shadow cast changes",
+          "Quick jump presets: 'Today (Live)', 'Next Full Moon', 'Next Solstice/Equinox', 'Upcoming Eclipse'"
+        ]
+      },
+      "schedule_timeline": {
+        "title": "MY SCHEDULE & NATURAL PHENOMENA",
+        "timeline_items": [
+          {"time": "05:12 WIB", "title": "Astronomical Dawn (Fajar Astronomis)", "category": "astronomy", "badge": "Sky 18° below horizon"},
+          {"time": "05:48 WIB", "title": "Subuh & Sunrise (Surya Terbit)", "category": "sun", "badge": "Solar Arc Starts"},
+          {"time": "08:30 WIB", "title": "Morning High Tide Peak", "category": "tide", "badge": "Coastal Monitoring"},
+          {"time": "11:50 WIB", "title": "Solar Noon & Dzuhur", "category": "sun", "badge": "Peak Altitude 68.4°"},
+          {"time": "15:15 WIB", "title": "Ashar (Shadow = Object + Noon)", "category": "prayer", "badge": "Pranata Kasa"},
+          {"time": "17:52 WIB", "title": "Sunset & Maghrib (Surya Surup)", "category": "sun", "badge": "Golden Hour End"},
+          {"time": "19:04 WIB", "title": "Isya & Night Sky Stargazing Window", "category": "sky", "badge": "Optimal Bortle 4.8"}
+        ]
+      },
+      "footer_status_bar": {
+        "description": "Minimalist high-precision telemetry footer with 1px border-top (#E2E8F0).",
+        "items": [
+          "Data Source: Bandung Lembang Astronomical Data Mesh (Bosscha Reference Station)",
+          "Engine: Personal Almanac Ephemeris Engine v1.8.4",
+          "Status: Operational (100% Synced to UTC+7 WIB)",
+          "Calculations: Real astronomical algorithms for any selected coordinates and dates"
+        ]
+      }
+    }
+  },
+  "interactive_states": {
+    "location_selector": {
+      "options": [
+        {"name": "Bandung, West Java", "lat": -6.9175, "lon": 107.6191, "tz": "WIB (UTC+7)", "elevation": "768m"},
+        {"name": "Jakarta (DKI)", "lat": -6.2088, "lon": 106.8456, "tz": "WIB (UTC+7)", "elevation": "8m"},
+        {"name": "Yogyakarta (DIY)", "lat": -7.7956, "lon": 110.3695, "tz": "WIB (UTC+7)", "elevation": "113m"},
+        {"name": "Denpasar, Bali", "lat": -8.6705, "lon": 115.2126, "tz": "WITA (UTC+8)", "elevation": "25m"},
+        {"name": "Surabaya, East Java", "lat": -7.2575, "lon": 112.7521, "tz": "WIB (UTC+7)", "elevation": "5m"},
+        {"name": "Medan, North Sumatra", "lat": 3.5952, "lon": 98.6722, "tz": "WIB (UTC+7)", "elevation": "26m"}
+      ]
+    },
+    "date_picker": "Full calendar month navigation with month jump dropdown, day clicking with instant live recalculation of all natural cycles and Indonesian calendars.",
+    "time_slider": "Live hour and minute scrubber that updates the Sun altitude graphic, solar progress ring, and schedule focus dynamically.",
+    "weton_detail_modal": "Clicking on any calendar system card opens an interactive drawer or modal unpacking the complete mathematical breakdown (Neptu, Pasaran, Dino 7, Dino 5, Wuku, Padangon, Pangarasan, and Rakam)."
+  },
+  "visual_enhancers": {
+    "sun_arc_svg": "Interactive curved SVG path with a glowing sun icon that tracks the selected time across dawn, sunrise, solar noon, sunset, and dusk.",
+    "moon_phase_canvas": "Accurate 2D vector graphic showing the illuminated crescent/gibbous terminator according to moon age (0-29.53 days).",
+    "annual_cycle_progress_bar": "Segmented seasonal ring/bar showing current day in the 365-day Gregorian year, Javanese Pranata Mangsa seasons, and Solstice/Equinox markers.",
+    "pulse_status_indicators": "Subtle green/amber radar ping dots indicating active live telemetry.",
+    "glassmorphism_nav": "Frosted glass header (`bg-white/85 backdrop-blur-xl border-b border-slate-200/80`) to ensure readability over scrolling content.",
+    "elevation_hover": "Subtle hover lift (`transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s ease`) with 1px border highlight (`hover:border-slate-300 hover:shadow-md`)."
+  },
+  "image_urls": {
+    "hero_stargazing_sky": {
+      "url": "https://images.unsplash.com/photo-1751643769121-6b94a49cce01?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NTYxOTB8MHwxfHNlYXJjaHw0fHxpbmRvbmVzaWElMjBuaWdodCUyMHNreSUyMHN0YXJzJTIwYXN0cm9ub215fGVufDB8fHx8MTc4ODE1MDY1M3ww&ixlib=rb-4.1.0&q=85",
+      "description": "Indonesian starry night sky with Milky Way over mountain ridges for the Sky Observation card and Astronomy background banner",
+      "category": "astronomy_banner"
+    },
+    "bandung_landscape": {
+      "url": "https://images.unsplash.com/photo-1535224513923-e7bef3d0cae1?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTY2NzF8MHwxfHNlYXJjaHwxfHxiYW5kdW5nJTIwc3Vuc2V0JTIwbW91bnRhaW5zfGVufDB8fHx8MTc4ODE1MDY1N3ww&ixlib=rb-4.1.0&q=85",
+      "description": "Bandung lush highlands and mountain sunrise landscape for the Solar & Geographic reference backdrop",
+      "category": "location_hero"
+    },
+    "bandung_city_twilight": {
+      "url": "https://images.unsplash.com/photo-1638204429366-c9ed3b12973e?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTY2NzF8MHwxfHNlYXJjaHwyfHxiYW5kdW5nJTIwc3Vuc2V0JTIwbW91bnRhaW5zfGVufDB8fHx8MTc4ODE1MDY1N3ww&ixlib=rb-4.1.0&q=85",
+      "description": "Twilight view of Bandung basin under dramatic sky for evening dusk and sunset telemetry visualizer",
+      "category": "dusk_twilight"
+    }
+  },
+  "component_structure": {
+    "header": "/app/frontend/src/components/HeaderNav.js",
+    "location_selector": "/app/frontend/src/components/LocationSelector.js",
+    "live_clock": "/app/frontend/src/components/LiveClock.js",
+    "natural_layer_grid": "/app/frontend/src/components/NaturalLayerGrid.js",
+    "calendar_systems_grid": "/app/frontend/src/components/CalendarSystemsGrid.js",
+    "calendar_detail_modal": "/app/frontend/src/components/CalendarDetailModal.js",
+    "month_calendar_panel": "/app/frontend/src/components/MonthCalendarPanel.js",
+    "time_scrubber": "/app/frontend/src/components/TimeScrubber.js",
+    "schedule_timeline": "/app/frontend/src/components/ScheduleTimeline.js",
+    "footer_status_bar": "/app/frontend/src/components/FooterStatusBar.js",
+    "astronomy_engine_utils": "/app/frontend/src/lib/almanacCalculations.js"
+  },
+  "testing_attributes": {
+    "header_brand_logo": "brand-logo",
+    "header_page_title": "page-title",
+    "header_time_badge": "live-time-badge",
+    "header_location_button": "location-dropdown-trigger",
+    "natural_card_sun": "natural-card-sun",
+    "natural_card_moon": "natural-card-moon",
+    "natural_card_eclipse": "natural-card-eclipse",
+    "natural_card_sky": "natural-card-sky",
+    "natural_card_earth": "natural-card-earth",
+    "natural_card_tide": "natural-card-tide",
+    "calendar_card_jawa": "calendar-card-jawa",
+    "calendar_card_sunda": "calendar-card-sunda",
+    "calendar_card_bali": "calendar-card-bali",
+    "calendar_card_hijri": "calendar-card-hijri",
+    "calendar_card_lunar": "calendar-card-lunar",
+    "month_calendar_grid": "month-calendar-grid",
+    "month_prev_button": "month-nav-prev-btn",
+    "month_next_button": "month-nav-next-btn",
+    "time_scrubber_slider": "time-scrubber-slider",
+    "today_jump_btn": "jump-today-btn",
+    "schedule_timeline_container": "schedule-timeline-container",
+    "schedule_item": "schedule-item-row",
+    "footer_status_container": "footer-status-bar"
+  },
+  "instructions_to_main_agent": [
+    "Follow the exact light-themed baseline (#F8FAFC, #FFFFFF cards, #E2E8F0 1px borders, #0F172A primary dark navy text/pills) requested by the user.",
+    "Implement real astronomical calculations in /app/frontend/src/lib/almanacCalculations.js for exact sunrise/sunset, solar noon, moon phase illumination percentage, moon age, Javanese Pasaran (Legi, Pahing, Pon, Wage, Kliwon), Javanese Dino 7, Neptu sums, Saka Sunda date, and Balinese Pawukon/Wuku for any selected date and Indonesian coordinates.",
+    "Keep the dashboard strictly on the main dashboard layout per user choice ('Main dashboard only, no spec side panels').",
+    "Support full interactivity: changing the location updates sunrise/sunset and coordinates; scrubbing the time updates the solar position visualizer; picking a calendar date recalculates all natural layers and multi-calendar cards in real time.",
+    "Include rich micro-interactions using framer-motion (staggered card reveal, active pill spring transitions, subtle hover elevations).",
+    "Ensure every interactive element has the required data-testid attributes for testing."
+  ],
+  "UNIVERSAL_GUIDELINES_FOR_MAIN_AGENT": [
+    "Do NOT use dark mode as full page background; keep the light background #F8FAFC with crisp contrast #0F172A.",
+    "Do NOT center align the whole app; keep structured left-aligned editorial hierarchy.",
+    "Ensure 1px solid border (#E2E8F0) on cards with generous internal padding (p-5 or p-6).",
+    "Use Framer Motion with specific property transitions (opacity, transform) and avoid universal 'transition: all'.",
+    "All interactive elements must have data-testid attributes.",
+    "Use sonner for any user alerts or location change toast notifications."
+  ]
+}
