@@ -4,9 +4,11 @@ import Lenis from "lenis";
 import { Toaster, toast } from "sonner";
 import Header from "@/components/Header";
 import NaturalLayer from "@/components/NaturalLayer";
+import SunArc from "@/components/SunArc";
 import CalendarSystems from "@/components/CalendarSystems";
 import MonthCalendar from "@/components/MonthCalendar";
 import ScheduleTimeline from "@/components/ScheduleTimeline";
+import WetonModal from "@/components/WetonModal";
 import Ticker from "@/components/Ticker";
 import Footer from "@/components/Footer";
 
@@ -21,6 +23,7 @@ export default function App() {
   const [time, setTime] = useState("12:00");
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [wetonOpen, setWetonOpen] = useState(false);
 
   useEffect(() => {
     const lenis = new Lenis({ duration: 1.1, smoothWheel: true });
@@ -77,7 +80,12 @@ export default function App() {
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-12">
           <div className="flex flex-col gap-6 lg:col-span-8">
             <NaturalLayer data={data} loading={loading} />
-            <CalendarSystems data={data} loading={loading} />
+            <SunArc sun={data?.natural?.sun} time={time} loading={loading} />
+            <CalendarSystems
+              data={data}
+              loading={loading}
+              onOpenWeton={() => setWetonOpen(true)}
+            />
           </div>
           <div className="flex flex-col gap-6 lg:col-span-4">
             <MonthCalendar
@@ -86,11 +94,13 @@ export default function App() {
               time={time}
               onTimeChange={setTime}
               onJumpToday={() => setDateISO(iso(new Date()))}
+              quickJumps={data?.quick_jumps}
             />
             <ScheduleTimeline data={data} loading={loading} time={time} />
           </div>
         </div>
       </main>
+      <WetonModal open={wetonOpen} onOpenChange={setWetonOpen} data={data} />
       <Ticker data={data} />
       <Footer data={data} />
     </div>

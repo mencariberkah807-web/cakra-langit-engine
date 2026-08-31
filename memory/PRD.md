@@ -23,6 +23,8 @@
 
 ## Implemented
 - 2026-08-31: Full stack v1. FastAPI `/api/locations` + `/api/almanac` (astral sun calc, synodic moon, pasaran anchored to verified sources — 27 Aug 2026 = Kamis Legi, Wuku Maktal, Tahun Be, Windu Sengara confirmed against published Indonesian calendar references). React dashboard with Header (live clock, location Select), NaturalLayer, CalendarSystems, MonthCalendar, ScheduleTimeline, Ticker marquee, Footer. Fonts: Cabinet Grotesk / Plus Jakarta Sans / JetBrains Mono. Verified via curl + browser screenshots (date pick, city switch to Denpasar/WITA, toast, PAST badge).
+- 2026-08-31: Widened calendar system cards (4-per-row grid) per user feedback.
+- 2026-08-31: Weton Deep Dive modal (click Jawa card → neptu math dino+pasaran, watak neptu bands, wuku/pawukon stats), Sun Arc Visualizer (SVG sun path driven by the time scrubber, dawn/sunrise/noon/sunset/dusk ticks, night state), Quick Jumps (Today / Next Full Moon / Next Eclipse with computed dates; month view auto-syncs to jumped date). Backend exposes calendars[jawa].detail + quick_jumps. Verified: full-moon jump → 27 Sep 2026 Full Moon 99%; eclipse jump → 6 Feb 2027 Annular Solar Eclipse; modal breakdown correct (Senin Kliwon → 4+8=12).
 
 ## Known Approximations
 - Hijri uses Umm al-Qura tables (hijri-converter); may differ ±1 day from Indonesian government (hisab/rukyat) dates.
@@ -30,10 +32,10 @@
 
 ## Backlog
 - P0: none blocking.
-- P1: Weton detail modal (neptu breakdown, watak), eclipse detail drawer, next-event quick jumps (Next Full Moon, Next Eclipse).
-- P2: Kalacakra / Candra Kala / Cannse Lunar engines, tide model for coastal cities, sun-arc SVG visualizer, moon phase canvas, custom coordinates input.
+- P1: Eclipse detail drawer (visibility map, penumbra timeline), tide model for coastal cities, custom coordinates input.
+- P2: Kalacakra / Candra Kala / Cannse Lunar engines, moon phase canvas graphic, Pranata Mangsa seasonal ring, printable day card export.
 
 ## Next Tasks
-1. Weton detail modal on calendar card click.
-2. Sun arc SVG day visualizer driven by the time scrubber.
-3. Quick-jump presets (Today, Next Full Moon, Next Eclipse).
+1. Eclipse detail drawer on eclipse card click.
+2. Moon phase canvas visualizer in the Moon card.
+3. Tide engine for coastal cities (Denpasar, Surabaya).

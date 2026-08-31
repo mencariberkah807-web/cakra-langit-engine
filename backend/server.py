@@ -1,7 +1,7 @@
 import math
 import os
 import logging
-from datetime import date, datetime
+from datetime import date, datetime, timedelta
 from pathlib import Path
 from zoneinfo import ZoneInfo
 
@@ -86,6 +86,34 @@ def moon_info(d: date) -> dict:
     illum = (1 - math.cos(2 * math.pi * age / syn)) / 2 * 100
     idx = int((age / syn) * 8 + 0.5) % 8
     return {"phase": MOON_PHASES[idx], "illumination": round(illum), "age": round(age, 2)}
+
+
+NEPTU_WATAK = [
+    (10, "Lakuning Bumi", "Tenang dan membumi — sabar, tekun, disegani karena keteguhannya."),
+    (13, "Lakuning Geni", "Laksana api — bersemangat, cepat bertindak, penuh tekad."),
+    (16, "Lakuning Banyu", "Laksana air — luwes bergaul, menyejukkan, mudah beradaptasi."),
+    (19, "Lakuning Srengenge", "Laksana matahari — terbuka, berwibawa, menjadi pusat perhatian."),
+    (22, "Lakuning Wulan", "Laksana rembulan — teduh, mengayomi, disukai banyak orang."),
+    (99, "Lakuning Lintang", "Laksana bintang — bercita-cita tinggi, berpandangan jauh."),
+]
+
+
+def neptu_watak(n: int) -> dict:
+    for cap, name, desc in NEPTU_WATAK:
+        if n <= cap:
+            return {"name": name, "desc": desc}
+    return {"name": NEPTU_WATAK[-1][1], "desc": NEPTU_WATAK[-1][2]}
+
+
+def next_full_moon(d: date):
+    prev = None
+    for i in range(0, 45):
+        cur = d + timedelta(days=i)
+        age = moon_info(cur)["age"]
+        if prev is not None and prev < 14.7669 <= age:
+            return cur.isoformat()
+        prev = age
+    return None
 
 
 def saka_year(d: date) -> int:
@@ -179,7 +207,19 @@ async def almanac(city: str = "bandung", date_str: str = Query(None, alias="date
                         {"k": "Wuku", "v": wuku},
                         {"k": "Tahun", "v": TAHUN_JAWA[(jawa_year - 1955) % 8]},
                         {"k": "Windu", "v": WINDU[((jawa_year - 1555) // 8) % 4]},
-                        {"k": "Pasaran", "v": pasaran_name}]},
+                        {"k": "Pasaran", "v": pasaran_name}],
+             "detail": {
+                 "jawa_date": f"{h.day} {JAWA_MONTHS[h.month - 1]} {jawa_year}",
+                 "dino": {"name": DINO_JAWA[wd], "neptu": DINO_NEPTU[wd]},
+                 "pasaran": {"name": pasaran_name, "neptu": pasaran_neptu},
+                 "neptu_total": neptu,
+                 "watak": neptu_watak(neptu),
+                 "wuku": {"name": wuku, "index": (p_day - 1) // 7 + 1,
+                          "day_in_wuku": (p_day - 1) % 7 + 1,
+                          "pawukon_day": p_day},
+                 "tahun": TAHUN_JAWA[(jawa_year - 1955) % 8],
+                 "windu": WINDU[((jawa_year - 1555) // 8) % 4],
+             }},
             {"id": "sunda", "name": "Saka Sunda",
              "headline": f"Taun {saka_year(d)} Saka",
              "sub": SUNDA_DAYS[wd],
@@ -209,6 +249,9 @@ async def almanac(city: str = "bandung", date_str: str = Query(None, alias="date
                         {"k": "Hari", "v": DAYS_ID[wd]}]},
         ],
         "schedule": schedule,
+        "quick_jumps": {"today": datetime.now(tz).date().isoformat(),
+                        "next_full_moon": next_full_moon(d),
+                        "next_eclipse": eclipse_next},
         "ticker": [
             f"Weton {weton}", f"Neptu {neptu}", f"Sunrise {sunrise}",
             f"Sunset {sunset}", f"Moon {moon['phase']} {moon['illumination']}%",

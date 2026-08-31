@@ -10,7 +10,7 @@ const item = {
   show: { opacity: 1, y: 0, transition: { duration: 0.6, ease: [0.16, 1, 0.3, 1] } },
 };
 
-export default function CalendarSystems({ data, loading }) {
+export default function CalendarSystems({ data, loading, onOpenWeton }) {
   const calendars = data?.calendars || [];
 
   return (
@@ -40,12 +40,20 @@ export default function CalendarSystems({ data, loading }) {
                 key={cal.id}
                 variants={item}
                 whileHover={cal.future ? {} : { y: -3, transition: { duration: 0.2 } }}
+                onClick={cal.id === "jawa" ? onOpenWeton : undefined}
+                role={cal.id === "jawa" ? "button" : undefined}
+                tabIndex={cal.id === "jawa" ? 0 : undefined}
+                onKeyDown={
+                  cal.id === "jawa"
+                    ? (e) => (e.key === "Enter" || e.key === " ") && onOpenWeton()
+                    : undefined
+                }
                 data-testid={`calendar-card-${cal.id}`}
                 className={`rounded-lg border p-4 ${
                   cal.future
                     ? "border-dashed border-[#E2E8F0] bg-[#F8FAFC]"
                     : "border-[#E2E8F0] bg-white transition-[border-color,box-shadow] duration-200 hover:border-[#CBD5E1] hover:shadow-[0_4px_12px_rgba(15,23,42,0.06)]"
-                }`}
+                } ${cal.id === "jawa" ? "cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#2563EB] focus:ring-offset-2" : ""}`}
               >
                 <p className="text-[10px] font-bold uppercase tracking-[0.08em] text-[#94A3B8]">
                   Calendar
@@ -76,6 +84,11 @@ export default function CalendarSystems({ data, loading }) {
                         </div>
                       ))}
                     </div>
+                    {cal.id === "jawa" && (
+                      <p className="mt-3 text-[10px] font-bold uppercase tracking-[0.08em] text-[#2563EB]">
+                        Weton breakdown →
+                      </p>
+                    )}
                   </>
                 )}
               </motion.div>

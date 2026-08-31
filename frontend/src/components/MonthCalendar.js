@@ -1,6 +1,6 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { motion } from "framer-motion";
-import { CalendarDays, ChevronLeft, ChevronRight, RotateCcw } from "lucide-react";
+import { CalendarDays, ChevronLeft, ChevronRight, RotateCcw, Moon, Eclipse } from "lucide-react";
 
 const MONTHS_ID = [
   "Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli",
@@ -11,10 +11,21 @@ const WD = ["MIN", "SEN", "SEL", "RAB", "KAM", "JUM", "SAB"];
 const iso = (d) =>
   `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
 
-export default function MonthCalendar({ dateISO, onSelect, time, onTimeChange, onJumpToday }) {
+const fmtShort = (isoStr) => {
+  if (!isoStr) return "—";
+  const d = new Date(`${isoStr}T00:00:00`);
+  return `${d.getDate()} ${MONTHS_ID[d.getMonth()].slice(0, 3)} ${d.getFullYear()}`;
+};
+
+export default function MonthCalendar({ dateISO, onSelect, time, onTimeChange, onJumpToday, quickJumps }) {
   const sel = new Date(`${dateISO}T00:00:00`);
   const [view, setView] = useState({ y: sel.getFullYear(), m: sel.getMonth() });
   const todayISO = iso(new Date());
+
+  useEffect(() => {
+    const d = new Date(`${dateISO}T00:00:00`);
+    setView({ y: d.getFullYear(), m: d.getMonth() });
+  }, [dateISO]);
 
   const cells = useMemo(() => {
     const first = new Date(view.y, view.m, 1);
@@ -96,6 +107,49 @@ export default function MonthCalendar({ dateISO, onSelect, time, onTimeChange, o
           <RotateCcw className="h-4 w-4 text-[#475569]" />
         </button>
       </div>
+
+      {quickJumps && (
+        <div className="mb-5 grid grid-cols-3 gap-2" data-testid="quick-jumps-row">
+          <button
+            data-testid="quick-jump-today"
+            onClick={onJumpToday}
+            className="flex flex-col items-start gap-1 rounded-lg border border-[#E2E8F0] p-2.5 text-left transition-colors duration-150 hover:bg-[#F1F5F9]"
+          >
+            <span className="flex items-center gap-1.5 text-[11px] font-semibold">
+              <RotateCcw className="h-3 w-3 text-[#475569]" />
+              Today
+            </span>
+            <span className="font-mono text-[10px] tabular-nums text-[#94A3B8]">Live</span>
+          </button>
+          <button
+            data-testid="quick-jump-full-moon"
+            onClick={() => quickJumps.next_full_moon && onSelect(quickJumps.next_full_moon)}
+            className="flex flex-col items-start gap-1 rounded-lg border border-[#E2E8F0] p-2.5 text-left transition-colors duration-150 hover:bg-[#F1F5F9]"
+          >
+            <span className="flex items-center gap-1.5 text-[11px] font-semibold">
+              <Moon className="h-3 w-3 text-[#2563EB]" />
+              Full Moon
+            </span>
+            <span className="font-mono text-[10px] tabular-nums text-[#94A3B8]">
+              {fmtShort(quickJumps.next_full_moon)}
+            </span>
+          </button>
+          <button
+            data-testid="quick-jump-eclipse"
+            disabled={!quickJumps.next_eclipse}
+            onClick={() => quickJumps.next_eclipse && onSelect(quickJumps.next_eclipse.date)}
+            className="flex flex-col items-start gap-1 rounded-lg border border-[#E2E8F0] p-2.5 text-left transition-colors duration-150 hover:bg-[#F1F5F9] disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            <span className="flex items-center gap-1.5 text-[11px] font-semibold">
+              <Eclipse className="h-3 w-3 text-[#7C3AED]" />
+              Eclipse
+            </span>
+            <span className="font-mono text-[10px] tabular-nums text-[#94A3B8]">
+              {quickJumps.next_eclipse ? fmtShort(quickJumps.next_eclipse.date) : "—"}
+            </span>
+          </button>
+        </div>
+      )}
 
       <h3 className="mb-3 font-display text-lg font-bold tracking-[-0.01em]">
         {MONTHS_ID[view.m]} {view.y}
