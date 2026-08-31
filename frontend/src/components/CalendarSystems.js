@@ -27,7 +27,7 @@ export default function CalendarSystems({ data, loading }) {
           Calendar Systems
         </h2>
       </div>
-      <div className="grid grid-cols-2 gap-3.5 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-7">
+      <div className="grid grid-cols-1 gap-3.5 min-[480px]:grid-cols-2 md:grid-cols-3 xl:grid-cols-4">
         {loading || !data
           ? Array.from({ length: 7 }).map((_, i) => (
               <div
