@@ -1,42 +1,49 @@
 import { useState } from 'react'
 
-const primaryNav = [
-  ['⌂', 'Dashboard'],
-  ['☼', 'Kalkulasi Hari Ini'],
-  ['◈', 'Natural Layer'],
-  ['♙', 'Birth Converter'],
-  ['▣', 'Weton'],
-  ['東', 'BaZi'],
-  ['▤', 'Paririmbon'],
-  ['☾', 'Almanac'],
-  ['↶', 'Riwayat'],
+export const primaryNav = [
+  ['⌂', 'Dashboard', '/calculation'],
+  ['☼', 'Kalkulasi Hari Ini', '/calculation/today'],
+  ['◈', 'Natural Layer', '/calculation/natural'],
+  ['♙', 'Birth Converter', '/calculation/birth-converter'],
+  ['▣', 'Weton', '/calculation/weton'],
+  ['東', 'BaZi', '/calculation/bazi'],
+  ['▤', 'Paririmbon', '/calculation/paririmbon'],
+  ['☾', 'Almanac', '/calculation/almanac'],
+  ['↶', 'Riwayat', '/calculation/history'],
 ]
 
-const personalNav = [
-  ['☑', 'Personal Tasks'],
-  ['♙', 'Profil Saya'],
-  ['⚙', 'Pengaturan'],
+export const personalNav = [
+  ['☑', 'Personal Tasks', '/calculation/tasks'],
+  ['♙', 'Profil Saya', '/calculation/profile'],
+  ['⚙', 'Pengaturan', '/calculation/settings'],
 ]
 
 function Navigation({ onLogout, mobile = false }) {
+  const currentPath = window.location.pathname
+
+  const renderItem = ([icon, label, href]) => {
+    const active = href === '/calculation'
+      ? currentPath === href
+      : currentPath === href || currentPath.startsWith(`${href}/`)
+
+    return (
+      <a
+        key={label}
+        href={href}
+        onClick={() => mobile && window.setTimeout(() => window.scrollTo(0, 0), 0)}
+        className={`mb-1 flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm transition-colors ${active ? 'bg-blue-50 font-medium text-blue-700' : 'text-slate-700 hover:bg-slate-50'}`}
+      >
+        <span className="w-5 text-center text-lg">{icon}</span>
+        <span>{label}</span>
+      </a>
+    )
+  }
+
   return (
     <nav className={mobile ? 'space-y-1 px-2 pb-4' : 'flex-1 px-3 text-sm text-slate-700'}>
-      {primaryNav.map(([icon, label], index) => (
-        <div
-          key={label}
-          className={`mb-1 flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm ${index === 0 ? 'bg-blue-50 font-medium text-blue-700' : 'text-slate-700'}`}
-        >
-          <span className="w-5 text-center text-lg">{icon}</span>
-          <span>{label}</span>
-        </div>
-      ))}
+      {primaryNav.map(renderItem)}
       <div className="my-5 border-t border-slate-200" />
-      {personalNav.map(([icon, label]) => (
-        <div key={label} className="mb-1 flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-slate-700">
-          <span className="w-5 text-center text-lg">{icon}</span>
-          <span>{label}</span>
-        </div>
-      ))}
+      {personalNav.map(renderItem)}
       {mobile && (
         <button
           type="button"
