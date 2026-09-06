@@ -9,6 +9,7 @@ import ScheduleTimeline from "../cakra-ui/ScheduleTimeline";
 import WetonModal from "../cakra-ui/WetonModal";
 import Ticker from "../cakra-ui/Ticker";
 import Footer from "../cakra-ui/Footer";
+import { primaryNav, personalNav } from "../cakra-ui/GlobalShell";
 
 import { useTodayContext } from "../core/TodayContext";
 import { getResultsByGroup } from "../core/resultRegistry.js";
@@ -16,7 +17,65 @@ import { getResultsByGroup } from "../core/resultRegistry.js";
 const iso = (d) =>
   `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
 
-export default function AppShell() {
+function AuthenticatedSidebar({ user, onLogout }) {
+  const currentPath = window.location.pathname;
+  const displayName = user?.display_name || user?.email?.split("@")[0] || "Pengguna";
+  const initials = displayName.slice(0, 2).toUpperCase();
+
+  const renderItem = ([Icon, label, href]) => {
+    const active = href === "/calculation"
+      ? currentPath === href
+      : currentPath === href || currentPath.startsWith(`${href}/`);
+
+    return (
+      <a
+        key={label}
+        href={href}
+        className={`mb-1 flex items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors ${
+          active
+            ? "bg-[#EFF6FF] font-semibold text-[#2563EB]"
+            : "text-[#475569] hover:bg-[#F8FAFC]"
+        }`}
+      >
+        <Icon size={16} strokeWidth={1.7} className={active ? "text-[#2563EB]" : "text-[#64748B]"} />
+        <span>{label}</span>
+      </a>
+    );
+  };
+
+  return (
+    <aside className="hidden w-[220px] shrink-0 border-r border-[#E2E8F0] bg-white lg:flex lg:flex-col">
+      <div className="px-4 py-5">
+        <div className="text-[10px] font-bold uppercase tracking-[0.14em] text-[#94A3B8]">Akun Saya</div>
+        <div className="mt-2 flex items-center gap-2.5">
+          <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#2563EB] text-[10px] font-bold text-white">{initials}</div>
+          <div className="min-w-0">
+            <div className="truncate text-xs font-semibold text-[#0F172A]">{displayName}</div>
+            <div className="truncate text-[10px] text-[#64748B]">Personal Almanac</div>
+          </div>
+        </div>
+      </div>
+
+      <nav className="flex-1 px-3 pb-4">
+        {primaryNav.map(renderItem)}
+        <div className="my-4 border-t border-[#E2E8F0]" />
+        {personalNav.map(renderItem)}
+      </nav>
+
+      <div className="border-t border-[#E2E8F0] px-4 py-3">
+        <button
+          type="button"
+          onClick={onLogout}
+          className="w-full text-left text-xs font-semibold text-[#64748B] hover:text-[#0F172A]"
+        >
+          Keluar
+        </button>
+      </div>
+    </aside>
+  );
+}
+
+export default function AppShell({ authenticatedUser = null, onLogout = null, showFooter = true }) {
   const context = useTodayContext();
   const apiData = context.apiData;
   const [time, setTime] = useState("12:00");
@@ -156,51 +215,57 @@ export default function AppShell() {
         isToday={context.mode === "live"}
       />
 
-      <main className="mx-auto max-w-[1440px] px-4 py-6 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 gap-6 lg:grid-cols-12">
+      <div className="flex items-start">
+        {authenticatedUser ? (
+          <AuthenticatedSidebar user={authenticatedUser} onLogout={onLogout} />
+        ) : null}
 
-          <div className="flex flex-col gap-6 lg:col-span-8">
-            <NaturalLayer
-              data={data}
-              loading={false}
-            />
+        <main className="min-w-0 flex-1">
+          <div className="mx-auto max-w-[1440px] px-4 py-6 sm:px-6 lg:px-8">
+            <div className="grid grid-cols-1 gap-6 lg:grid-cols-12">
+              <div className="flex flex-col gap-6 lg:col-span-8">
+                <NaturalLayer
+                  data={data}
+                  loading={false}
+                />
 
-            <SunArc
-              sun={data.natural.sun}
-              time={time}
-              loading={false}
-            />
+                <SunArc
+                  sun={data.natural.sun}
+                  time={time}
+                  loading={false}
+                />
 
-            <CalendarSystems
-              data={data}
-              loading={false}
-              onOpenWeton={() => setWetonOpen(true)}
-            />
+                <CalendarSystems
+                  data={data}
+                  loading={false}
+                  onOpenWeton={() => setWetonOpen(true)}
+                />
+              </div>
+
+              <div className="flex flex-col gap-6 lg:col-span-4">
+                <MonthCalendar
+                  dateISO={iso(context.selectedDate)}
+                  onSelect={(value) =>
+                    context.setSelectedDate(
+                      new Date(`${value}T12:00:00`)
+                    )
+                  }
+                  time={time}
+                  onTimeChange={setTime}
+                  onJumpToday={context.goLive}
+                  quickJumps={data.quick_jumps}
+                />
+
+                <ScheduleTimeline
+                  data={data}
+                  loading={false}
+                  time={time}
+                />
+              </div>
+            </div>
           </div>
-
-          <div className="flex flex-col gap-6 lg:col-span-4">
-            <MonthCalendar
-              dateISO={iso(context.selectedDate)}
-              onSelect={(value) =>
-                context.setSelectedDate(
-                  new Date(`${value}T12:00:00`)
-                )
-              }
-              time={time}
-              onTimeChange={setTime}
-              onJumpToday={context.goLive}
-              quickJumps={data.quick_jumps}
-            />
-
-            <ScheduleTimeline
-              data={data}
-              loading={false}
-              time={time}
-            />
-          </div>
-
-        </div>
-      </main>
+        </main>
+      </div>
 
       <WetonModal
         open={wetonOpen}
@@ -210,7 +275,7 @@ export default function AppShell() {
 
       <Ticker data={data} />
 
-      <Footer data={data} />
+      {showFooter ? <Footer data={data} /> : null}
     </div>
   );
 }
