@@ -23,7 +23,7 @@ function AuthenticatedSidebar({ user, onLogout }) {
   const initials = displayName.slice(0, 2).toUpperCase();
 
   const renderItem = ([Icon, label, href]) => {
-    const active = href === "/calculation"
+    const active = href === "/dashboard"
       ? currentPath === href
       : currentPath === href || currentPath.startsWith(`${href}/`);
 
@@ -84,11 +84,8 @@ export default function AppShell({ authenticatedUser = null, onLogout = null, sh
   const naturalResults = getResultsByGroup("natural", context);
   const calendarResults = getResultsByGroup("calendar", context);
 
-  const sunResult =
-    naturalResults.find((result) => result.id === "sun") || null;
-
+  const sunResult = naturalResults.find((result) => result.id === "sun") || null;
   const sunData = sunResult?.data || sunResult?.value || sunResult || {};
-
   const sun = {
     ...sunData,
     sunrise: sunData.sunrise ?? null,
@@ -99,10 +96,7 @@ export default function AppShell({ authenticatedUser = null, onLogout = null, sh
     golden_hour: sunData.golden_hour ?? null,
   };
 
-  const sunEvents = Array.isArray(sunResult?.events)
-    ? sunResult.events
-    : [];
-
+  const sunEvents = Array.isArray(sunResult?.events) ? sunResult.events : [];
   const schedule = sunEvents.map((event) => ({
     time: event.time,
     title: event.title,
@@ -110,27 +104,19 @@ export default function AppShell({ authenticatedUser = null, onLogout = null, sh
     sub: event.sub || (event.type === "SOLAR" ? "Sun" : "Sky"),
   }));
 
-  const eclipseResult =
-    naturalResults.find((result) => result.id === "eclipse") || null;
-
-  const eclipseData =
-    eclipseResult?.data || eclipseResult?.value || eclipseResult || {};
+  const eclipseResult = naturalResults.find((result) => result.id === "eclipse") || null;
+  const eclipseData = eclipseResult?.data || eclipseResult?.value || eclipseResult || {};
 
   const data = {
     ...context,
     ...(apiData || {}),
-
     location: apiData?.location
       ? {
           ...context.location,
           ...apiData.location,
-          timezoneLabel:
-            apiData.location.timezoneLabel ||
-            context.location?.timezoneLabel ||
-            null,
+          timezoneLabel: apiData.location.timezoneLabel || context.location?.timezoneLabel || null,
         }
       : context.location,
-
     date_info: apiData?.date_info || {
       date_long: context.selectedDate
         ? new Intl.DateTimeFormat("id-ID", {
@@ -142,44 +128,20 @@ export default function AppShell({ authenticatedUser = null, onLogout = null, sh
           }).format(context.selectedDate)
         : null,
     },
-
     natural: apiData?.natural || context.natural || {
       sun,
-      moon:
-        naturalResults.find((r) => r.id === "moon")?.data ||
-        naturalResults.find((r) => r.id === "moon") ||
-        null,
-      eclipse:
-        naturalResults.find((r) => r.id === "eclipse")?.data ||
-        naturalResults.find((r) => r.id === "eclipse") ||
-        null,
-      sky:
-        naturalResults.find((r) => r.id === "sky")?.data ||
-        naturalResults.find((r) => r.id === "sky") ||
-        null,
-      earth:
-        naturalResults.find((r) => r.id === "earth-space")?.data ||
-        naturalResults.find((r) => r.id === "earth-space") ||
-        null,
-      tide:
-        naturalResults.find((r) => r.id === "tide")?.data ||
-        naturalResults.find((r) => r.id === "tide") ||
-        null,
+      moon: naturalResults.find((r) => r.id === "moon")?.data || naturalResults.find((r) => r.id === "moon") || null,
+      eclipse: naturalResults.find((r) => r.id === "eclipse")?.data || naturalResults.find((r) => r.id === "eclipse") || null,
+      sky: naturalResults.find((r) => r.id === "sky")?.data || naturalResults.find((r) => r.id === "sky") || null,
+      earth: naturalResults.find((r) => r.id === "earth-space")?.data || naturalResults.find((r) => r.id === "earth-space") || null,
+      tide: naturalResults.find((r) => r.id === "tide")?.data || naturalResults.find((r) => r.id === "tide") || null,
     },
-
     schedule: apiData?.schedule || schedule,
-
     quick_jumps: apiData?.quick_jumps || {
-      today:
-        context.mode === "live" && context.selectedDate
-          ? iso(context.selectedDate)
-          : null,
-      next_full_moon:
-        naturalResults.find((result) => result.id === "moon")?.nextFullMoon ??
-        null,
+      today: context.mode === "live" && context.selectedDate ? iso(context.selectedDate) : null,
+      next_full_moon: naturalResults.find((result) => result.id === "moon")?.nextFullMoon ?? null,
       next_eclipse: eclipseData.next ?? null,
     },
-
     calendars: calendarResults
       .filter((result) => result.id !== "gregorian")
       .map((result) => ({
@@ -216,65 +178,35 @@ export default function AppShell({ authenticatedUser = null, onLogout = null, sh
       />
 
       <div className="flex items-start">
-        {authenticatedUser ? (
-          <AuthenticatedSidebar user={authenticatedUser} onLogout={onLogout} />
-        ) : null}
+        {authenticatedUser ? <AuthenticatedSidebar user={authenticatedUser} onLogout={onLogout} /> : null}
 
         <main className="min-w-0 flex-1">
           <div className="mx-auto max-w-[1440px] px-4 py-6 sm:px-6 lg:px-8">
             <div className="grid grid-cols-1 gap-6 lg:grid-cols-12">
               <div className="flex flex-col gap-6 lg:col-span-8">
-                <NaturalLayer
-                  data={data}
-                  loading={false}
-                />
-
-                <SunArc
-                  sun={data.natural.sun}
-                  time={time}
-                  loading={false}
-                />
-
-                <CalendarSystems
-                  data={data}
-                  loading={false}
-                  onOpenWeton={() => setWetonOpen(true)}
-                />
+                <NaturalLayer data={data} loading={false} />
+                <SunArc sun={data.natural.sun} time={time} loading={false} />
+                <CalendarSystems data={data} loading={false} onOpenWeton={() => setWetonOpen(true)} />
               </div>
 
               <div className="flex flex-col gap-6 lg:col-span-4">
                 <MonthCalendar
                   dateISO={iso(context.selectedDate)}
-                  onSelect={(value) =>
-                    context.setSelectedDate(
-                      new Date(`${value}T12:00:00`)
-                    )
-                  }
+                  onSelect={(value) => context.setSelectedDate(new Date(`${value}T12:00:00`))}
                   time={time}
                   onTimeChange={setTime}
                   onJumpToday={context.goLive}
                   quickJumps={data.quick_jumps}
                 />
-
-                <ScheduleTimeline
-                  data={data}
-                  loading={false}
-                  time={time}
-                />
+                <ScheduleTimeline data={data} loading={false} time={time} />
               </div>
             </div>
           </div>
         </main>
       </div>
 
-      <WetonModal
-        open={wetonOpen}
-        onOpenChange={setWetonOpen}
-        data={data}
-      />
-
+      <WetonModal open={wetonOpen} onOpenChange={setWetonOpen} data={data} />
       <Ticker data={data} />
-
       {showFooter ? <Footer data={data} /> : null}
     </div>
   );
