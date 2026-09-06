@@ -29,24 +29,27 @@ function CalendarCard() {
   const cells = useMemo(() => Array.from({ length: Math.ceil((start + days) / 7) * 7 }, (_, i) => i - start + 1), [start, days])
 
   return (
-    <section className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
-      <div className="mb-4 flex items-center justify-between">
-        <h2 className="text-sm font-semibold text-slate-900">Kalender Bulan Ini</h2>
-        <div className="flex items-center gap-1">
-          <button type="button" onClick={() => setCursor(new Date(year, month - 1, 1))} className="rounded-md border border-slate-200 p-1.5 text-slate-500 hover:bg-slate-50"><ChevronLeft size={14} /></button>
-          <button type="button" onClick={() => setCursor(new Date(year, month + 1, 1))} className="rounded-md border border-slate-200 p-1.5 text-slate-500 hover:bg-slate-50"><ChevronRight size={14} /></button>
-          <button type="button" onClick={() => setCursor(new Date())} className="ml-1 rounded-md border border-slate-200 px-2 py-1.5 text-[11px] font-medium text-blue-600">Hari ini</button>
+    <section className="month-calendar">
+      <div className="month-calendar-heading">
+        <div>
+          <span className="eyebrow">Calendar</span>
+          <h2>Kalender Bulan Ini</h2>
+        </div>
+        <div className="month-date-controls">
+          <button type="button" onClick={() => setCursor(new Date(year, month - 1, 1))} className="month-nav-button"><ChevronLeft size={14} /></button>
+          <button type="button" onClick={() => setCursor(new Date(year, month + 1, 1))} className="month-nav-button"><ChevronRight size={14} /></button>
+          <button type="button" onClick={() => setCursor(new Date())} className="month-live-button">Hari ini</button>
         </div>
       </div>
-      <div className="mb-3 text-sm font-semibold capitalize text-slate-800">{monthLabel}</div>
-      <div className="grid grid-cols-7 text-center text-[10px] font-semibold uppercase tracking-wide text-slate-400">
-        {['Min', 'Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab'].map((day) => <div key={day} className="py-1.5">{day}</div>)}
+      <div className="mb-3 text-sm font-semibold capitalize text-[#26364d]">{monthLabel}</div>
+      <div className="month-weekdays">
+        {['Min', 'Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab'].map((day) => <span key={day}>{day}</span>)}
       </div>
-      <div className="grid grid-cols-7 gap-y-1 text-center text-xs">
+      <div className="month-days">
         {cells.map((day, index) => {
           const active = day === today.getDate() && month === today.getMonth() && year === today.getFullYear()
           const valid = day > 0 && day <= days
-          return <div key={index} className={`flex h-8 items-center justify-center rounded-md ${!valid ? 'text-transparent' : active ? 'bg-blue-600 font-semibold text-white' : 'text-slate-700 hover:bg-slate-50'}`}>{valid ? day : '·'}</div>
+          return <button type="button" key={index} disabled={!valid} className={`month-day ${!valid ? 'month-day-muted' : active ? 'month-day-selected' : ''}`}>{valid ? day : '·'}</button>
         })}
       </div>
     </section>
@@ -64,24 +67,29 @@ function AgendaCard() {
   }
 
   return (
-    <section className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
-      <div className="mb-4 flex items-center justify-between">
-        <div className="flex items-center gap-2"><CalendarDays size={15} className="text-slate-500" /><h2 className="text-sm font-semibold text-slate-900">Today Event</h2></div>
-        <button type="button" className="text-[11px] font-medium text-blue-600">Lihat Semua <ArrowRight size={12} className="ml-1 inline" /></button>
+    <section className="timeline-section">
+      <div className="timeline-item-header mb-4">
+        <div>
+          <span className="eyebrow">Today</span>
+          <h2 className="mt-1 text-xl font-bold tracking-[-0.02em] text-[#1f2d3d]">Today Event</h2>
+        </div>
+        <button type="button" className="text-xs font-semibold text-[#26364d]">Lihat Semua <ArrowRight size={12} className="ml-1 inline" /></button>
       </div>
-      <div className="space-y-1.5">
+      <div className="timeline-list">
         {items.slice(0, 5).map(({ time, title, note, icon: Icon }, index) => (
-          <div key={`${title}-${index}`} className="flex items-center gap-3 rounded-lg border border-slate-100 px-3 py-2.5">
-            <span className="w-10 text-[10px] font-medium text-slate-400">{time}</span>
-            <Icon size={15} className="shrink-0 text-blue-500" />
-            <div className="min-w-0 flex-1"><div className="truncate text-xs font-semibold text-slate-800">{title}</div><div className="truncate text-[10px] text-slate-400">{note}</div></div>
-            <span className="text-slate-300">⋮</span>
+          <div key={`${title}-${index}`} className="timeline-item">
+            <span className="timeline-time">{time}</span>
+            <span className="timeline-marker"><Icon size={14} className="sr-only" /></span>
+            <div className="timeline-content">
+              <div className="timeline-item-header"><h3>{title}</h3><span className="timeline-type">PERSONAL</span></div>
+              <p>{note}</p>
+            </div>
           </div>
         ))}
       </div>
-      <div className="mt-3 flex gap-2">
-        <input value={task} onChange={(event) => setTask(event.target.value)} onKeyDown={(event) => event.key === 'Enter' && addTask()} placeholder="Tambah agenda..." className="min-w-0 flex-1 rounded-md border border-slate-200 px-3 py-2 text-xs outline-none focus:border-blue-400" />
-        <button type="button" onClick={addTask} className="rounded-md bg-blue-600 px-3 text-white"><Plus size={15} /></button>
+      <div className="mt-5 flex gap-2">
+        <input value={task} onChange={(event) => setTask(event.target.value)} onKeyDown={(event) => event.key === 'Enter' && addTask()} placeholder="Tambah agenda..." className="min-w-0 flex-1 rounded-lg border border-[#dfe5ec] bg-white px-3 py-2 text-xs text-[#26364d] outline-none focus:border-[#26364d]" />
+        <button type="button" onClick={addTask} className="rounded-lg bg-[#26364d] px-3 text-white"><Plus size={15} /></button>
       </div>
     </section>
   )
@@ -92,48 +100,51 @@ export default function CalculationDashboard({ displayName }) {
   const dateLabel = now.toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })
 
   return (
-    <section className="mx-auto max-w-[1180px] px-5 pb-8 pt-6 sm:px-7">
-      <div className="mb-5 flex flex-wrap items-end justify-between gap-4">
-        <div>
-          <div className="text-xs text-slate-500">Good morning,</div>
-          <h1 className="mt-0.5 text-3xl font-semibold tracking-tight text-slate-900">{displayName}</h1>
-          <p className="mt-1 text-xs text-slate-500">Temukan petunjuk hari ini melalui alam dan berbagai sistem kalender Cakra Langit.</p>
+    <section className="app-shell">
+      <div className="dashboard-section" style={{ marginTop: 0 }}>
+        <div className="section-heading">
+          <div>
+            <span className="eyebrow">Cakra Langit</span>
+            <h2>Dashboard {displayName}</h2>
+            <p className="mt-2 max-w-2xl text-sm text-[#718096]">Temukan petunjuk hari ini melalui alam dan berbagai sistem kalender Cakra Langit.</p>
+          </div>
+          <div className="section-status text-right">
+            <div className="flex items-center justify-end gap-2 font-semibold text-[#26364d]"><Sun size={16} />{dateLabel}</div>
+            <div className="mt-1">Jakarta, Indonesia</div>
+          </div>
         </div>
-        <div className="text-right">
-          <div className="flex items-center justify-end gap-2 text-xs font-semibold text-slate-800"><Sun size={16} className="text-amber-500" />{dateLabel}</div>
-          <div className="mt-1 flex items-center justify-end gap-1 text-[10px] text-slate-500">Jakarta, Indonesia</div>
-        </div>
-      </div>
 
-      <section className="mb-5 rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
-        <div className="mb-3 flex items-center gap-2"><Leaf size={15} className="text-emerald-500" /><h2 className="text-xs font-semibold uppercase tracking-[0.12em] text-slate-500">Natural Layer</h2></div>
-        <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-5">
+        <section className="natural-summary">
           {natural.map(({ title, value, secondary, icon: Icon, tone }) => (
-            <div key={title} className="rounded-lg border border-slate-100 bg-slate-50/40 p-3">
-              <div className={`mb-3 flex items-center gap-2 text-[10px] font-medium ${tone}`}><Icon size={14} /><span className="text-slate-500">{title}</span></div>
-              <div className="text-xs font-semibold text-slate-900">{value}</div>
-              <div className="mt-1 text-[10px] leading-4 text-slate-400">{secondary}</div>
+            <div key={title} className="natural-item">
+              <div className="natural-item-heading flex items-center gap-2"><Icon size={14} className={tone} /><span className="natural-item-label">{title}</span></div>
+              <p className="natural-item-primary">{value}</p>
+              <p className="natural-item-secondary">{secondary}</p>
+            </div>
+          ))}
+        </section>
+
+        <div className="dashboard-main-layout">
+          <div className="dashboard-main-left">
+            <CalendarCard />
+          </div>
+          <div className="dashboard-main-right">
+            <AgendaCard />
+          </div>
+        </div>
+
+        <div className="dashboard-detail-section grid grid-cols-1 gap-3 sm:grid-cols-3">
+          {[
+            ['Terbit', '05:50', Sunrise, 'text-amber-500'],
+            ['Kumulasi', '11:51', Sun, 'text-blue-500'],
+            ['Terbenam', '17:51', Sunset, 'text-orange-500'],
+          ].map(([label, value, Icon, tone]) => (
+            <div key={label} className="calendar-detail flex items-center gap-3 !p-4">
+              <Icon size={17} className={tone} />
+              <div><div className="natural-item-label">{label}</div><div className="text-sm font-semibold text-[#26364d]">{value}</div></div>
             </div>
           ))}
         </div>
-      </section>
-
-      <div className="grid grid-cols-1 gap-5 lg:grid-cols-[minmax(0,1fr)_360px]">
-        <CalendarCard />
-        <AgendaCard />
-      </div>
-
-      <div className="mt-5 grid grid-cols-1 gap-3 sm:grid-cols-3">
-        {[
-          ['Terbit', '05:50', Sunrise, 'text-amber-500'],
-          ['Kumulasi', '11:51', Sun, 'text-blue-500'],
-          ['Terbenam', '17:51', Sunset, 'text-orange-500'],
-        ].map(([label, value, Icon, tone]) => (
-          <div key={label} className="flex items-center gap-3 rounded-xl border border-slate-200 bg-white px-4 py-3 shadow-sm">
-            <Icon size={17} className={tone} />
-            <div><div className="text-[10px] uppercase tracking-wide text-slate-400">{label}</div><div className="text-sm font-semibold text-slate-800">{value}</div></div>
-          </div>
-        ))}
       </div>
     </section>
   )
