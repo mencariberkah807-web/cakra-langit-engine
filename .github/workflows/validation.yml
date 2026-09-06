@@ -54,15 +54,21 @@ jobs:
           test "$STATUS" = "401"
 
           EMAIL="smoke-${GITHUB_RUN_ID}@example.com"
+          PASSWORD='SmokeTest123!'
+
           REGISTER=$(curl -fsS -X POST http://127.0.0.1:8000/api/auth/register \
             -H 'Content-Type: application/json' \
-            -d "{\"email\":\"$EMAIL\",\"password\":\"SmokeTest123!\",\"display_name\":\"CI Smoke\"}")
+            -d "{\"email\":\"$EMAIL\",\"password\":\"$PASSWORD\",\"display_name\":\"CI Smoke\"}")
 
-          TOKEN=$(python -c 'import json,sys; print(json.load(sys.stdin)["access_token"])' <<< "$REGISTER")
+          REGISTER_TOKEN=$(python -c 'import json,sys; print(json.load(sys.stdin)["access_token"])' <<< "$REGISTER")
+          test -n "$REGISTER_TOKEN"
+
+          LOGIN=$(curl -fsS -X POST http://127.0.0.1:8000/api/auth/login \
+            -H 'Content-Type: application/json' \
+            -d "{\"email\":\"$EMAIL\",\"password\":\"$PASSWORD\"}")
+
+          TOKEN=$(python -c 'import json,sys; print(json.load(sys.stdin)["access_token"])' <<< "$LOGIN")
           test -n "$TOKEN"
-
-          curl -fsS http://127.0.0.1:8000/api/auth/me \
-            -H "Authorization: Bearer $TOKEN"
 
           curl -fsS 'http://127.0.0.1:8000/api/almanac?city=Bandung' \
             -H "Authorization: Bearer $TOKEN" >/tmp/almanac.json
