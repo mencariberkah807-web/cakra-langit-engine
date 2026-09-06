@@ -1,0 +1,78 @@
+name: Cakra Langit Validation
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Frontend build
+        run: |
+          npm ci
+          npm run build
+
+      - name: Backend install
+        run: python -m pip install --upgrade pip && pip install -r backend/requirements.txt
+
+      - name: Backend compile
+        run: python -m compileall -q backend
+
+      - name: Authentication end-to-end smoke test
+        env:
+          DATABASE_URL: sqlite:////tmp/cakra-langit-smoke.db
+          JWT_SECRET_KEY: cakra-langit-ci-test-secret
+          PYTHONPATH: backend
+        run: |
+          alembic upgrade head
+          uvicorn backend.server:app --host 127.0.0.1 --port 8000 >/tmp/cakra-langit-server.log 2>&1 &
+          SERVER_PID=$!
+          trap 'kill $SERVER_PID || true' EXIT
+
+          python - <<'PY'
+          import time
+          import urllib.request
+
+          for _ in range(30):
+              try:
+                  urllib.request.urlopen('http://127.0.0.1:8000/api/health', timeout=1)
+                  break
+              except Exception:
+                  time.sleep(1)
+          else:
+              raise SystemExit('Server did not become ready')
+          PY
+
+          curl -fsS http://127.0.0.1:8000/api/health
+
+          STATUS=$(curl -s -o /tmp/unauthorized.json -w '%{http_code}' 'http://127.0.0.1:8000/api/almanac?city=Bandung')
+          test "$STATUS" = "401"
+
+          EMAIL="smoke-${GITHUB_RUN_ID}@example.com"
+          REGISTER=$(curl -fsS -X POST http://127.0.0.1:8000/api/auth/register \
+            -H 'Content-Type: application/json' \
+            -d "{\"email\":\"$EMAIL\",\"password\":\"SmokeTest123!\",\"display_name\":\"CI Smoke\"}")
+
+          TOKEN=$(python -c 'import json,sys; print(json.load(sys.stdin)["access_token"])' <<< "$REGISTER")
+          test -n "$TOKEN"
+
+          curl -fsS http://127.0.0.1:8000/api/auth/me \
+            -H "Authorization: Bearer $TOKEN"
+
+          curl -fsS 'http://127.0.0.1:8000/api/almanac?city=Bandung' \
+            -H "Authorization: Bearer $TOKEN" >/tmp/almanac.json
+
+          python - <<'PY'
+          import json
+          with open('/tmp/almanac.json') as fh:
+              data = json.load(fh)
+          required = {'location', 'date_info', 'natural', 'calendars', 'schedule'}
+          missing = required.difference(data)
+          if missing:
+              raise SystemExit(f'Missing almanac fields: {sorted(missing)}')
+          PY
