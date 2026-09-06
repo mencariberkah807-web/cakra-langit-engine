@@ -19,10 +19,10 @@ const pageMap = {
 
 function PagePlaceholder({ title, description }) {
   return (
-    <section className="mx-auto max-w-[1500px] px-4 py-6 sm:px-6 lg:px-8">
-      <div className="rounded-2xl border border-slate-200 bg-white px-6 py-7 shadow-sm sm:px-8">
-        <div className="text-xs font-medium uppercase tracking-wide text-slate-500">Cakra Langit</div>
-        <h1 className="mt-2 text-3xl font-semibold tracking-tight text-slate-900">{title}</h1>
+    <section className="mx-auto max-w-[1180px] px-5 py-7 sm:px-7">
+      <div className="rounded-xl border border-slate-200 bg-white px-6 py-7 shadow-sm">
+        <div className="text-[11px] font-semibold uppercase tracking-[0.12em] text-slate-500">Cakra Langit</div>
+        <h1 className="mt-2 text-2xl font-semibold tracking-tight text-slate-900">{title}</h1>
         <p className="mt-2 max-w-2xl text-sm text-slate-600">{description}</p>
       </div>
     </section>
@@ -32,21 +32,7 @@ function PagePlaceholder({ title, description }) {
 function CalculationContent({ displayName }) {
   const path = window.location.pathname
 
-  if (path === '/calculation') {
-    return (
-      <>
-        <section className="mx-auto max-w-[1500px] px-4 pt-6 sm:px-6">
-          <div className="rounded-2xl border border-slate-200 bg-white px-6 py-6 shadow-sm sm:px-8">
-            <div className="text-sm font-medium text-slate-500">Good morning,</div>
-            <h1 className="mt-1 text-3xl font-semibold tracking-tight text-slate-900 sm:text-4xl">{displayName}</h1>
-            <p className="mt-2 max-w-2xl text-sm text-slate-600">Temukan petunjuk hari ini melalui alam dan berbagai sistem kalender Cakra Langit.</p>
-          </div>
-        </section>
-        <CalculationDashboard />
-      </>
-    )
-  }
-
+  if (path === '/calculation') return <CalculationDashboard displayName={displayName} />
   if (path === '/calculation/settings') return <SettingsPage />
 
   const page = pageMap[path]
