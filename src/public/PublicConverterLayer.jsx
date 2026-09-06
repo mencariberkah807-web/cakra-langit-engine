@@ -10,14 +10,12 @@ export default function PublicConverterLayer() {
       <TodayProvider>
         <AppShell />
       </TodayProvider>
-      {!isAuthenticated && (
-        <a
-          href="/login"
-          className="fixed right-5 top-5 z-50 rounded-lg bg-[#2563EB] px-4 py-2.5 text-sm font-semibold text-white shadow-sm"
-        >
-          Masuk
-        </a>
-      )}
+      <a
+        href={isAuthenticated ? '/calculation' : '/login'}
+        className="fixed right-5 top-5 z-50 rounded-lg bg-[#2563EB] px-4 py-2.5 text-sm font-semibold text-white shadow-sm"
+      >
+        {isAuthenticated ? 'Workspace' : 'Masuk'}
+      </a>
     </>
   )
 }
