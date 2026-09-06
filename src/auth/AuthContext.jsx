@@ -30,6 +30,10 @@ async function request(path, options = {}) {
   return payload
 }
 
+function storeToken(value) {
+  window.localStorage.setItem(TOKEN_KEY, value)
+}
+
 export function AuthProvider({ children }) {
   const [token, setToken] = useState(() => {
     try {
@@ -49,6 +53,7 @@ export function AuthProvider({ children }) {
     } catch {
       // Ignore storage errors.
     }
+    window.location.assign('/')
   }, [])
 
   useEffect(() => {
@@ -66,7 +71,15 @@ export function AuthProvider({ children }) {
         })
         if (!cancelled) setUser(currentUser)
       } catch {
-        if (!cancelled) clearSession()
+        if (!cancelled) {
+          try {
+            window.localStorage.removeItem(TOKEN_KEY)
+          } catch {
+            // Ignore storage errors.
+          }
+          setToken(null)
+          setUser(null)
+        }
       } finally {
         if (!cancelled) setLoading(false)
       }
@@ -77,7 +90,7 @@ export function AuthProvider({ children }) {
     return () => {
       cancelled = true
     }
-  }, [token, clearSession])
+  }, [token])
 
   const login = useCallback(async (email, password) => {
     const payload = await request('/api/auth/login', {
@@ -87,8 +100,8 @@ export function AuthProvider({ children }) {
 
     setToken(payload.access_token)
     setUser(payload.user)
-    window.localStorage.setItem(TOKEN_KEY, payload.access_token)
-    return payload.user
+    storeToken(payload.access_token)
+    window.location.assign('/calculation')
   }, [])
 
   const register = useCallback(async (email, password, displayName) => {
@@ -103,8 +116,8 @@ export function AuthProvider({ children }) {
 
     setToken(payload.access_token)
     setUser(payload.user)
-    window.localStorage.setItem(TOKEN_KEY, payload.access_token)
-    return payload.user
+    storeToken(payload.access_token)
+    window.location.assign('/calculation')
   }, [])
 
   const value = useMemo(
