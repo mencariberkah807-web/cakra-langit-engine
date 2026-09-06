@@ -1,5 +1,5 @@
 import { TodayProvider } from '../core/TodayContext'
-import CalculationDashboard from './CalculationDashboard'
+import AppShell from '../dashboard/AppShell'
 import SettingsPage from './SettingsPage'
 import { useAuth } from './AuthContext'
 import GlobalShell from '../cakra-ui/GlobalShell'
@@ -29,10 +29,19 @@ function PagePlaceholder({ title, description }) {
   )
 }
 
-function CalculationContent({ displayName }) {
+function CalculationContent({ user, logout }) {
   const path = window.location.pathname
 
-  if (path === '/calculation') return <CalculationDashboard displayName={displayName} />
+  if (path === '/calculation') {
+    return (
+      <AppShell
+        authenticatedUser={user}
+        onLogout={logout}
+        showFooter={false}
+      />
+    )
+  }
+
   if (path === '/calculation/settings') return <SettingsPage />
 
   const page = pageMap[path]
@@ -43,15 +52,10 @@ function CalculationContent({ displayName }) {
 
 export default function CalculationLayer() {
   const { user, logout } = useAuth()
-  const displayName = user?.display_name || user?.email?.split('@')[0] || 'Pengguna'
 
   return (
     <TodayProvider>
-      <GlobalShell user={user} onLogout={logout}>
-        <main>
-          <CalculationContent displayName={displayName} />
-        </main>
-      </GlobalShell>
+      <CalculationContent user={user} logout={logout} />
     </TodayProvider>
   )
 }
