@@ -28,9 +28,18 @@ function LoadingScreen() {
 
 export default function App() {
   const { loading, isAuthenticated } = useAuth()
-  const path = window.location.pathname
+  const rawPath = window.location.pathname
 
   if (loading) return <LoadingScreen />
+
+  // /calculation was the former application route. It is an engine/domain name,
+  // not a user-facing page. Keep legacy links from exposing that route.
+  if (rawPath === '/calculation' || rawPath.startsWith('/calculation/')) {
+    window.location.replace('/dashboard')
+    return <LoadingScreen />
+  }
+
+  const path = rawPath
 
   if (path === '/login') {
     return isAuthenticated ? <UserDashboardLayer /> : <LoginPage />
