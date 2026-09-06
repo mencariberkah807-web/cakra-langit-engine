@@ -1,6 +1,7 @@
 import { TodayProvider } from '../core/TodayContext'
 import AppShell from '../dashboard/AppShell'
 import CalculationDashboard from './CalculationDashboard'
+import SettingsPage from './SettingsPage'
 import { useAuth } from './AuthContext'
 import GlobalShell from '../cakra-ui/GlobalShell'
 
@@ -15,7 +16,6 @@ const pageMap = {
   '/calculation/history': ['Riwayat', 'Riwayat kalkulasi personal.'],
   '/calculation/tasks': ['Personal Tasks', 'Daftar tugas personal.'],
   '/calculation/profile': ['Profil Saya', 'Informasi dan data profil pengguna.'],
-  '/calculation/settings': ['Pengaturan', 'Pengaturan akun dan preferensi.'],
 }
 
 function PagePlaceholder({ title, description }) {
@@ -48,6 +48,8 @@ function CalculationContent({ displayName }) {
       </>
     )
   }
+
+  if (path === '/calculation/settings') return <SettingsPage />
 
   const page = pageMap[path]
   if (page) return <PagePlaceholder title={page[0]} description={page[1]} />
