@@ -4,3 +4,19 @@ dist/
 .env
 .env.local
 *.save
+
+# Local development / recovery
+.venv/
+_archive/
+*.bak
+*.bak-*
+*.step*bak
+*.step*backup
+
+# Python runtime / local environment
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Local runtime database
+backend/data/personal_almanac.db

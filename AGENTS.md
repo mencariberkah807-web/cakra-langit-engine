@@ -363,7 +363,7 @@ Each engine owns its own effective-date rule.
 Conceptually:
 
 ```js
-resolveEffectiveDate(context)
+resolveEffectiveDate(context);
 ```
 
 Examples:
@@ -1309,19 +1309,19 @@ Hidden engines remain available.
 
 # 27. AGENT DECISION TABLE
 
-| Situation | Required Action |
-|---|---|
-| Unknown repository state | Terminal scan |
-| Existing working engine | Protect + adapter |
-| User says apply/fix/mulai implementasi | Scan → Apply → Validate |
-| Anchor change | Stop and request approval |
-| Boundary rule change | Stop and request approval |
-| New UI card | Inspect dashboard, implement, build |
-| New dependency | Inspect package.json first |
-| Build fails | Debug actual error |
-| Test fails | Identify regression before proceeding |
-| Conflicting calendars | Show both; do not force consensus |
-| Location-dependent result | Preserve location/timezone context |
+| Situation                              | Required Action                       |
+| -------------------------------------- | ------------------------------------- |
+| Unknown repository state               | Terminal scan                         |
+| Existing working engine                | Protect + adapter                     |
+| User says apply/fix/mulai implementasi | Scan → Apply → Validate               |
+| Anchor change                          | Stop and request approval             |
+| Boundary rule change                   | Stop and request approval             |
+| New UI card                            | Inspect dashboard, implement, build   |
+| New dependency                         | Inspect package.json first            |
+| Build fails                            | Debug actual error                    |
+| Test fails                             | Identify regression before proceeding |
+| Conflicting calendars                  | Show both; do not force consensus     |
+| Location-dependent result              | Preserve location/timezone context    |
 
 ---
 
@@ -1413,3 +1413,47 @@ SCAN
 ```
 
 # END OF AGENTS.md
+
+---
+
+# PERSONAL ALMANAC V1 — ENGINE FOUNDATION LOCK
+
+## Current Development Phase
+
+The project is currently in:
+
+**ENGINE FOUNDATION / DOMAIN IMPLEMENTATION**
+
+The project is NOT currently in a UI/UX redesign phase.
+
+The existing dashboard is considered an:
+
+- integration surface
+- debugging surface
+- domain result visualization surface
+
+It is not the current architecture target for redesign.
+
+Do not initiate UI redesign unless explicitly requested.
+
+---
+
+## Architecture Direction
+
+The required flow is:
+
+```text
+Context
+    ↓
+Core Time / Location
+    ↓
+Domain Engine
+    ↓
+Adapter
+    ↓
+Adapter Contract
+    ↓
+Result Registry
+    ↓
+Dashboard Integration
+```

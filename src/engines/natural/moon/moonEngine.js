@@ -6,6 +6,26 @@ function normalizeAge(days) {
   return value < 0 ? value + SYNODIC_MONTH : value
 }
 
+function getNextFullMoon(date) {
+  const daysSinceReference =
+    (date.getTime() - REFERENCE_NEW_MOON) / 86400000
+
+  const currentAge = normalizeAge(daysSinceReference)
+  const fullMoonAge = SYNODIC_MONTH / 2
+
+  let daysUntil = fullMoonAge - currentAge
+
+  if (daysUntil <= 0) {
+    daysUntil += SYNODIC_MONTH
+  }
+
+  const next = new Date(
+    date.getTime() + daysUntil * 86400000
+  )
+
+  return next.toISOString().slice(0, 10)
+}
+
 function getPhase(age) {
   if (age < 1.84566 || age >= 27.68493) return 'New Moon'
   if (age < 5.53699) return 'Waxing Crescent'
@@ -25,10 +45,16 @@ export function getMoonData(context) {
 
   const age = normalizeAge(daysSinceReference)
   const phase = getPhase(age)
+  const nextFullMoon = getNextFullMoon(date)
+
+  const illumination =
+    (1 - Math.cos((2 * Math.PI * age) / SYNODIC_MONTH)) / 2 * 100
 
   return {
     phase,
     age: Number(age.toFixed(2)),
+    illumination: Math.round(illumination),
+    nextFullMoon,
     effectiveDate: date,
     boundary: 'MIDNIGHT',
 
@@ -36,6 +62,10 @@ export function getMoonData(context) {
       {
         label: 'Moon Age',
         value: `${age.toFixed(1)} days`,
+      },
+      {
+        label: 'Illumination',
+        value: `${Math.round(illumination)}%`,
       },
     ],
 

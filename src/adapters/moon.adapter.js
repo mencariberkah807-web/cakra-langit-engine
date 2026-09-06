@@ -6,7 +6,8 @@ import {
 export function adaptMoon(context) {
   const result = getMoonData(context)
 
-  return createCalendarResult({
+  return {
+    ...createCalendarResult({
     id: 'moon',
     title: 'Moon',
 
@@ -23,5 +24,9 @@ export function adaptMoon(context) {
     events: [],
 
     meta: result.meta,
-  })
+    }),
+    phase: result.phase ?? null,
+    age: result.age ?? null,
+    illumination: result.illumination ?? null,
+  }
 }

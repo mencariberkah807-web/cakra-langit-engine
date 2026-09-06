@@ -1,52 +1,56 @@
-import { useTodayContext } from '../../core/TodayContext'
-import { getResultsByGroup } from '../../core/resultRegistry'
+import { useTodayContext } from "../../core/TodayContext";
+import { getResultsByGroup } from "../../core/resultRegistry.js";
 
-function NaturalCard({ result }) {
-  return (
-    <article className="almanac-card">
-      <span className="card-kicker">NATURAL</span>
-
-      <h3>{result.title}</h3>
-
-      <p className="card-primary">
-        {result.primary}
-      </p>
-
-      <p>{result.secondary}</p>
-
-      {result.details?.length > 0 && (
-        <div className="card-details">
-          {result.details.map((detail) => (
-            <div
-              className="detail-row"
-              key={detail.label}
-            >
-              <span>{detail.label}</span>
-              <strong>{detail.value}</strong>
-            </div>
-          ))}
-        </div>
-      )}
-    </article>
-  )
-}
+const ACCENTS = {
+  sun: "natural-sun",
+  moon: "natural-moon",
+  eclipse: "natural-eclipse",
+  sky: "natural-sky",
+  "earth-space": "natural-earth",
+  tide: "natural-tide",
+};
 
 export default function NaturalLayer() {
-  const context = useTodayContext()
-
-  const results = getResultsByGroup(
-    'natural',
-    context
-  )
+  const context = useTodayContext();
+  const results = getResultsByGroup("natural", context);
 
   return (
-    <div className="card-grid">
+    <div className="natural-layer cakra-natural-layer">
       {results.map((result) => (
-        <NaturalCard
+        <article
           key={result.id}
-          result={result}
-        />
+          className={`natural-item cakra-natural-card ${ACCENTS[result.id] || ""}`}
+        >
+          <div className="natural-card-top">
+            <span className="natural-card-label">
+              {result.label || result.title || result.id}
+            </span>
+            <span className="natural-card-marker" aria-hidden="true" />
+          </div>
+
+          <div className="natural-card-primary">
+            {result.primary || "—"}
+          </div>
+
+          {result.secondary && (
+            <div className="natural-card-secondary">
+              {result.secondary}
+            </div>
+          )}
+
+          {result.meta && (
+            <div className="natural-card-meta">
+              {typeof result.meta === "string"
+                ? result.meta
+                : result.meta.label ||
+                  result.meta.phase ||
+                  result.meta.engine ||
+                  result.meta.status ||
+                  ""}
+            </div>
+          )}
+        </article>
       ))}
     </div>
-  )
+  );
 }

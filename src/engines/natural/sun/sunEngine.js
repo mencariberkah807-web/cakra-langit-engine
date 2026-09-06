@@ -27,6 +27,7 @@ function getTimezoneOffsetHours(date, timezone) {
   }
 
   const match = value.match(/GMT([+-])(\d{1,2})(?::(\d{2}))?/)
+
   if (!match) {
     return 0
   }
@@ -48,29 +49,33 @@ function getLocalDateParts(date, timezone) {
 
   const parts = formatter.formatToParts(date)
 
-  const year = Number(parts.find((part) => part.type === 'year')?.value)
-  const month = Number(parts.find((part) => part.type === 'month')?.value)
-  const day = Number(parts.find((part) => part.type === 'day')?.value)
-
-  return { year, month, day }
+  return {
+    year: Number(parts.find((part) => part.type === 'year')?.value),
+    month: Number(parts.find((part) => part.type === 'month')?.value),
+    day: Number(parts.find((part) => part.type === 'day')?.value),
+  }
 }
 
-function calculateSunTime({
+function getDayOfYear(year, month, day) {
+  return Math.floor(
+    (
+      Date.UTC(year, month - 1, day) -
+      Date.UTC(year, 0, 0)
+    ) / 86400000
+  )
+}
+
+function calculateSolarTime({
   year,
   month,
   day,
   latitude,
   longitude,
   timezoneOffset,
+  zenith,
   sunrise,
 }) {
-  const dayOfYear = Math.floor(
-    (
-      Date.UTC(year, month - 1, day) -
-      Date.UTC(year, 0, 0)
-    ) / 86400000
-  )
-
+  const dayOfYear = getDayOfYear(year, month, day)
   const longitudeHour = longitude / 15
 
   const approximateTime =
@@ -120,7 +125,7 @@ function calculateSunTime({
 
   const cosHourAngle =
     (
-      Math.cos(degToRad(90.833)) -
+      Math.cos(degToRad(zenith)) -
       (
         sinDeclination *
         Math.sin(degToRad(latitude))
@@ -167,31 +172,70 @@ function calculateSunTime({
     (localTime - hour) * 60
   )
 
-  const normalizedHour =
-    minute >= 60
-      ? (hour + 1) % 24
-      : hour
-
-  const normalizedMinute =
-    minute >= 60
-      ? 0
-      : minute
-
   return {
-    hour: normalizedHour,
-    minute: normalizedMinute,
+    hour: minute >= 60
+      ? (hour + 1) % 24
+      : hour,
+    minute: minute >= 60
+      ? 0
+      : minute,
   }
 }
 
 function formatTime(value) {
   if (!value) {
-    return 'Unavailable'
+    return null
   }
 
   return [
     String(value.hour).padStart(2, '0'),
     String(value.minute).padStart(2, '0'),
   ].join(':')
+}
+
+function calculateSolarNoon({
+  longitude,
+  timezoneOffset,
+}) {
+  let localTime =
+    12 -
+    (longitude / 15) +
+    timezoneOffset
+
+  localTime =
+    ((localTime % 24) + 24) % 24
+
+  const hour = Math.floor(localTime)
+  const minute = Math.round((localTime - hour) * 60)
+
+  return {
+    hour: minute >= 60
+      ? (hour + 1) % 24
+      : hour,
+    minute: minute >= 60
+      ? 0
+      : minute,
+  }
+}
+
+function calculateGoldenHour({
+  year,
+  month,
+  day,
+  latitude,
+  longitude,
+  timezoneOffset,
+}) {
+  return calculateSolarTime({
+    year,
+    month,
+    day,
+    latitude,
+    longitude,
+    timezoneOffset,
+    zenith: 4,
+    sunrise: false,
+  })
 }
 
 export function getSunData(context) {
@@ -201,7 +245,7 @@ export function getSunData(context) {
     latitude,
     longitude,
     timezone = 'Asia/Jakarta',
-  } = location
+  } = location || {}
 
   if (
     typeof latitude !== 'number' ||
@@ -210,7 +254,11 @@ export function getSunData(context) {
     return {
       sunrise: null,
       sunset: null,
-      effectiveDate: time.instant,
+      dawn: null,
+      noon: null,
+      golden_hour: null,
+      dusk: null,
+      effectiveDate: time?.instant ?? null,
       boundary: 'LOCATION_DEPENDENT',
       meta: {
         available: false,
@@ -234,40 +282,76 @@ export function getSunData(context) {
       timezone
     )
 
-  const sunrise = calculateSunTime({
+  const sunrise = calculateSolarTime({
     year,
     month,
     day,
     latitude,
     longitude,
     timezoneOffset,
+    zenith: 90.833,
     sunrise: true,
   })
 
-  const sunset = calculateSunTime({
+  const sunset = calculateSolarTime({
     year,
     month,
     day,
     latitude,
     longitude,
     timezoneOffset,
+    zenith: 90.833,
     sunrise: false,
+  })
+
+  const dawn = calculateSolarTime({
+    year,
+    month,
+    day,
+    latitude,
+    longitude,
+    timezoneOffset,
+    zenith: 96,
+    sunrise: true,
+  })
+
+  const dusk = calculateSolarTime({
+    year,
+    month,
+    day,
+    latitude,
+    longitude,
+    timezoneOffset,
+    zenith: 96,
+    sunrise: false,
+  })
+
+  const goldenHour = calculateGoldenHour({
+    year,
+    month,
+    day,
+    latitude,
+    longitude,
+    timezoneOffset,
+  })
+
+  const noon = calculateSolarNoon({
+    longitude,
+    timezoneOffset,
   })
 
   return {
     sunrise: formatTime(sunrise),
     sunset: formatTime(sunset),
-
+    dawn: formatTime(dawn),
+    noon: formatTime(noon),
+    golden_hour: formatTime(goldenHour),
+    dusk: formatTime(dusk),
     effectiveDate: time.instant,
-
     boundary: 'LOCATION_DEPENDENT',
-
     meta: {
-      available: Boolean(sunrise && sunset),
-      latitude,
-      longitude,
-      timezone,
-      timezoneOffset,
+      available: true,
+      source: 'V1 solar engine harmonized to Cakra contract',
     },
   }
 }

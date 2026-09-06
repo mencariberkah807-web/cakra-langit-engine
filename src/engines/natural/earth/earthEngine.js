@@ -37,6 +37,8 @@ export function getEarthSpaceData(context) {
     dayOfYear,
     yearLength,
     progress,
+    day_of_year: dayOfYear,
+    annual_pct: progress,
 
     effectiveDate: date,
 

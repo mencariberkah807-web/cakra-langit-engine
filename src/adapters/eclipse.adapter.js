@@ -24,6 +24,8 @@ export function adaptEclipse(context) {
       meta: {
         hasEvent: false,
       },
+      today: result.today ?? null,
+      next: result.next ?? null,
     })
   }
 
@@ -75,5 +77,7 @@ export function adaptEclipse(context) {
       type: event.type,
       regression: event.meta.regression,
     },
+    today: result.today ?? event,
+    next: result.next ?? null,
   })
 }
