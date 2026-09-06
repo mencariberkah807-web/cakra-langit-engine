@@ -6,7 +6,6 @@ import {
   useState,
 } from 'react'
 
-import { useAuth } from '../auth/AuthContext'
 import { createAlmanacContext } from './context'
 import {
   findLocation,
@@ -19,20 +18,20 @@ import {
 
 const TodayContext = createContext(null)
 
-const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://127.0.0.1:8000'
+const API_BASE = 'http://127.0.0.1:8000'
 const LOCATION_STORAGE_KEY = 'personal-almanac:selected-location'
 
 function getLocalDateISO(date, timezone) {
-  return new Intl.DateTimeFormat('en-CA', {
+  return new Intl.DateTimeFormat("en-CA", {
     timeZone: timezone,
-    year: 'numeric',
-    month: '2-digit',
-    day: '2-digit',
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
   }).format(date)
 }
 
-async function fetchAlmanac(location, date, token, isLive = false) {
-  if (!location || !date || !token) return null
+async function fetchAlmanac(location, date, isLive = false) {
+  if (!location || !date) return null
 
   const params = new URLSearchParams({
     location_id: location.id,
@@ -41,19 +40,16 @@ async function fetchAlmanac(location, date, token, isLive = false) {
   })
 
   if (!isLive) {
-    params.set('date_value', getLocalDateISO(date, location.timezone))
+    params.set(
+      "date_value",
+      getLocalDateISO(date, location.timezone)
+    )
   }
 
-  const response = await fetch(`${API_BASE}/api/almanac?${params}`, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  })
+  const response = await fetch(`${API_BASE}/api/almanac?${params}`)
 
   if (!response.ok) {
-    const error = new Error(`Almanac API error: ${response.status}`)
-    error.status = response.status
-    throw error
+    throw new Error(`Almanac API error: ${response.status}`)
   }
 
   return response.json()
@@ -67,16 +63,20 @@ function getMode(selectedDate, now) {
     return 'live'
   }
 
-  return selectedTimestamp < nowTimestamp ? 'past' : 'future'
+  return selectedTimestamp < nowTimestamp
+    ? 'past'
+    : 'future'
 }
 
 export function TodayProvider({ children }) {
-  const { token, logout } = useAuth()
   const [now, setNow] = useState(() => new Date())
   const [selectedDate, setSelectedDate] = useState(null)
   const [selectedLocation, setSelectedLocation] = useState(() => {
-    const browserTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone
-    const browserLocation = findLocationByTimezone(browserTimezone)
+    const browserTimezone =
+      Intl.DateTimeFormat().resolvedOptions().timeZone
+
+    const browserLocation =
+      findLocationByTimezone(browserTimezone)
 
     if (browserLocation?.countryCode === 'ID') {
       return browserLocation
@@ -91,10 +91,14 @@ export function TodayProvider({ children }) {
 
     async function restoreStoredLocation() {
       try {
-        const storedId = window.localStorage.getItem(LOCATION_STORAGE_KEY)
+        const storedId = window.localStorage.getItem(
+          LOCATION_STORAGE_KEY
+        )
+
         if (!storedId) return
 
         const storedLocation = await findLocationById(storedId)
+
         if (!cancelled && storedLocation) {
           setSelectedLocation(storedLocation)
         }
@@ -139,22 +143,19 @@ export function TodayProvider({ children }) {
     fetchAlmanac(
       selectedLocation,
       activeDate,
-      token,
       selectedDate === null
     )
       .then((result) => {
         if (!cancelled) setApiData(result)
       })
-      .catch((error) => {
-        if (cancelled) return
-        setApiData(null)
-        if (error.status === 401) logout()
+      .catch(() => {
+        if (!cancelled) setApiData(null)
       })
 
     return () => {
       cancelled = true
     }
-  }, [selectedLocation, activeDate, selectedDate, token, logout])
+  }, [selectedLocation, activeDate, selectedDate])
 
   function setLocation(location) {
     setSelectedLocation(location)
@@ -190,8 +191,14 @@ export function TodayProvider({ children }) {
           tz: selectedLocation.timezone,
           tz_label:
             selectedLocation.timezoneLabel ||
-            getTimezoneLabel(selectedLocation.timezone, now),
-          utc: getLocationUtcOffset(selectedLocation.timezone, now),
+            getTimezoneLabel(
+              selectedLocation.timezone,
+              now
+            ),
+          utc: getLocationUtcOffset(
+            selectedLocation.timezone,
+            now
+          ),
         }
       : null
 
@@ -210,6 +217,7 @@ export function TodayProvider({ children }) {
         setSelectedDate(null)
       },
     }
+
   }, [activeDate, now, selectedLocation, apiData])
 
   return (
@@ -223,7 +231,9 @@ export function useTodayContext() {
   const context = useContext(TodayContext)
 
   if (!context) {
-    throw new Error('useTodayContext must be used inside TodayProvider')
+    throw new Error(
+      'useTodayContext must be used inside TodayProvider'
+    )
   }
 
   return context
