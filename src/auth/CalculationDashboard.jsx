@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react'
-import { ArrowRight, CalendarDays, ChevronLeft, ChevronRight, CloudSun, Droplets, Eye, Leaf, Moon, Plus, Sparkles, Sun, Sunrise, Sunset } from 'lucide-react'
+import { ArrowRight, CalendarDays, ChevronLeft, ChevronRight, CloudSun, Eye, Leaf, Moon, Plus, Sparkles, Sun, Sunrise, Sunset } from 'lucide-react'
 
 const agenda = [
   { time: '07:00', title: 'Meditasi & doa', note: 'Waktu terbaik untuk menyelaraskan niat', icon: Leaf },
@@ -66,7 +66,7 @@ function AgendaCard() {
   return (
     <section className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
       <div className="mb-4 flex items-center justify-between">
-        <div className="flex items-center gap-2"><CalendarDays size={15} className="text-slate-500" /><h2 className="text-sm font-semibold text-slate-900">Agenda Hari Ini</h2></div>
+        <div className="flex items-center gap-2"><CalendarDays size={15} className="text-slate-500" /><h2 className="text-sm font-semibold text-slate-900">Today Event</h2></div>
         <button type="button" className="text-[11px] font-medium text-blue-600">Lihat Semua <ArrowRight size={12} className="ml-1 inline" /></button>
       </div>
       <div className="space-y-1.5">
