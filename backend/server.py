@@ -1,5 +1,38 @@
-from fastapi import FastAPI, HTTPException
+from datetime import date, datetime
+from typing import Annotated
+from zoneinfo import ZoneInfo
+
+from fastapi import Depends, FastAPI, HTTPException, status
 from fastapi.middleware.cors import CORSMiddleware
+from pydantic import BaseModel
+from sqlalchemy.orm import Session
+
+from database.connection import get_db
+from database.models import User
+from engines.bazi_engine import get_bazi_data
+from engines.calendar_engine import get_calendar_data
+from engines.eclipse_engine import get_eclipse_data
+from engines.earth_engine import get_earth_data
+from engines.hijri_engine import get_hijri_data
+from engines.location_engine import (
+    find_location,
+    find_location_by_id,
+    get_indonesia_provinces,
+    get_popular_locations,
+    search_locations,
+)
+from engines.moon_engine import get_moon_data
+from engines.sky_engine import get_sky_data
+from engines.solar_engine import get_solar_data
+from engines.tide_engine import get_tide_data
+from services.auth_dependencies import get_current_user
+from services.auth_service import create_access_token, verify_password
+from services.user_service import (
+    create_user,
+    get_user_by_email,
+    serialize_user,
+)
+
 
 app = FastAPI(title="Personal Almanac V1 API")
 
@@ -17,6 +50,20 @@ app.add_middleware(
 )
 
 
+class RegisterRequest(BaseModel):
+    email: str
+    password: str
+    display_name: str | None = None
+
+
+class LoginRequest(BaseModel):
+    email: str
+    password: str
+
+
+DbSession = Annotated[Session, Depends(get_db)]
+CurrentUser = Annotated[User, Depends(get_current_user)]
+
 
 @app.get("/api/health")
 def health():
@@ -25,20 +72,68 @@ def health():
         "service": "personal-almanac-v1",
     }
 
-from engines.hijri_engine import get_hijri_data
+
+@app.post("/api/auth/register", status_code=status.HTTP_201_CREATED)
+def register(payload: RegisterRequest, db: DbSession):
+    email = payload.email.strip().lower()
+    password = payload.password
+
+    if "@" not in email or len(email) > 255:
+        raise HTTPException(status_code=400, detail="Invalid email")
+
+    if len(password) < 8:
+        raise HTTPException(
+            status_code=400,
+            detail="Password must be at least 8 characters",
+        )
+
+    if get_user_by_email(db, email):
+        raise HTTPException(status_code=409, detail="Email already registered")
+
+    user = create_user(
+        db,
+        email=email,
+        password=password,
+        display_name=payload.display_name,
+    )
+    token = create_access_token(user.id)
+
+    return {
+        "access_token": token,
+        "token_type": "bearer",
+        "user": serialize_user(user),
+    }
+
+
+@app.post("/api/auth/login")
+def login(payload: LoginRequest, db: DbSession):
+    user = get_user_by_email(db, payload.email)
+
+    if user is None or not verify_password(payload.password, user.password_hash):
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid email or password",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+
+    if not user.is_active:
+        raise HTTPException(status_code=403, detail="User is inactive")
+
+    return {
+        "access_token": create_access_token(user.id),
+        "token_type": "bearer",
+        "user": serialize_user(user),
+    }
+
+
+@app.get("/api/auth/me")
+def me(current_user: CurrentUser):
+    return serialize_user(current_user)
 
 
 @app.get("/api/hijri")
 def hijri(year: int, month: int, day: int):
     return get_hijri_data(year, month, day)
-
-from engines.location_engine import (
-    find_location,
-    find_location_by_id,
-    get_popular_locations,
-    get_indonesia_provinces,
-    search_locations,
-)
 
 
 @app.get("/api/provinces")
@@ -61,6 +156,7 @@ def locations(
 
     return get_popular_locations(limit)
 
+
 @app.get("/api/locations/{location_id}")
 def location_by_id(location_id: str):
     location = find_location_by_id(location_id)
@@ -70,21 +166,10 @@ def location_by_id(location_id: str):
 
     return location
 
-from datetime import date, datetime
-from zoneinfo import ZoneInfo
-from engines.location_engine import find_location
-from engines.solar_engine import get_solar_data
-from engines.moon_engine import get_moon_data
-from engines.eclipse_engine import get_eclipse_data
-from engines.sky_engine import get_sky_data
-from engines.earth_engine import get_earth_data
-from engines.tide_engine import get_tide_data
-from engines.calendar_engine import get_calendar_data
-from engines.bazi_engine import get_bazi_data
-
 
 @app.get("/api/almanac")
 def almanac(
+    current_user: CurrentUser,
     city: str = "Bandung",
     location_id: str = "",
     date_value: str = "",
@@ -115,17 +200,20 @@ def almanac(
                 detail=f"Invalid datetime_value: {exc}",
             )
 
-    target_date = (
-        date.fromisoformat(date_value)
-        if date_value
-        else (
-            local_datetime.date()
-            if local_datetime
-            else datetime.now(
-                ZoneInfo(location["timezone"])
-            ).date()
+    try:
+        target_date = (
+            date.fromisoformat(date_value)
+            if date_value
+            else (
+                local_datetime.date()
+                if local_datetime
+                else datetime.now(
+                    ZoneInfo(location["timezone"])
+                ).date()
+            )
         )
-    )
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc))
 
     solar = get_solar_data(
         latitude=location["latitude"],
@@ -148,19 +236,13 @@ def almanac(
     eclipse = get_eclipse_data(target_date)
     sky = get_sky_data(moon)
     earth = get_earth_data(target_date)
-    tide = get_tide_data(
-        location,
-        target_date,
-        location["timezone"],
-    )
+    tide = get_tide_data(location, target_date, location["timezone"])
 
     quick_jumps = {
         "today": target_date.isoformat(),
         "next_full_moon": moon.get("next_full_moon"),
         "next_eclipse": (
-            eclipse["next"]["date"]
-            if eclipse.get("next")
-            else None
+            eclipse["next"]["date"] if eclipse.get("next") else None
         ),
     }
 
@@ -178,44 +260,13 @@ def almanac(
     ticker = [item for item in ticker if item]
 
     schedule = [
-        {
-            "time": solar.get("dawn"),
-            "title": "Fajar — Dawn Window",
-            "cat": "SKY",
-            "sub": "Sky",
-        },
-        {
-            "time": solar.get("sunrise"),
-            "title": "Sunrise — Surya Terbit",
-            "cat": "SOLAR",
-            "sub": "Sun",
-        },
-        {
-            "time": solar.get("noon"),
-            "title": "Solar Noon — Kulminasi",
-            "cat": "SOLAR",
-            "sub": "Sun",
-        },
-        {
-            "time": solar.get("golden_hour"),
-            "title": "Golden Hour",
-            "cat": "SOLAR",
-            "sub": "Sun",
-        },
-        {
-            "time": solar.get("sunset"),
-            "title": "Sunset — Surya Surup",
-            "cat": "SOLAR",
-            "sub": "Sun",
-        },
-        {
-            "time": solar.get("dusk"),
-            "title": "Dusk — Stargazing Window",
-            "cat": "SKY",
-            "sub": "Night sky",
-        },
+        {"time": solar.get("dawn"), "title": "Fajar — Dawn Window", "cat": "SKY", "sub": "Sky"},
+        {"time": solar.get("sunrise"), "title": "Sunrise — Surya Terbit", "cat": "SOLAR", "sub": "Sun"},
+        {"time": solar.get("noon"), "title": "Solar Noon — Kulminasi", "cat": "SOLAR", "sub": "Sun"},
+        {"time": solar.get("golden_hour"), "title": "Golden Hour", "cat": "SOLAR", "sub": "Sun"},
+        {"time": solar.get("sunset"), "title": "Sunset — Surya Surup", "cat": "SOLAR", "sub": "Sun"},
+        {"time": solar.get("dusk"), "title": "Dusk — Stargazing Window", "cat": "SKY", "sub": "Night sky"},
     ]
-
     schedule = [item for item in schedule if item["time"]]
 
     return {
@@ -229,8 +280,8 @@ def almanac(
                 "Asia/Makassar": "WITA",
                 "Asia/Jayapura": "WIT",
             }.get(location["timezone"], location["timezone"]),
-            "utc": "UTC" + __import__("datetime").datetime.now(
-                __import__("zoneinfo").ZoneInfo(location["timezone"])
+            "utc": "UTC" + datetime.now(
+                ZoneInfo(location["timezone"])
             ).strftime("%z")[:3],
         },
         "date_info": {
@@ -258,6 +309,7 @@ def almanac(
 
 @app.get("/api/bazi")
 def bazi(
+    current_user: CurrentUser,
     year: int,
     month: int,
     day: int,
@@ -277,12 +329,6 @@ def bazi(
             day_boundary=day_boundary,
         )
     except ValueError as exc:
-        raise HTTPException(
-            status_code=400,
-            detail=str(exc),
-        )
+        raise HTTPException(status_code=400, detail=str(exc))
     except RuntimeError as exc:
-        raise HTTPException(
-            status_code=500,
-            detail=str(exc),
-        )
+        raise HTTPException(status_code=500, detail=str(exc))
