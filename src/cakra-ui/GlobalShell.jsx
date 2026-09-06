@@ -1,28 +1,29 @@
 import { useEffect, useState } from 'react'
+import { Bell, CalendarDays, ChevronDown, CircleUserRound, Home, Leaf, ListChecks, Moon, Settings, Sparkles, Sun, UserRound, WandSparkles } from 'lucide-react'
 import { getImage } from './imagePreferences'
 
 export const primaryNav = [
-  ['⌂', 'Dashboard', '/calculation'],
-  ['☼', 'Kalkulasi Hari Ini', '/calculation/today'],
-  ['◈', 'Natural Layer', '/calculation/natural'],
-  ['♙', 'Birth Converter', '/calculation/birth-converter'],
-  ['▣', 'Weton', '/calculation/weton'],
-  ['東', 'BaZi', '/calculation/bazi'],
-  ['▤', 'Paririmbon', '/calculation/paririmbon'],
-  ['☾', 'Almanac', '/calculation/almanac'],
-  ['↶', 'Riwayat', '/calculation/history'],
+  [Home, 'Dashboard', '/calculation'],
+  [Sun, 'Kalkulasi Hari Ini', '/calculation/today'],
+  [Leaf, 'Natural Layer', '/calculation/natural'],
+  [WandSparkles, 'Birth Converter', '/calculation/birth-converter'],
+  [Sparkles, 'Weton', '/calculation/weton'],
+  [CircleUserRound, 'BaZi', '/calculation/bazi'],
+  [ListChecks, 'Paririmbon', '/calculation/paririmbon'],
+  [Moon, 'Almanac', '/calculation/almanac'],
+  [CalendarDays, 'Riwayat', '/calculation/history'],
 ]
 
 export const personalNav = [
-  ['☑', 'Personal Tasks', '/calculation/tasks'],
-  ['♙', 'Profil Saya', '/calculation/profile'],
-  ['⚙', 'Pengaturan', '/calculation/settings'],
+  [ListChecks, 'Personal Tasks', '/calculation/tasks'],
+  [UserRound, 'Profil Saya', '/calculation/profile'],
+  [Settings, 'Pengaturan', '/calculation/settings'],
 ]
 
 function Navigation({ onLogout, mobile = false }) {
   const currentPath = window.location.pathname
 
-  const renderItem = ([icon, label, href]) => {
+  const renderItem = ([Icon, label, href]) => {
     const active = href === '/calculation'
       ? currentPath === href
       : currentPath === href || currentPath.startsWith(`${href}/`)
@@ -34,7 +35,7 @@ function Navigation({ onLogout, mobile = false }) {
         onClick={() => mobile && window.setTimeout(() => window.scrollTo(0, 0), 0)}
         className={`mb-1 flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm transition-colors ${active ? 'bg-blue-50 font-medium text-blue-700' : 'text-slate-700 hover:bg-slate-50'}`}
       >
-        <span className="w-5 text-center text-lg">{icon}</span>
+        <Icon size={16} strokeWidth={1.7} className={active ? 'text-blue-600' : 'text-slate-500'} />
         <span>{label}</span>
       </a>
     )
@@ -57,7 +58,7 @@ function Navigation({ onLogout, mobile = false }) {
 export default function GlobalShell({ user, onLogout, children }) {
   const [mobileOpen, setMobileOpen] = useState(false)
   const [logoUrl, setLogoUrl] = useState('')
-  const displayName = user?.display_name || user?.email || 'Pengguna'
+  const displayName = user?.display_name || user?.email?.split('@')[0] || 'Pengguna'
   const initials = displayName.slice(0, 2).toUpperCase()
 
   useEffect(() => {
@@ -77,45 +78,61 @@ export default function GlobalShell({ user, onLogout, children }) {
   return (
     <div className="min-h-screen bg-[#F8FAFC] text-slate-900">
       <div className="flex min-h-screen">
-        <aside className="hidden w-[230px] shrink-0 border-r border-slate-200 bg-white lg:flex lg:flex-col">
-          <div className="px-6 pb-5 pt-7 text-center">
-            {logoUrl ? (
-              <img src={logoUrl} alt="Cakra Langit" className="mx-auto mb-3 h-11 w-11 rounded-full object-cover" />
-            ) : (
-              <div className="mx-auto mb-2 flex h-11 w-11 items-center justify-center rounded-full border border-slate-300 text-xl text-slate-700">✧</div>
-            )}
-            <div className="font-serif text-xl tracking-wide text-slate-900">CAKRA LANGIT</div>
-            <div className="text-xs text-slate-500">Personal Almanac</div>
+        <aside className="hidden w-[204px] shrink-0 border-r border-slate-200 bg-white lg:flex lg:flex-col">
+          <div className="px-5 pb-6 pt-6">
+            <div className="flex items-center gap-3">
+              {logoUrl ? (
+                <img src={logoUrl} alt="Cakra Langit" className="h-9 w-9 rounded-full object-cover" />
+              ) : (
+                <div className="flex h-9 w-9 items-center justify-center rounded-full border border-slate-300 text-lg text-slate-700">✧</div>
+              )}
+              <div>
+                <div className="font-serif text-[15px] tracking-wide text-slate-900">CAKRA LANGIT</div>
+                <div className="text-[10px] text-slate-500">Personal Almanac</div>
+              </div>
+            </div>
           </div>
           <Navigation onLogout={onLogout} />
-          <div className="px-6 pb-5 text-center">
-            <div className="mb-3 text-left font-serif text-sm italic leading-5 text-slate-600">“Langit, Waktu,<br />Manusia, Harmoni.”</div>
-            <button type="button" onClick={onLogout} className="w-full rounded-lg border border-slate-200 px-3 py-2 text-xs font-medium text-slate-600 hover:bg-slate-50">
-              Keluar
-            </button>
+          <div className="border-t border-slate-200 px-4 py-4">
+            <div className="flex items-center gap-2.5">
+              <div className="flex h-8 w-8 items-center justify-center rounded-full bg-blue-600 text-[11px] font-semibold text-white">{initials}</div>
+              <div className="min-w-0 flex-1">
+                <div className="truncate text-xs font-semibold text-slate-900">{displayName}</div>
+                <div className="text-[10px] text-slate-500">Akun Saya</div>
+              </div>
+              <button type="button" onClick={onLogout} aria-label="Keluar" className="text-xs text-slate-400 hover:text-slate-700">↪</button>
+            </div>
           </div>
         </aside>
 
         <div className="min-w-0 flex-1">
-          <header className="sticky top-0 z-40 flex h-[72px] items-center border-b border-slate-200 bg-white/95 px-4 backdrop-blur sm:px-6 lg:px-8">
+          <header className="sticky top-0 z-40 flex h-[64px] items-center border-b border-slate-200 bg-white px-5 sm:px-7">
             <button type="button" aria-label="Buka navigasi" aria-expanded={mobileOpen} onClick={() => setMobileOpen((open) => !open)} className="mr-3 rounded-lg border border-slate-200 px-2.5 py-1.5 text-lg text-slate-600 lg:hidden">
               ☰
             </button>
-            <div>
-              <div className="text-xs font-medium tracking-wide text-slate-500">CAKRA LANGIT</div>
-              <div className="text-sm font-semibold text-slate-900">Personal Almanac</div>
+            <div className="hidden md:flex w-[300px] items-center rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs text-slate-400">
+              <span className="mr-2">⌕</span>
+              <span>Cari di Cakra Langit...</span>
             </div>
-            <div className="ml-auto flex items-center gap-3">
-              <div className="flex h-9 w-9 items-center justify-center rounded-full bg-blue-600 text-xs font-semibold text-white">{initials}</div>
-              <div className="hidden sm:block">
-                <div className="text-sm font-semibold text-slate-900">{displayName}</div>
-                <div className="text-xs text-slate-500">Akun Saya</div>
+            <div className="ml-auto flex items-center gap-4">
+              <button type="button" aria-label="Notifikasi" className="relative text-slate-500 hover:text-slate-800">
+                <Bell size={18} strokeWidth={1.7} />
+                <span className="absolute -right-0.5 -top-0.5 h-1.5 w-1.5 rounded-full bg-red-500" />
+              </button>
+              <div className="h-6 border-l border-slate-200" />
+              <div className="flex items-center gap-2">
+                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-blue-600 text-[11px] font-semibold text-white">{initials}</div>
+                <div className="hidden sm:block">
+                  <div className="text-xs font-semibold text-slate-900">{displayName}</div>
+                  <div className="text-[10px] text-slate-500">Akun Saya</div>
+                </div>
+                <ChevronDown size={15} className="text-slate-400" />
               </div>
             </div>
           </header>
 
           {mobileOpen && (
-            <div className="fixed inset-x-0 top-[72px] z-30 border-b border-slate-200 bg-white px-3 py-3 shadow-lg lg:hidden">
+            <div className="fixed inset-x-0 top-[64px] z-30 border-b border-slate-200 bg-white px-3 py-3 shadow-lg lg:hidden">
               <Navigation mobile onLogout={onLogout} />
             </div>
           )}
