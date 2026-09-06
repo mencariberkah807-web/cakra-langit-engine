@@ -1,5 +1,4 @@
 import { TodayProvider } from '../core/TodayContext'
-import AppShell from '../dashboard/AppShell'
 import CalculationDashboard from './CalculationDashboard'
 import SettingsPage from './SettingsPage'
 import { useAuth } from './AuthContext'
@@ -43,7 +42,6 @@ function CalculationContent({ displayName }) {
             <p className="mt-2 max-w-2xl text-sm text-slate-600">Temukan petunjuk hari ini melalui alam dan berbagai sistem kalender Cakra Langit.</p>
           </div>
         </section>
-        <AppShell />
         <CalculationDashboard />
       </>
     )
