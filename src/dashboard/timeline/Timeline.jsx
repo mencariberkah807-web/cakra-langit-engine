@@ -42,7 +42,7 @@ export default function Timeline() {
             DAILY EVENTS
           </span>
 
-          <h2>Timeline</h2>
+          <h2>Today Event</h2>
         </div>
 
         <span className="section-status">
