@@ -30,7 +30,7 @@ jobs:
           PYTHONPATH: backend
         run: |
           alembic upgrade head
-          uvicorn backend.server:app --host 127.0.0.1 --port 8000 >/tmp/cakra-langit-server.log 2>&1 &
+          python -m uvicorn server:app --app-dir backend --host 127.0.0.1 --port 8000 >/tmp/cakra-langit-server.log 2>&1 &
           SERVER_PID=$!
           trap 'kill $SERVER_PID || true' EXIT
 
