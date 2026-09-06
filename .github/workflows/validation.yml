@@ -31,7 +31,7 @@ jobs:
           API_URL: http://127.0.0.1:18000
         run: |
           alembic upgrade head
-          python -m uvicorn server:app --app-dir backend --host 127.0.0.1 --port 18000 >/tmp/cakra-langit-server.log 2>&1 &
+          python -c "import sys; sys.path.insert(0, 'backend'); import server, uvicorn; uvicorn.run(server.app, host='127.0.0.1', port=18000)" >/tmp/cakra-langit-server.log 2>&1 &
           SERVER_PID=$!
           trap 'kill $SERVER_PID || true' EXIT
 
