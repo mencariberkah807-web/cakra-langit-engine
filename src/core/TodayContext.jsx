@@ -51,7 +51,9 @@ async function fetchAlmanac(location, date, token, isLive = false) {
   })
 
   if (!response.ok) {
-    throw new Error(`Almanac API error: ${response.status}`)
+    const error = new Error(`Almanac API error: ${response.status}`)
+    error.status = response.status
+    throw error
   }
 
   return response.json()
@@ -69,7 +71,7 @@ function getMode(selectedDate, now) {
 }
 
 export function TodayProvider({ children }) {
-  const { token } = useAuth()
+  const { token, logout } = useAuth()
   const [now, setNow] = useState(() => new Date())
   const [selectedDate, setSelectedDate] = useState(null)
   const [selectedLocation, setSelectedLocation] = useState(() => {
@@ -143,14 +145,16 @@ export function TodayProvider({ children }) {
       .then((result) => {
         if (!cancelled) setApiData(result)
       })
-      .catch(() => {
-        if (!cancelled) setApiData(null)
+      .catch((error) => {
+        if (cancelled) return
+        setApiData(null)
+        if (error.status === 401) logout()
       })
 
     return () => {
       cancelled = true
     }
-  }, [selectedLocation, activeDate, selectedDate, token])
+  }, [selectedLocation, activeDate, selectedDate, token, logout])
 
   function setLocation(location) {
     setSelectedLocation(location)
