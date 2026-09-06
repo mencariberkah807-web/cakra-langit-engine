@@ -75,7 +75,7 @@ export function AuthProvider({ children }) {
     setToken(payload.access_token)
     setUser(payload.user)
     storeSession(payload.access_token, payload.user)
-    window.location.assign('/calculation')
+    window.location.assign('/dashboard')
   }, [])
 
   const register = useCallback(async (email, password, displayName) => {
@@ -91,7 +91,7 @@ export function AuthProvider({ children }) {
     setToken(payload.access_token)
     setUser(payload.user)
     storeSession(payload.access_token, payload.user)
-    window.location.assign('/calculation')
+    window.location.assign('/dashboard')
   }, [])
 
   const value = useMemo(
