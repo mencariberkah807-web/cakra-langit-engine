@@ -181,7 +181,7 @@ export default function AppShell({ authenticatedUser = null, onLogout = null, sh
         {authenticatedUser ? <AuthenticatedSidebar user={authenticatedUser} onLogout={onLogout} /> : null}
 
         <main className="min-w-0 flex-1">
-          <div className="mx-auto max-w-[1440px] px-4 py-6 sm:px-6 lg:px-8">
+          <div className={authenticatedUser ? "w-full px-4 py-6 sm:px-6 lg:px-8" : "mx-auto max-w-[1440px] px-4 py-6 sm:px-6 lg:px-8"}>
             <div className="grid grid-cols-1 gap-6 lg:grid-cols-12">
               <div className="flex flex-col gap-6 lg:col-span-8">
                 <NaturalLayer data={data} loading={false} />
