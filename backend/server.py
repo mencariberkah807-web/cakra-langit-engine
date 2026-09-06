@@ -171,7 +171,6 @@ def location_by_id(location_id: str):
 
 @app.get("/api/almanac")
 def almanac(
-    current_user: CurrentUser,
     city: str = "Bandung",
     location_id: str = "",
     date_value: str = "",
