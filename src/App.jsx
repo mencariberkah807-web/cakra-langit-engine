@@ -1,21 +1,21 @@
 import { useAuth } from './auth/AuthContext'
-import CalculationLayer from './auth/CalculationLayer'
+import UserDashboardLayer from './auth/UserDashboardLayer'
 import LoginPage from './auth/LoginPage'
 import PublicConverterLayer from './public/PublicConverterLayer'
 
 const authenticatedPaths = new Set([
-  '/calculation',
-  '/calculation/today',
-  '/calculation/natural',
-  '/calculation/birth-converter',
-  '/calculation/weton',
-  '/calculation/bazi',
-  '/calculation/paririmbon',
-  '/calculation/almanac',
-  '/calculation/history',
-  '/calculation/tasks',
-  '/calculation/profile',
-  '/calculation/settings',
+  '/dashboard',
+  '/dashboard/today',
+  '/dashboard/natural',
+  '/dashboard/birth-converter',
+  '/dashboard/weton',
+  '/dashboard/bazi',
+  '/dashboard/paririmbon',
+  '/dashboard/almanac',
+  '/dashboard/history',
+  '/dashboard/tasks',
+  '/dashboard/profile',
+  '/dashboard/settings',
 ])
 
 function LoadingScreen() {
@@ -33,11 +33,11 @@ export default function App() {
   if (loading) return <LoadingScreen />
 
   if (path === '/login') {
-    return isAuthenticated ? <CalculationLayer /> : <LoginPage />
+    return isAuthenticated ? <UserDashboardLayer /> : <LoginPage />
   }
 
   if (authenticatedPaths.has(path)) {
-    return isAuthenticated ? <CalculationLayer /> : <LoginPage />
+    return isAuthenticated ? <UserDashboardLayer /> : <LoginPage />
   }
 
   return <PublicConverterLayer />
