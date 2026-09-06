@@ -3,28 +3,28 @@ import { Bell, CalendarDays, ChevronDown, CircleUserRound, Home, Leaf, ListCheck
 import { getImage } from './imagePreferences'
 
 export const primaryNav = [
-  [Home, 'Dashboard', '/calculation'],
-  [Sun, 'Kalkulasi Hari Ini', '/calculation/today'],
-  [Leaf, 'Natural Layer', '/calculation/natural'],
-  [WandSparkles, 'Birth Converter', '/calculation/birth-converter'],
-  [Sparkles, 'Weton', '/calculation/weton'],
-  [CircleUserRound, 'BaZi', '/calculation/bazi'],
-  [ListChecks, 'Paririmbon', '/calculation/paririmbon'],
-  [Moon, 'Almanac', '/calculation/almanac'],
-  [CalendarDays, 'Riwayat', '/calculation/history'],
+  [Home, 'Dashboard', '/dashboard'],
+  [Sun, 'Kalkulasi Hari Ini', '/dashboard/today'],
+  [Leaf, 'Natural Layer', '/dashboard/natural'],
+  [WandSparkles, 'Birth Converter', '/dashboard/birth-converter'],
+  [Sparkles, 'Weton', '/dashboard/weton'],
+  [CircleUserRound, 'BaZi', '/dashboard/bazi'],
+  [ListChecks, 'Paririmbon', '/dashboard/paririmbon'],
+  [Moon, 'Almanac', '/dashboard/almanac'],
+  [CalendarDays, 'Riwayat', '/dashboard/history'],
 ]
 
 export const personalNav = [
-  [ListChecks, 'Personal Tasks', '/calculation/tasks'],
-  [UserRound, 'Profil Saya', '/calculation/profile'],
-  [Settings, 'Pengaturan', '/calculation/settings'],
+  [ListChecks, 'Personal Tasks', '/dashboard/tasks'],
+  [UserRound, 'Profil Saya', '/dashboard/profile'],
+  [Settings, 'Pengaturan', '/dashboard/settings'],
 ]
 
 function Navigation({ onLogout, mobile = false }) {
   const currentPath = window.location.pathname
 
   const renderItem = ([Icon, label, href]) => {
-    const active = href === '/calculation'
+    const active = href === '/dashboard'
       ? currentPath === href
       : currentPath === href || currentPath.startsWith(`${href}/`)
 
