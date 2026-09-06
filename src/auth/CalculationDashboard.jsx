@@ -1,5 +1,4 @@
-import { useMemo, useState } from 'react'
-import { useAuth } from './AuthContext'
+import { useState } from 'react'
 
 const week = [
   { day: 'Sen', date: '1 Sep', tone: 'Baik', toneClass: 'bg-emerald-50 text-emerald-700', items: ['08:00 Meditasi pagi', '10:00 Review Weton', '14:00 Rencana proyek'] },
@@ -18,51 +17,7 @@ const engines = [
   { name: 'Almanac', icon: '☾', desc: 'Siklus bulan, musim, dan fenomena langit.', cls: 'bg-emerald-50 border-emerald-100 text-emerald-800' },
 ]
 
-function Sidebar({ onLogout }) {
-  return (
-    <aside className="hidden min-h-screen w-[230px] shrink-0 border-r border-slate-200 bg-white lg:flex lg:flex-col">
-      <div className="px-6 pb-5 pt-7 text-center">
-        <div className="mx-auto mb-2 flex h-11 w-11 items-center justify-center rounded-full border border-slate-300 text-xl text-slate-700">✧</div>
-        <div className="font-serif text-xl tracking-wide text-slate-900">CAKRA LANGIT</div>
-        <div className="text-xs text-slate-500">Personal Almanac</div>
-      </div>
-      <nav className="flex-1 px-3 text-sm text-slate-700">
-        {[
-          ['⌂', 'Dashboard', true],
-          ['☼', 'Kalkulasi Hari Ini'],
-          ['◈', 'Natural Layer'],
-          ['♙', 'Birth Converter'],
-          ['▣', 'Weton'],
-          ['東', 'BaZi'],
-          ['▤', 'Paririmbon'],
-          ['☾', 'Almanac'],
-          ['↶', 'Riwayat'],
-        ].map(([icon, label, active]) => (
-          <div key={label} className={`mb-1 flex items-center gap-3 rounded-lg px-3 py-2.5 ${active ? 'bg-blue-50 font-medium text-blue-700' : ''}`}>
-            <span className="w-5 text-center text-lg">{icon}</span><span>{label}</span>
-          </div>
-        ))}
-        <div className="my-5 border-t border-slate-200" />
-        {[
-          ['☑', 'My Tasks'],
-          ['♙', 'Profil Saya'],
-          ['⚙', 'Pengaturan'],
-        ].map(([icon, label]) => (
-          <div key={label} className="mb-1 flex items-center gap-3 rounded-lg px-3 py-2.5">
-            <span className="w-5 text-center text-lg">{icon}</span><span>{label}</span>
-          </div>
-        ))}
-      </nav>
-      <div className="px-6 pb-5 text-center">
-        <div className="mb-3 text-left font-serif text-sm italic leading-5 text-slate-600">“Langit, Waktu,<br />Manusia, Harmoni.”</div>
-        <button onClick={onLogout} className="w-full rounded-lg border border-slate-200 px-3 py-2 text-xs font-medium text-slate-600 hover:bg-slate-50">Keluar</button>
-      </div>
-    </aside>
-  )
-}
-
 export default function CalculationDashboard() {
-  const { user, logout } = useAuth()
   const [task, setTask] = useState('')
   const [tasks, setTasks] = useState([
     { text: 'Siapkan materi BaZi', done: true, time: '10:30' },
@@ -70,8 +25,6 @@ export default function CalculationDashboard() {
     { text: 'Meditasi pagi', done: false, time: '06:00' },
     { text: 'Catat mimpi', done: false, time: '21:00' },
   ])
-
-  const displayName = useMemo(() => user?.display_name || user?.email?.split('@')[0] || 'Pengguna', [user])
 
   const addTask = () => {
     const value = task.trim()
@@ -81,94 +34,86 @@ export default function CalculationDashboard() {
   }
 
   return (
-    <div className="flex min-h-screen bg-[#F7F9FC] font-sans text-slate-900">
-      <Sidebar onLogout={logout} />
-      <div className="min-w-0 flex-1">
-        <header className="sticky top-0 z-20 flex h-[72px] items-center gap-4 border-b border-slate-200 bg-white/95 px-5 backdrop-blur sm:px-8">
-          <button className="text-2xl text-slate-600 lg:hidden">☰</button>
-          <div className="flex h-10 max-w-[460px] flex-1 items-center rounded-xl bg-slate-50 px-4 text-sm text-slate-400">
-            <span className="mr-3 text-lg">⌕</span>Cari tanggal, kalkulasi, atau tugas...
+    <section className="mx-auto max-w-[1440px] px-4 pb-8 sm:px-6 lg:px-8">
+      <div className="mb-6 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+        <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <h2 className="text-xl font-semibold">Weekly Calendar</h2>
+            <p className="text-sm text-slate-500">Hasil kalkulasi berbagai sistem dan rencana Anda.</p>
           </div>
-          <div className="ml-auto flex items-center gap-4">
-            <span className="text-lg text-slate-500">♧</span>
-            <div className="flex items-center gap-2 border-l border-slate-200 pl-4">
-              <div className="flex h-9 w-9 items-center justify-center rounded-full bg-blue-600 text-xs font-semibold text-white">{displayName.slice(0, 2).toUpperCase()}</div>
-              <div className="hidden sm:block">
-                <div className="text-sm font-semibold">{displayName}</div>
-                <div className="text-xs text-slate-500">Personal Workspace</div>
-              </div>
-              <span className="text-slate-400">⌄</span>
-            </div>
+          <div className="flex items-center gap-2 text-sm">
+            <button className="rounded-lg border px-2.5 py-1.5">‹</button>
+            <button className="rounded-lg border px-2.5 py-1.5">›</button>
+            <span className="px-2 font-medium">1–7 September 2025</span>
           </div>
-        </header>
-
-        <main className="mx-auto max-w-[1500px] space-y-5 p-4 sm:p-6">
-          <section className="relative overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
-            <div className="absolute inset-0 bg-gradient-to-r from-slate-50 via-white/70 to-blue-50/60" />
-            <div className="relative flex min-h-[185px] items-end justify-between gap-6 overflow-hidden px-7 py-7 sm:px-10">
-              <div>
-                <div className="mb-2 text-sm font-medium text-slate-600">Selamat datang kembali,</div>
-                <h1 className="text-3xl font-semibold tracking-tight text-slate-900 sm:text-4xl">{displayName}</h1>
-                <p className="mt-2 max-w-xl text-sm text-slate-600">Jalani hari dengan kesadaran waktu, selaras dengan alam, dan pahami petunjuk dari setiap kalender.</p>
+        </div>
+        <div className="grid min-w-[920px] grid-cols-7 gap-2 overflow-x-auto">
+          {week.map((item) => (
+            <div key={item.day} className={`rounded-xl border p-2 ${item.active ? 'border-blue-400 bg-blue-50/50' : 'border-slate-100 bg-slate-50/40'}`}>
+              <div className="border-b border-slate-100 pb-2 text-center">
+                <div className="text-sm font-semibold">{item.day}</div>
+                <div className="text-xs text-slate-500">{item.date}</div>
+                <div className={`mx-auto mt-2 w-fit rounded-full px-2 py-1 text-[10px] font-medium ${item.toneClass}`}>● {item.tone}</div>
               </div>
-              <div className="hidden max-w-xs text-right font-serif text-sm italic leading-6 text-slate-600 md:block">“Waktu adalah guru terbaik, setiap langkah membawa petunjuk.”<br /><span className="not-italic">— Cakra Langit</span></div>
-            </div>
-            <div className="h-12 bg-gradient-to-t from-slate-300/50 to-transparent" />
-          </section>
-
-          <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-            <div className="flex flex-wrap items-center gap-5">
-              <div className="min-w-[170px]"><h2 className="text-lg font-semibold">Natural Layer</h2><p className="text-xs text-slate-500">Kondisi alam hari ini · 6 September 2025</p></div>
-              {[
-                ['☀', 'Matahari', 'Terbit 05:48 · Terbenam 17:49'],
-                ['☾', 'Bulan', 'Waxing Moon · Fase 62%'],
-                ['◒', 'Musim', 'Kemarau · Elemen Tanah'],
-                ['☁', 'Cuaca', 'Bandung · Cerah Berawan 26°C'],
-              ].map(([icon, title, value]) => (
-                <div key={title} className="flex min-w-[170px] flex-1 items-center gap-3 border-l border-slate-100 pl-5">
-                  <div className="flex h-11 w-11 items-center justify-center rounded-full bg-slate-50 text-xl">{icon}</div>
-                  <div><div className="text-sm font-semibold">{title}</div><div className="text-xs leading-5 text-slate-500">{value}</div></div>
-                </div>
-              ))}
-            </div>
-          </section>
-
-          <div className="grid grid-cols-1 gap-5 xl:grid-cols-[minmax(0,1fr)_330px]">
-            <section className="min-w-0 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-              <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
-                <div><h2 className="text-xl font-semibold">Kalender Mingguan</h2><p className="text-sm text-slate-500">Hasil kalkulasi berbagai sistem dan rencana Anda.</p></div>
-                <div className="flex items-center gap-2 text-sm"><button className="rounded-lg border px-2.5 py-1.5">‹</button><button className="rounded-lg border px-2.5 py-1.5">›</button><span className="px-2 font-medium">1–7 September 2025</span></div>
+              <div className="space-y-2 pt-2">
+                {item.items.map((value) => <div key={value} className="rounded-lg border border-slate-100 bg-white px-2 py-2 text-[11px] leading-4 shadow-sm">{value}</div>)}
+                <button className="w-full rounded-lg border border-dashed border-slate-200 py-2 text-xs text-blue-600">＋ Tambah</button>
               </div>
-              <div className="grid min-w-[920px] grid-cols-7 gap-2 overflow-x-auto">
-                {week.map((item) => (
-                  <div key={item.day} className={`rounded-xl border p-2 ${item.active ? 'border-blue-400 bg-blue-50/50' : 'border-slate-100 bg-slate-50/40'}`}>
-                    <div className="border-b border-slate-100 pb-2 text-center"><div className="text-sm font-semibold">{item.day}</div><div className="text-xs text-slate-500">{item.date}</div><div className={`mx-auto mt-2 w-fit rounded-full px-2 py-1 text-[10px] font-medium ${item.toneClass}`}>● {item.tone}</div></div>
-                    <div className="space-y-2 pt-2">{item.items.map((value) => <div key={value} className="rounded-lg border border-slate-100 bg-white px-2 py-2 text-[11px] leading-4 shadow-sm">{value}</div>)}<button className="w-full rounded-lg border border-dashed border-slate-200 py-2 text-xs text-blue-600">＋ Tambah</button></div>
-                  </div>
-                ))}
-              </div>
-            </section>
-
-            <aside className="space-y-5">
-              <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-                <div className="mb-3 flex items-center justify-between"><h2 className="text-lg font-semibold">Tambah Tugas</h2><span className="text-xl text-blue-600">＋</span></div>
-                <div className="flex gap-2"><input value={task} onChange={(event) => setTask(event.target.value)} onKeyDown={(event) => event.key === 'Enter' && addTask()} placeholder="Apa yang ingin Anda lakukan?" className="min-w-0 flex-1 rounded-lg border border-slate-200 px-3 py-2.5 text-sm outline-none focus:border-blue-400" /><button onClick={addTask} className="rounded-lg bg-blue-600 px-4 text-white">＋</button></div>
-              </section>
-              <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-                <div className="mb-3 flex items-center justify-between"><h2 className="text-lg font-semibold">Tugas Saya</h2><span className="text-xs text-blue-600">Lihat Semua →</span></div>
-                <div className="space-y-1">{tasks.map((item, index) => <label key={`${item.text}-${index}`} className="flex items-center gap-3 border-b border-slate-100 py-2.5 text-sm"><input type="checkbox" checked={item.done} onChange={() => setTasks((current) => current.map((taskItem, taskIndex) => taskIndex === index ? { ...taskItem, done: !taskItem.done } : taskItem))} className="h-4 w-4 accent-blue-600" /><span className={item.done ? 'flex-1 text-slate-400 line-through' : 'flex-1'}>{item.text}</span><span className="text-xs text-slate-400">{item.time}</span></label>)}</div>
-              </section>
-            </aside>
-          </div>
-
-          <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-            <div className="mb-4 flex items-center justify-between"><div><h2 className="text-xl font-semibold">Engine Calculation</h2><p className="text-sm text-slate-500">Akses cepat ke berbagai sistem pengetahuan.</p></div><span className="text-sm text-blue-600">Lihat Semua →</span></div>
-            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4">
-              {engines.map((engine) => <button key={engine.name} className={`group rounded-xl border p-4 text-left transition hover:-translate-y-0.5 hover:shadow-sm ${engine.cls}`}><div className="mb-5 flex items-center justify-between"><span className="text-3xl">{engine.icon}</span><span className="rounded-full bg-white/70 px-2 py-1 text-lg">→</span></div><div className="text-base font-semibold">{engine.name}</div><p className="mt-1 min-h-10 text-xs leading-5 opacity-80">{engine.desc}</p></button>)}
             </div>
-          </section>
-        </main>
+          ))}
+        </div>
       </div>
-    </div>
+
+      <div className="mb-6 grid grid-cols-1 gap-5 xl:grid-cols-[minmax(0,1fr)_330px]">
+        <section className="min-w-0 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+          <div className="mb-3 flex items-center justify-between">
+            <h2 className="text-lg font-semibold">Add Task</h2>
+            <span className="text-xl text-blue-600">＋</span>
+          </div>
+          <div className="flex gap-2">
+            <input value={task} onChange={(event) => setTask(event.target.value)} onKeyDown={(event) => event.key === 'Enter' && addTask()} placeholder="Apa yang ingin Anda lakukan?" className="min-w-0 flex-1 rounded-lg border border-slate-200 px-3 py-2.5 text-sm outline-none focus:border-blue-400" />
+            <button onClick={addTask} className="rounded-lg bg-blue-600 px-4 text-white">＋</button>
+          </div>
+        </section>
+
+        <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+          <div className="mb-3 flex items-center justify-between">
+            <h2 className="text-lg font-semibold">My Tasks</h2>
+            <span className="text-xs text-blue-600">Lihat Semua →</span>
+          </div>
+          <div className="space-y-1">
+            {tasks.map((item, index) => (
+              <label key={`${item.text}-${index}`} className="flex items-center gap-3 border-b border-slate-100 py-2.5 text-sm">
+                <input type="checkbox" checked={item.done} onChange={() => setTasks((current) => current.map((taskItem, taskIndex) => taskIndex === index ? { ...taskItem, done: !taskItem.done } : taskItem))} className="h-4 w-4 accent-blue-600" />
+                <span className={item.done ? 'flex-1 text-slate-400 line-through' : 'flex-1'}>{item.text}</span>
+                <span className="text-xs text-slate-400">{item.time}</span>
+              </label>
+            ))}
+          </div>
+        </section>
+      </div>
+
+      <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+        <div className="mb-4 flex items-center justify-between">
+          <div>
+            <h2 className="text-xl font-semibold">Engine Calculation</h2>
+            <p className="text-sm text-slate-500">Akses cepat ke berbagai sistem pengetahuan.</p>
+          </div>
+          <span className="text-sm text-blue-600">Lihat Semua →</span>
+        </div>
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4">
+          {engines.map((engine) => (
+            <button key={engine.name} className={`group rounded-xl border p-4 text-left transition hover:-translate-y-0.5 hover:shadow-sm ${engine.cls}`}>
+              <div className="mb-5 flex items-center justify-between">
+                <span className="text-3xl">{engine.icon}</span>
+                <span className="rounded-full bg-white/70 px-2 py-1 text-lg">→</span>
+              </div>
+              <div className="text-base font-semibold">{engine.name}</div>
+              <p className="mt-1 min-h-10 text-xs leading-5 opacity-80">{engine.desc}</p>
+            </button>
+          ))}
+        </div>
+      </section>
+    </section>
   )
 }
