@@ -25,6 +25,7 @@ from engines.moon_engine import get_moon_data
 from engines.sky_engine import get_sky_data
 from engines.solar_engine import get_solar_data
 from engines.tide_engine import get_tide_data
+from routes.auth import router as auth_router
 from services.auth_dependencies import get_current_user
 from services.auth_service import create_access_token, verify_password
 from services.user_service import (
@@ -35,6 +36,7 @@ from services.user_service import (
 
 
 app = FastAPI(title="Personal Almanac V1 API")
+app.include_router(auth_router)
 
 app.add_middleware(
     CORSMiddleware,
