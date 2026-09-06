@@ -30,7 +30,7 @@ function PagePlaceholder({ title, description }) {
   )
 }
 
-function CalculationContent() {
+function CalculationContent({ displayName }) {
   const path = window.location.pathname
 
   if (path === '/calculation') {
@@ -39,7 +39,7 @@ function CalculationContent() {
         <section className="mx-auto max-w-[1500px] px-4 pt-6 sm:px-6">
           <div className="rounded-2xl border border-slate-200 bg-white px-6 py-6 shadow-sm sm:px-8">
             <div className="text-sm font-medium text-slate-500">Good morning,</div>
-            <h1 className="mt-1 text-3xl font-semibold tracking-tight text-slate-900 sm:text-4xl">{window.__CAKRA_USER_NAME__ || 'Pengguna'}</h1>
+            <h1 className="mt-1 text-3xl font-semibold tracking-tight text-slate-900 sm:text-4xl">{displayName}</h1>
             <p className="mt-2 max-w-2xl text-sm text-slate-600">Temukan petunjuk hari ini melalui alam dan berbagai sistem kalender Cakra Langit.</p>
           </div>
         </section>
@@ -62,9 +62,8 @@ export default function CalculationLayer() {
   return (
     <TodayProvider>
       <GlobalShell user={user} onLogout={logout}>
-        <div style={{ display: 'none' }} aria-hidden="true">{window.__CAKRA_USER_NAME__ = displayName}</div>
         <main>
-          <CalculationContent />
+          <CalculationContent displayName={displayName} />
         </main>
       </GlobalShell>
     </TodayProvider>
