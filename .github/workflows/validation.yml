@@ -49,7 +49,12 @@ jobs:
                   health = await client.get('/api/health')
                   assert health.status_code == 200, health.text
 
-                  unauthorized = await client.get('/api/almanac?city=Bandung')
+                  public_hijri = await client.get(
+                      '/api/hijri?year=2026&month=9&day=6'
+                  )
+                  assert public_hijri.status_code == 200, public_hijri.text
+
+                  unauthorized = await client.get('/api/bazi?year=1990&month=1&day=1')
                   assert unauthorized.status_code == 401, unauthorized.text
 
                   email = 'smoke@example.com'
@@ -75,15 +80,12 @@ jobs:
                   token = login.json()['access_token']
                   assert token
 
-                  almanac = await client.get(
-                      '/api/almanac?city=Bandung',
+                  me = await client.get(
+                      '/api/auth/me',
                       headers={'Authorization': f'Bearer {token}'},
                   )
-                  assert almanac.status_code == 200, almanac.text
-                  data = almanac.json()
-                  required = {'location', 'date_info', 'natural', 'calendars', 'schedule'}
-                  missing = required.difference(data)
-                  assert not missing, f'Missing almanac fields: {sorted(missing)}'
+                  assert me.status_code == 200, me.text
+                  assert me.json()['email'] == email
 
                   bazi = await client.get(
                       '/api/bazi?year=1990&month=1&day=1',
