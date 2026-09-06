@@ -1,4 +1,5 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
+import { getImage } from './imagePreferences'
 
 export const primaryNav = [
   ['⌂', 'Dashboard', '/calculation'],
@@ -45,11 +46,7 @@ function Navigation({ onLogout, mobile = false }) {
       <div className="my-5 border-t border-slate-200" />
       {personalNav.map(renderItem)}
       {mobile && (
-        <button
-          type="button"
-          onClick={onLogout}
-          className="mt-3 w-full rounded-lg border border-slate-200 px-3 py-2.5 text-sm font-medium text-slate-600"
-        >
+        <button type="button" onClick={onLogout} className="mt-3 w-full rounded-lg border border-slate-200 px-3 py-2.5 text-sm font-medium text-slate-600">
           Keluar
         </button>
       )}
@@ -59,15 +56,34 @@ function Navigation({ onLogout, mobile = false }) {
 
 export default function GlobalShell({ user, onLogout, children }) {
   const [mobileOpen, setMobileOpen] = useState(false)
+  const [logoUrl, setLogoUrl] = useState('')
   const displayName = user?.display_name || user?.email || 'Pengguna'
   const initials = displayName.slice(0, 2).toUpperCase()
+
+  useEffect(() => {
+    let url = ''
+    getImage('logo')
+      .then((record) => {
+        if (!record?.blob) return
+        url = URL.createObjectURL(record.blob)
+        setLogoUrl(url)
+      })
+      .catch(() => {})
+    return () => {
+      if (url) URL.revokeObjectURL(url)
+    }
+  }, [])
 
   return (
     <div className="min-h-screen bg-[#F8FAFC] text-slate-900">
       <div className="flex min-h-screen">
         <aside className="hidden w-[230px] shrink-0 border-r border-slate-200 bg-white lg:flex lg:flex-col">
           <div className="px-6 pb-5 pt-7 text-center">
-            <div className="mx-auto mb-2 flex h-11 w-11 items-center justify-center rounded-full border border-slate-300 text-xl text-slate-700">✧</div>
+            {logoUrl ? (
+              <img src={logoUrl} alt="Cakra Langit" className="mx-auto mb-3 h-11 w-11 rounded-full object-cover" />
+            ) : (
+              <div className="mx-auto mb-2 flex h-11 w-11 items-center justify-center rounded-full border border-slate-300 text-xl text-slate-700">✧</div>
+            )}
             <div className="font-serif text-xl tracking-wide text-slate-900">CAKRA LANGIT</div>
             <div className="text-xs text-slate-500">Personal Almanac</div>
           </div>
@@ -82,13 +98,7 @@ export default function GlobalShell({ user, onLogout, children }) {
 
         <div className="min-w-0 flex-1">
           <header className="sticky top-0 z-40 flex h-[72px] items-center border-b border-slate-200 bg-white/95 px-4 backdrop-blur sm:px-6 lg:px-8">
-            <button
-              type="button"
-              aria-label="Buka navigasi"
-              aria-expanded={mobileOpen}
-              onClick={() => setMobileOpen((open) => !open)}
-              className="mr-3 rounded-lg border border-slate-200 px-2.5 py-1.5 text-lg text-slate-600 lg:hidden"
-            >
+            <button type="button" aria-label="Buka navigasi" aria-expanded={mobileOpen} onClick={() => setMobileOpen((open) => !open)} className="mr-3 rounded-lg border border-slate-200 px-2.5 py-1.5 text-lg text-slate-600 lg:hidden">
               ☰
             </button>
             <div>
