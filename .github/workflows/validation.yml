@@ -26,21 +26,24 @@ jobs:
       - name: Authentication end-to-end smoke test
         env:
           DATABASE_URL: sqlite:////tmp/cakra-langit-smoke.db
-          JWT_SECRET_KEY: cakra-langit-ci-test-secret
+          JWT_SECRET_KEY: ci-only-test-secret
           PYTHONPATH: backend
+          API_URL: http://127.0.0.1:18000
         run: |
           alembic upgrade head
-          python -m uvicorn server:app --app-dir backend --host 127.0.0.1 --port 8000 >/tmp/cakra-langit-server.log 2>&1 &
+          python -m uvicorn server:app --app-dir backend --host 127.0.0.1 --port 18000 >/tmp/cakra-langit-server.log 2>&1 &
           SERVER_PID=$!
           trap 'kill $SERVER_PID || true' EXIT
 
           python - <<'PY'
+          import os
           import time
           import urllib.request
 
+          url = os.environ['API_URL'] + '/api/health'
           for _ in range(30):
               try:
-                  urllib.request.urlopen('http://127.0.0.1:8000/api/health', timeout=1)
+                  urllib.request.urlopen(url, timeout=1)
                   break
               except Exception:
                   time.sleep(1)
@@ -48,29 +51,29 @@ jobs:
               raise SystemExit('Server did not become ready')
           PY
 
-          curl -fsS http://127.0.0.1:8000/api/health
+          curl -fsS "$API_URL/api/health"
 
-          STATUS=$(curl -s -o /tmp/unauthorized.json -w '%{http_code}' 'http://127.0.0.1:8000/api/almanac?city=Bandung')
+          STATUS=$(curl -s -o /tmp/unauthorized.json -w '%{http_code}' "$API_URL/api/almanac?city=Bandung")
           test "$STATUS" = "401"
 
           EMAIL="smoke-${GITHUB_RUN_ID}@example.com"
-          PASSWORD='SmokeTest123!'
+          PASSWORD="Smoke${GITHUB_RUN_ID}!Aa9"
 
-          REGISTER=$(curl -fsS -X POST http://127.0.0.1:8000/api/auth/register \
+          REGISTER=$(curl -fsS -X POST "$API_URL/api/auth/register" \
             -H 'Content-Type: application/json' \
             -d "{\"email\":\"$EMAIL\",\"password\":\"$PASSWORD\",\"display_name\":\"CI Smoke\"}")
 
           REGISTER_TOKEN=$(python -c 'import json,sys; print(json.load(sys.stdin)["access_token"])' <<< "$REGISTER")
           test -n "$REGISTER_TOKEN"
 
-          LOGIN=$(curl -fsS -X POST http://127.0.0.1:8000/api/auth/login \
+          LOGIN=$(curl -fsS -X POST "$API_URL/api/auth/login" \
             -H 'Content-Type: application/json' \
             -d "{\"email\":\"$EMAIL\",\"password\":\"$PASSWORD\"}")
 
           TOKEN=$(python -c 'import json,sys; print(json.load(sys.stdin)["access_token"])' <<< "$LOGIN")
           test -n "$TOKEN"
 
-          curl -fsS 'http://127.0.0.1:8000/api/almanac?city=Bandung' \
+          curl -fsS "$API_URL/api/almanac?city=Bandung" \
             -H "Authorization: Bearer $TOKEN" >/tmp/almanac.json
 
           python - <<'PY'
