@@ -32,6 +32,13 @@ export default function LoginPage() {
     <main className="min-h-screen bg-[#F8FAFC] px-4 py-12 text-[#0F172A]">
       <div className="mx-auto flex min-h-[70vh] max-w-md items-center justify-center">
         <section className="w-full rounded-2xl border border-[#E2E8F0] bg-white p-8 shadow-sm">
+          <a
+            href="/"
+            className="mb-6 inline-flex text-sm font-medium text-[#64748B] hover:text-[#0F172A]"
+          >
+            ← Kembali
+          </a>
+
           <div className="mb-8">
             <p className="mb-2 text-xs font-bold uppercase tracking-[0.18em] text-[#64748B]">
               Cakra Langit
