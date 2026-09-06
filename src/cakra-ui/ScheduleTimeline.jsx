@@ -1,5 +1,4 @@
 import { motion } from "framer-motion";
-import { Clock3 } from "lucide-react";
 
 const CAT_COLORS = { SOLAR: "#F59E0B", SKY: "#7C3AED" };
 
@@ -24,12 +23,6 @@ export default function ScheduleTimeline({ data, loading, time }) {
       className="rounded-xl border border-[#E2E8F0] bg-white p-5 shadow-[0_1px_2px_rgba(15,23,42,0.04)]"
       data-testid="schedule-timeline-container"
     >
-      <div className="mb-1 flex items-center gap-2">
-        <Clock3 className="h-4 w-4 text-[#475569]" strokeWidth={1.8} />
-        <h2 className="text-[11px] font-bold uppercase tracking-[0.08em] text-[#475569]">
-          My Schedule
-        </h2>
-      </div>
       <div className="mb-5 flex items-center justify-between">
         <h3 className="font-display text-lg font-bold tracking-[-0.01em]">Today Event</h3>
         <span
