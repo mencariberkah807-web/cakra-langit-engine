@@ -31,7 +31,7 @@ export default function ScheduleTimeline({ data, loading, time }) {
         </h2>
       </div>
       <div className="mb-5 flex items-center justify-between">
-        <h3 className="font-display text-lg font-bold tracking-[-0.01em]">Timeline</h3>
+        <h3 className="font-display text-lg font-bold tracking-[-0.01em]">Today Event</h3>
         <span
           data-testid="schedule-count-badge"
           className="rounded-full bg-[#F1F5F9] px-2.5 py-0.5 text-[11px] font-semibold text-[#475569]"
