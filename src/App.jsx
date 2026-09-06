@@ -3,6 +3,21 @@ import CalculationLayer from './auth/CalculationLayer'
 import LoginPage from './auth/LoginPage'
 import PublicConverterLayer from './public/PublicConverterLayer'
 
+const authenticatedPaths = new Set([
+  '/calculation',
+  '/calculation/today',
+  '/calculation/natural',
+  '/calculation/birth-converter',
+  '/calculation/weton',
+  '/calculation/bazi',
+  '/calculation/paririmbon',
+  '/calculation/almanac',
+  '/calculation/history',
+  '/calculation/tasks',
+  '/calculation/profile',
+  '/calculation/settings',
+])
+
 function LoadingScreen() {
   return (
     <main className="flex min-h-screen items-center justify-center bg-[#F8FAFC] text-sm text-[#64748B]">
@@ -21,7 +36,7 @@ export default function App() {
     return isAuthenticated ? <CalculationLayer /> : <LoginPage />
   }
 
-  if (path === '/calculation') {
+  if (authenticatedPaths.has(path)) {
     return isAuthenticated ? <CalculationLayer /> : <LoginPage />
   }
 
