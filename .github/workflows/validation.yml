@@ -18,7 +18,7 @@ jobs:
           npm run build
 
       - name: Backend install
-        run: python -m pip install --upgrade pip && pip install -r backend/requirements.txt
+        run: python -m pip install --upgrade pip && pip install -r backend/requirements.txt && pip install httpx
 
       - name: Backend compile
         run: python -m compileall -q backend
@@ -28,60 +28,70 @@ jobs:
           DATABASE_URL: sqlite:////tmp/cakra-langit-smoke.db
           JWT_SECRET_KEY: ci-only-test-secret
           PYTHONPATH: backend
-          API_URL: http://127.0.0.1:18000
         run: |
           alembic upgrade head
-          python -c "import sys; sys.path.insert(0, 'backend'); import server, uvicorn; uvicorn.run(server.app, host='127.0.0.1', port=18000)" >/tmp/cakra-langit-server.log 2>&1 &
-          SERVER_PID=$!
-          trap 'kill $SERVER_PID || true' EXIT
-
           python - <<'PY'
-          import os
-          import time
-          import urllib.request
-
-          url = os.environ['API_URL'] + '/api/health'
-          for _ in range(30):
-              try:
-                  urllib.request.urlopen(url, timeout=1)
-                  break
-              except Exception:
-                  time.sleep(1)
-          else:
-              raise SystemExit('Server did not become ready')
-          PY
-
-          curl -fsS "$API_URL/api/health"
-
-          STATUS=$(curl -s -o /tmp/unauthorized.json -w '%{http_code}' "$API_URL/api/almanac?city=Bandung")
-          test "$STATUS" = "401"
-
-          EMAIL="smoke-${GITHUB_RUN_ID}@example.com"
-          PASSWORD="Smoke${GITHUB_RUN_ID}!Aa9"
-
-          REGISTER=$(curl -fsS -X POST "$API_URL/api/auth/register" \
-            -H 'Content-Type: application/json' \
-            -d "{\"email\":\"$EMAIL\",\"password\":\"$PASSWORD\",\"display_name\":\"CI Smoke\"}")
-
-          REGISTER_TOKEN=$(python -c 'import json,sys; print(json.load(sys.stdin)["access_token"])' <<< "$REGISTER")
-          test -n "$REGISTER_TOKEN"
-
-          LOGIN=$(curl -fsS -X POST "$API_URL/api/auth/login" \
-            -H 'Content-Type: application/json' \
-            -d "{\"email\":\"$EMAIL\",\"password\":\"$PASSWORD\"}")
-
-          TOKEN=$(python -c 'import json,sys; print(json.load(sys.stdin)["access_token"])' <<< "$LOGIN")
-          test -n "$TOKEN"
-
-          curl -fsS "$API_URL/api/almanac?city=Bandung" \
-            -H "Authorization: Bearer $TOKEN" >/tmp/almanac.json
-
-          python - <<'PY'
+          import asyncio
           import json
-          with open('/tmp/almanac.json') as fh:
-              data = json.load(fh)
-          required = {'location', 'date_info', 'natural', 'calendars', 'schedule'}
-          missing = required.difference(data)
-          if missing:
-              raise SystemExit(f'Missing almanac fields: {sorted(missing)}')
+          import sys
+
+          import httpx
+
+          sys.path.insert(0, 'backend')
+          import server
+
+          async def main():
+              transport = httpx.ASGITransport(app=server.app)
+              async with httpx.AsyncClient(
+                  transport=transport,
+                  base_url='http://testserver',
+              ) as client:
+                  health = await client.get('/api/health')
+                  assert health.status_code == 200, health.text
+
+                  unauthorized = await client.get('/api/almanac?city=Bandung')
+                  assert unauthorized.status_code == 401, unauthorized.text
+
+                  email = 'smoke@example.com'
+                  password = 'SmokeTest123!'
+
+                  register = await client.post(
+                      '/api/auth/register',
+                      json={
+                          'email': email,
+                          'password': password,
+                          'display_name': 'CI Smoke',
+                      },
+                  )
+                  assert register.status_code == 201, register.text
+                  register_payload = register.json()
+                  assert register_payload['access_token']
+
+                  login = await client.post(
+                      '/api/auth/login',
+                      json={'email': email, 'password': password},
+                  )
+                  assert login.status_code == 200, login.text
+                  token = login.json()['access_token']
+                  assert token
+
+                  almanac = await client.get(
+                      '/api/almanac?city=Bandung',
+                      headers={'Authorization': f'Bearer {token}'},
+                  )
+                  assert almanac.status_code == 200, almanac.text
+                  data = almanac.json()
+                  required = {'location', 'date_info', 'natural', 'calendars', 'schedule'}
+                  missing = required.difference(data)
+                  assert not missing, f'Missing almanac fields: {sorted(missing)}'
+
+                  bazi = await client.get(
+                      '/api/bazi?year=1990&month=1&day=1',
+                      headers={'Authorization': f'Bearer {token}'},
+                  )
+                  assert bazi.status_code in (200, 400), bazi.text
+
+              print(json.dumps({'status': 'auth-e2e-pass'}))
+
+          asyncio.run(main())
           PY
