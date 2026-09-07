@@ -1,7 +1,29 @@
-import { TodayProvider } from '../core/TodayContext'
-import AppShell from '../dashboard/AppShell'
+import { TodayProvider, useTodayContext } from '../core/TodayContext'
 import { useAuth } from '../auth/AuthContext'
 import PublicLayout from '../layouts/PublicLayout'
+import PublicNavigation from './PublicNavigation'
+import PublicHero from './PublicHero'
+import PublicFeatureHighlights from './PublicFeatureHighlights'
+import Ticker from '../cakra-ui/Ticker'
+
+function PublicPageContent({ isAuthenticated }) {
+  const context = useTodayContext()
+  const data = {
+    ...context,
+    ...(context.apiData || {}),
+    location: context.location,
+    selectedDate: context.selectedDate,
+  }
+
+  return (
+    <>
+      <PublicNavigation isAuthenticated={isAuthenticated} />
+      <PublicHero data={data} isAuthenticated={isAuthenticated} />
+      <PublicFeatureHighlights />
+      <Ticker data={data} />
+    </>
+  )
+}
 
 export default function PublicConverterLayer() {
   const { isAuthenticated } = useAuth()
@@ -9,14 +31,8 @@ export default function PublicConverterLayer() {
   return (
     <PublicLayout>
       <TodayProvider>
-        <AppShell />
+        <PublicPageContent isAuthenticated={isAuthenticated} />
       </TodayProvider>
-      <a
-        href={isAuthenticated ? '/calculation' : '/login'}
-        className="fixed right-5 top-5 z-50 rounded-lg bg-[#2563EB] px-4 py-2.5 text-sm font-semibold text-white shadow-sm"
-      >
-        {isAuthenticated ? 'Akun Saya' : 'Masuk'}
-      </a>
     </PublicLayout>
   )
 }
