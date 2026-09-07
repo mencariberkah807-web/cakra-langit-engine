@@ -1,18 +1,20 @@
 import { ArrowRight } from 'lucide-react'
 import PublicTodaySummary from './PublicTodaySummary'
+import { resolveAssetUrl } from './siteSettings'
 
 export default function PublicHero({ data, isAuthenticated, settings }) {
   const exploreHref = isAuthenticated ? '/dashboard' : '/login'
   const heroTitle = settings?.hero_title || 'Harmoni Langit, Panduan Kehidupan'
   const [titleFirst, ...titleRest] = heroTitle.split(',')
   const titleSecond = titleRest.join(',').trim()
+  const heroImageUrl = resolveAssetUrl(settings?.hero_image)
 
   return (
     <section
       className="relative overflow-hidden border-b border-[#E2E8F0] bg-gradient-to-br from-[#EAF4FF] via-[#F5F9FD] to-[#DCE8F1]"
-      style={settings?.hero_image ? { backgroundImage: `url(${settings.hero_image})`, backgroundSize: 'cover', backgroundPosition: 'center' } : undefined}
+      style={heroImageUrl ? { backgroundImage: `url(${heroImageUrl})`, backgroundSize: 'cover', backgroundPosition: 'center' } : undefined}
     >
-      {settings?.hero_image ? <div className="absolute inset-0 bg-white/55" /> : null}
+      {heroImageUrl ? <div className="absolute inset-0 bg-white/55" /> : null}
       <div className="absolute inset-x-0 bottom-0 h-44 bg-[linear-gradient(162deg,transparent_34%,rgba(148,163,184,0.16)_35%,rgba(100,116,139,0.18)_56%,transparent_57%),linear-gradient(18deg,transparent_40%,rgba(71,85,105,0.10)_41%,rgba(100,116,139,0.15)_64%,transparent_65%)]" />
       <div className="absolute right-[-8%] top-[-18%] h-72 w-72 rounded-full bg-white/30 blur-3xl" />
       <div className="relative mx-auto grid min-h-[430px] max-w-[1360px] items-center gap-12 px-6 py-16 sm:px-8 sm:py-20 lg:grid-cols-[1.12fr_0.88fr] lg:px-12 lg:py-20">
