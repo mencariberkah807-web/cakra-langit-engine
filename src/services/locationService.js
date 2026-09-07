@@ -88,6 +88,51 @@ export function findLocationByTimezone(timezone) {
   return normalizeLocation(matches[0])
 }
 
+export function findLocationByCoordinates(latitude, longitude) {
+  const lat = Number(latitude)
+  const lng = Number(longitude)
+
+  if (!Number.isFinite(lat) || !Number.isFinite(lng)) return null
+
+  const indonesiaMatches = CITY_DATA.filter(
+    (record) => String(record.iso2 || '').toUpperCase() === 'ID'
+  )
+
+  if (!indonesiaMatches.length) return null
+
+  const toRadians = (value) => (value * Math.PI) / 180
+  const earthRadiusKm = 6371
+  const lat1 = toRadians(lat)
+  const lng1 = toRadians(lng)
+
+  let nearest = null
+  let nearestDistance = Infinity
+
+  for (const record of indonesiaMatches) {
+    const recordLat = Number(record.lat)
+    const recordLng = Number(record.lng)
+
+    if (!Number.isFinite(recordLat) || !Number.isFinite(recordLng)) continue
+
+    const lat2 = toRadians(recordLat)
+    const lng2 = toRadians(recordLng)
+    const dLat = lat2 - lat1
+    const dLng = lng2 - lng1
+    const a =
+      Math.sin(dLat / 2) ** 2 +
+      Math.cos(lat1) * Math.cos(lat2) * Math.sin(dLng / 2) ** 2
+    const distance =
+      2 * earthRadiusKm * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a))
+
+    if (distance < nearestDistance) {
+      nearestDistance = distance
+      nearest = record
+    }
+  }
+
+  return normalizeLocation(nearest)
+}
+
 export function findLocation(city, countryCode = null) {
   const normalizedCity = String(city || '').trim().toLowerCase()
   if (!normalizedCity) return null
@@ -191,7 +236,6 @@ export function getTimezoneLabel(timezone, date = new Date()) {
 
   return parts.find((part) => part.type === 'timeZoneName')?.value || timezone
 }
-
 
 export function getPopularLocations(limit = 100) {
   return CITY_DATA
