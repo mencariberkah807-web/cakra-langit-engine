@@ -1,4 +1,5 @@
 import { Search, Sparkles } from 'lucide-react'
+import { resolveAssetUrl } from './siteSettings'
 
 const links = [
   ['Beranda', '/'],
@@ -13,13 +14,14 @@ export default function PublicNavigation({ isAuthenticated, settings }) {
   const accountLabel = isAuthenticated ? 'Akun Saya' : 'Masuk'
   const siteName = settings?.site_name || 'Cakra Langit'
   const tagline = settings?.tagline || 'Personal Almanac'
+  const logoUrl = resolveAssetUrl(settings?.logo)
 
   return (
     <header className="border-b border-[#E2E8F0] bg-white">
       <nav className="mx-auto flex min-h-[76px] max-w-[1360px] items-center gap-8 px-5 sm:px-7 lg:px-10" aria-label="Navigasi utama">
         <a href="/" className="flex shrink-0 items-center gap-3" aria-label={`${siteName} Beranda`}>
-          {settings?.logo ? (
-            <img src={settings.logo} alt="" className="h-9 w-9 rounded-full object-cover" />
+          {logoUrl ? (
+            <img src={logoUrl} alt="" className="h-9 w-9 rounded-full object-cover" />
           ) : (
             <span className="flex h-9 w-9 items-center justify-center rounded-full border border-[#2563EB]/30 bg-[#EFF6FF] text-[#2563EB]">
               <Sparkles className="h-5 w-5" strokeWidth={1.6} />
