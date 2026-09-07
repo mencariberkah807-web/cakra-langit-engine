@@ -9,6 +9,7 @@ import {
 import { createAlmanacContext } from './context'
 import {
   findLocation,
+  findLocationByCoordinates,
   findLocationById,
   getLocationUtcOffset,
   getTimezoneLabel,
@@ -20,6 +21,7 @@ const TodayContext = createContext(null)
 
 const API_BASE = 'http://127.0.0.1:8000'
 const LOCATION_STORAGE_KEY = 'personal-almanac:selected-location'
+const LOCATION_SOURCE_STORAGE_KEY = 'personal-almanac:selected-location-source'
 
 function getLocalDateISO(date, timezone) {
   return new Intl.DateTimeFormat("en-CA", {
@@ -89,25 +91,101 @@ export function TodayProvider({ children }) {
   useEffect(() => {
     let cancelled = false
 
-    async function restoreStoredLocation() {
+    async function initializeLocation() {
+      let storedId = null
+      let storedSource = null
+
       try {
-        const storedId = window.localStorage.getItem(
-          LOCATION_STORAGE_KEY
-        )
-
-        if (!storedId) return
-
-        const storedLocation = await findLocationById(storedId)
-
-        if (!cancelled && storedLocation) {
-          setSelectedLocation(storedLocation)
-        }
+        storedId = window.localStorage.getItem(LOCATION_STORAGE_KEY)
+        storedSource = window.localStorage.getItem(LOCATION_SOURCE_STORAGE_KEY)
       } catch {
-        // Ignore storage errors and keep the default location.
+        // Ignore storage errors and continue with browser detection.
       }
+
+      if (storedSource === 'manual' && storedId) {
+        try {
+          const storedLocation = await findLocationById(storedId)
+          if (!cancelled && storedLocation) {
+            setSelectedLocation(storedLocation)
+          }
+          return
+        } catch {
+          // Fall through to browser geolocation.
+        }
+      }
+
+      if (!navigator.geolocation) {
+        if (storedId) {
+          try {
+            const storedLocation = await findLocationById(storedId)
+            if (!cancelled && storedLocation) {
+              setSelectedLocation(storedLocation)
+            }
+          } catch {
+            // Keep timezone fallback.
+          }
+        }
+        return
+      }
+
+      navigator.geolocation.getCurrentPosition(
+        async ({ coords }) => {
+          const browserLocation = findLocationByCoordinates(
+            coords.latitude,
+            coords.longitude
+          )
+
+          if (!browserLocation || browserLocation.countryCode !== 'ID') {
+            if (storedId) {
+              try {
+                const storedLocation = await findLocationById(storedId)
+                if (!cancelled && storedLocation) {
+                  setSelectedLocation(storedLocation)
+                }
+              } catch {
+                // Keep timezone fallback.
+              }
+            }
+            return
+          }
+
+          if (!cancelled) {
+            setSelectedLocation(browserLocation)
+            try {
+              window.localStorage.setItem(
+                LOCATION_STORAGE_KEY,
+                browserLocation.id
+              )
+              window.localStorage.setItem(
+                LOCATION_SOURCE_STORAGE_KEY,
+                'browser'
+              )
+            } catch {
+              // Ignore storage errors.
+            }
+          }
+        },
+        async () => {
+          if (!storedId) return
+
+          try {
+            const storedLocation = await findLocationById(storedId)
+            if (!cancelled && storedLocation) {
+              setSelectedLocation(storedLocation)
+            }
+          } catch {
+            // Keep timezone fallback.
+          }
+        },
+        {
+          enableHighAccuracy: false,
+          maximumAge: 300000,
+          timeout: 10000,
+        }
+      )
     }
 
-    restoreStoredLocation()
+    initializeLocation()
 
     return () => {
       cancelled = true
@@ -159,6 +237,20 @@ export function TodayProvider({ children }) {
 
   function setLocation(location) {
     setSelectedLocation(location)
+    try {
+      if (location?.id) {
+        window.localStorage.setItem(
+          LOCATION_STORAGE_KEY,
+          location.id
+        )
+        window.localStorage.setItem(
+          LOCATION_SOURCE_STORAGE_KEY,
+          'manual'
+        )
+      }
+    } catch {
+      // Ignore storage errors.
+    }
   }
 
   function setLocationByCity(city, countryCode = null) {
@@ -166,7 +258,7 @@ export function TodayProvider({ children }) {
     if (!location) {
       throw new Error(`Unknown location: ${city}`)
     }
-    setSelectedLocation(location)
+    setLocation(location)
   }
 
   async function setLocationById(id) {
@@ -174,7 +266,7 @@ export function TodayProvider({ children }) {
     if (!location) {
       throw new Error(`Unknown location id: ${id}`)
     }
-    setSelectedLocation(location)
+    setLocation(location)
   }
 
   const value = useMemo(() => {
