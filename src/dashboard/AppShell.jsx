@@ -9,7 +9,7 @@ import ScheduleTimeline from "../cakra-ui/ScheduleTimeline";
 import WetonModal from "../cakra-ui/WetonModal";
 import Ticker from "../cakra-ui/Ticker";
 import Footer from "../cakra-ui/Footer";
-import { primaryNav, personalNav } from "../cakra-ui/GlobalShell";
+import { primaryNav, personalNav } from "../navigation/userNavigation";
 
 import { useTodayContext } from "../core/TodayContext";
 import { getResultsByGroup } from "../core/resultRegistry.js";
