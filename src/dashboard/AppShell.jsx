@@ -9,7 +9,6 @@ import ScheduleTimeline from "../cakra-ui/ScheduleTimeline";
 import WetonModal from "../cakra-ui/WetonModal";
 import Ticker from "../cakra-ui/Ticker";
 import Footer from "../cakra-ui/Footer";
-import AppSidebar from "../components/navigation/AppSidebar";
 
 import { useTodayContext } from "../core/TodayContext";
 import { getResultsByGroup } from "../core/resultRegistry.js";
@@ -17,7 +16,7 @@ import { getResultsByGroup } from "../core/resultRegistry.js";
 const iso = (d) =>
   `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
 
-export default function AppShell({ authenticatedUser = null, onLogout = null, showFooter = true }) {
+export default function AppShell({ showFooter = true }) {
   const context = useTodayContext();
   const apiData = context.apiData;
   const [time, setTime] = useState("12:00");
@@ -119,33 +118,29 @@ export default function AppShell({ authenticatedUser = null, onLogout = null, sh
         isToday={context.mode === "live"}
       />
 
-      <div className="flex items-start">
-        {authenticatedUser ? <AppSidebar user={authenticatedUser} onLogout={onLogout} /> : null}
+      <main className="min-w-0 flex-1">
+        <div className="w-full px-4 py-6 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-1 gap-6 lg:grid-cols-12">
+            <div className="flex flex-col gap-6 lg:col-span-8">
+              <NaturalLayer data={data} loading={false} />
+              <SunArc sun={data.natural.sun} time={time} loading={false} />
+              <CalendarSystems data={data} loading={false} onOpenWeton={() => setWetonOpen(true)} />
+            </div>
 
-        <main className="min-w-0 flex-1">
-          <div className={authenticatedUser ? "w-full px-4 py-6 sm:px-6 lg:px-8" : "mx-auto max-w-[1440px] px-4 py-6 sm:px-6 lg:px-8"}>
-            <div className="grid grid-cols-1 gap-6 lg:grid-cols-12">
-              <div className="flex flex-col gap-6 lg:col-span-8">
-                <NaturalLayer data={data} loading={false} />
-                <SunArc sun={data.natural.sun} time={time} loading={false} />
-                <CalendarSystems data={data} loading={false} onOpenWeton={() => setWetonOpen(true)} />
-              </div>
-
-              <div className="flex flex-col gap-6 lg:col-span-4">
-                <MonthCalendar
-                  dateISO={iso(context.selectedDate)}
-                  onSelect={(value) => context.setSelectedDate(new Date(`${value}T12:00:00`))}
-                  time={time}
-                  onTimeChange={setTime}
-                  onJumpToday={context.goLive}
-                  quickJumps={data.quick_jumps}
-                />
-                <ScheduleTimeline data={data} loading={false} time={time} />
-              </div>
+            <div className="flex flex-col gap-6 lg:col-span-4">
+              <MonthCalendar
+                dateISO={iso(context.selectedDate)}
+                onSelect={(value) => context.setSelectedDate(new Date(`${value}T12:00:00`))}
+                time={time}
+                onTimeChange={setTime}
+                onJumpToday={context.goLive}
+                quickJumps={data.quick_jumps}
+              />
+              <ScheduleTimeline data={data} loading={false} time={time} />
             </div>
           </div>
-        </main>
-      </div>
+        </div>
+      </main>
 
       <WetonModal open={wetonOpen} onOpenChange={setWetonOpen} data={data} />
       <Ticker data={data} />
