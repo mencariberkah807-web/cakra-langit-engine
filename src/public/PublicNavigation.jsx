@@ -8,30 +8,32 @@ const links = [
   ['Tentang', '#tentang'],
 ]
 
-export default function PublicNavigation({ isAuthenticated }) {
+export default function PublicNavigation({ isAuthenticated, settings }) {
   const accountHref = isAuthenticated ? '/dashboard' : '/login'
   const accountLabel = isAuthenticated ? 'Akun Saya' : 'Masuk'
+  const siteName = settings?.site_name || 'Cakra Langit'
+  const tagline = settings?.tagline || 'Personal Almanac'
 
   return (
     <header className="border-b border-[#E2E8F0] bg-white">
       <nav className="mx-auto flex min-h-[76px] max-w-[1360px] items-center gap-8 px-5 sm:px-7 lg:px-10" aria-label="Navigasi utama">
-        <a href="/" className="flex shrink-0 items-center gap-3" aria-label="Cakra Langit Beranda">
-          <span className="flex h-9 w-9 items-center justify-center rounded-full border border-[#2563EB]/30 bg-[#EFF6FF] text-[#2563EB]">
-            <Sparkles className="h-5 w-5" strokeWidth={1.6} />
-          </span>
+        <a href="/" className="flex shrink-0 items-center gap-3" aria-label={`${siteName} Beranda`}>
+          {settings?.logo ? (
+            <img src={settings.logo} alt="" className="h-9 w-9 rounded-full object-cover" />
+          ) : (
+            <span className="flex h-9 w-9 items-center justify-center rounded-full border border-[#2563EB]/30 bg-[#EFF6FF] text-[#2563EB]">
+              <Sparkles className="h-5 w-5" strokeWidth={1.6} />
+            </span>
+          )}
           <span>
-            <span className="block text-[12px] font-bold tracking-[0.06em] text-[#0F172A]">CAKRA LANGIT</span>
-            <span className="block text-[9px] text-[#64748B]">Personal Almanac</span>
+            <span className="block text-[12px] font-bold tracking-[0.06em] text-[#0F172A]">{siteName.toUpperCase()}</span>
+            <span className="block text-[9px] text-[#64748B]">{tagline}</span>
           </span>
         </a>
 
         <div className="hidden items-center gap-7 lg:flex">
           {links.map(([label, href], index) => (
-            <a
-              key={label}
-              href={href}
-              className={`relative py-7 text-[11px] font-medium ${index === 0 ? 'text-[#2563EB]' : 'text-[#475569] hover:text-[#0F172A]'}`}
-            >
+            <a key={label} href={href} className={`relative py-7 text-[11px] font-medium ${index === 0 ? 'text-[#2563EB]' : 'text-[#475569] hover:text-[#0F172A]'}`}>
               {label}
               {index === 0 && <span className="absolute inset-x-0 bottom-0 h-0.5 bg-[#2563EB]" />}
             </a>
