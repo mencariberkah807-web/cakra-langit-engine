@@ -1,13 +1,14 @@
 import { BadgeCheck, CalendarDays, Heart, RefreshCw } from 'lucide-react'
 
-const items = [
-  [BadgeCheck, 'Akurat', 'dengan data astronomi'],
-  [CalendarDays, 'Menggabungkan', 'kearifan tradisional'],
-  [Heart, 'Mudah digunakan', 'untuk semua orang'],
-  [RefreshCw, 'Selalu diperbarui', 'setiap hari'],
-]
+const icons = [BadgeCheck, CalendarDays, Heart, RefreshCw]
 
-export default function PublicFeatureHighlights() {
+export default function PublicFeatureHighlights({ settings }) {
+  const items = [1, 2, 3, 4].map((index) => [
+    icons[index - 1],
+    settings?.[`feature_${index}_title`] || ['Akurat', 'Menggabungkan', 'Mudah digunakan', 'Selalu diperbarui'][index - 1],
+    settings?.[`feature_${index}_description`] || ['dengan data astronomi', 'kearifan tradisional', 'untuk semua orang', 'setiap hari'][index - 1],
+  ])
+
   return (
     <section className="border-b border-[#E2E8F0] bg-white">
       <div className="mx-auto grid max-w-[1360px] grid-cols-1 divide-y divide-[#E2E8F0] px-5 sm:grid-cols-2 sm:px-7 sm:divide-y-0 lg:grid-cols-4 lg:px-10">
