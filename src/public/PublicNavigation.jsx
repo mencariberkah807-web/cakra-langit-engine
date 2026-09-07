@@ -10,6 +10,7 @@ const links = [
 
 export default function PublicNavigation({ isAuthenticated }) {
   const accountHref = isAuthenticated ? '/dashboard' : '/login'
+  const accountLabel = isAuthenticated ? 'Akun Saya' : 'Masuk'
 
   return (
     <header className="border-b border-[#E2E8F0] bg-white">
@@ -42,7 +43,7 @@ export default function PublicNavigation({ isAuthenticated }) {
             <Search className="h-4 w-4" strokeWidth={1.8} />
           </button>
           <a href={accountHref} className="rounded-md border border-[#93B4FF] px-4 py-2 text-[11px] font-semibold text-[#2563EB] hover:bg-[#EFF6FF]">
-            Masuk
+            {accountLabel}
           </a>
           {!isAuthenticated && (
             <a href="/login" className="rounded-md bg-[#2563EB] px-4 py-2 text-[11px] font-semibold text-white shadow-sm hover:bg-[#1D4ED8]">
