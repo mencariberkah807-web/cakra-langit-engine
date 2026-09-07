@@ -1,12 +1,13 @@
 import { TodayProvider } from '../core/TodayContext'
 import AppShell from '../dashboard/AppShell'
 import { useAuth } from '../auth/AuthContext'
+import PublicLayout from '../layouts/PublicLayout'
 
 export default function PublicConverterLayer() {
   const { isAuthenticated } = useAuth()
 
   return (
-    <>
+    <PublicLayout>
       <TodayProvider>
         <AppShell />
       </TodayProvider>
@@ -16,6 +17,6 @@ export default function PublicConverterLayer() {
       >
         {isAuthenticated ? 'Akun Saya' : 'Masuk'}
       </a>
-    </>
+    </PublicLayout>
   )
 }
