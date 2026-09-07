@@ -1,4 +1,5 @@
 import { TodayProvider } from '../core/TodayContext'
+import UserLayout from '../layouts/UserLayout'
 import AppShell from '../dashboard/AppShell'
 import SettingsPage from './SettingsPage'
 import { useAuth } from './AuthContext'
@@ -28,17 +29,11 @@ function PagePlaceholder({ title, description }) {
   )
 }
 
-function UserDashboardContent({ user, logout }) {
+function UserDashboardContent() {
   const path = window.location.pathname
 
   if (path === '/dashboard') {
-    return (
-      <AppShell
-        authenticatedUser={user}
-        onLogout={logout}
-        showFooter={true}
-      />
-    )
+    return <AppShell showFooter={true} />
   }
 
   if (path === '/dashboard/settings') return <SettingsPage />
@@ -54,7 +49,9 @@ export default function UserDashboardLayer() {
 
   return (
     <TodayProvider>
-      <UserDashboardContent user={user} logout={logout} />
+      <UserLayout user={user} onLogout={logout}>
+        <UserDashboardContent />
+      </UserLayout>
     </TodayProvider>
   )
 }
