@@ -18,9 +18,9 @@ function PublicPageContent({ isAuthenticated }) {
   return (
     <>
       <PublicNavigation isAuthenticated={isAuthenticated} />
+      <Ticker data={data} />
       <PublicHero data={data} isAuthenticated={isAuthenticated} />
       <PublicFeatureHighlights />
-      <Ticker data={data} />
     </>
   )
 }
