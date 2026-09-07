@@ -48,6 +48,26 @@ export default function LoginPage() {
 
   useEffect(() => {
     if (defaultSettings.page_title) document.title = `Masuk — ${defaultSettings.page_title}`
+    if (defaultSettings.meta_description !== null) {
+      let meta = document.querySelector('meta[name="description"]')
+      if (!meta) {
+        meta = document.createElement('meta')
+        meta.name = 'description'
+        document.head.appendChild(meta)
+      }
+      meta.content = defaultSettings.meta_description || ''
+    }
+
+    const faviconUrl = resolveAssetUrl(defaultSettings.favicon)
+    if (faviconUrl) {
+      let link = document.querySelector('link[rel="icon"]')
+      if (!link) {
+        link = document.createElement('link')
+        link.rel = 'icon'
+        document.head.appendChild(link)
+      }
+      link.href = faviconUrl
+    }
   }, [])
 
   async function submit(event) {
