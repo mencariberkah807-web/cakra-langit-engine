@@ -2,6 +2,8 @@ import { useAuth } from './auth/AuthContext'
 import UserDashboardLayer from './auth/UserDashboardLayer'
 import LoginPage from './auth/LoginPage'
 import PublicConverterLayer from './public/PublicConverterLayer'
+import AdminLogin from './admin/AdminLogin'
+import AdminPanel from './admin/AdminPanel'
 
 const authenticatedPaths = new Set([
   '/dashboard',
@@ -27,10 +29,15 @@ function LoadingScreen() {
 }
 
 export default function App() {
-  const { loading, isAuthenticated } = useAuth()
+  const { loading, isAuthenticated, user } = useAuth()
   const rawPath = window.location.pathname
 
   if (loading) return <LoadingScreen />
+
+  // Private admin entry point. The backend role remains the real security boundary.
+  if (rawPath === '/saehu' || rawPath.startsWith('/saehu/')) {
+    return isAuthenticated && user?.role === 'admin' ? <AdminPanel /> : <AdminLogin />
+  }
 
   // /calculation was the former application route. It is an engine/domain name,
   // not a user-facing page. Keep legacy links from exposing that route.
