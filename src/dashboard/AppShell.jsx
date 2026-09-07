@@ -1,14 +1,10 @@
 import { useState } from "react";
 
 import Header from "../cakra-ui/Header";
-import NaturalLayer from "../cakra-ui/NaturalLayer";
-import SunArc from "../cakra-ui/SunArc";
-import CalendarSystems from "../cakra-ui/CalendarSystems";
-import MonthCalendar from "../cakra-ui/MonthCalendar";
-import ScheduleTimeline from "../cakra-ui/ScheduleTimeline";
 import WetonModal from "../cakra-ui/WetonModal";
 import Ticker from "../cakra-ui/Ticker";
 import Footer from "../cakra-ui/Footer";
+import AppContent from "./AppContent";
 
 import { useTodayContext } from "../core/TodayContext";
 import { getResultsByGroup } from "../core/resultRegistry.js";
@@ -119,27 +115,16 @@ export default function AppShell({ showFooter = true }) {
       />
 
       <main className="min-w-0 flex-1">
-        <div className="w-full px-4 py-6 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 gap-6 lg:grid-cols-12">
-            <div className="flex flex-col gap-6 lg:col-span-8">
-              <NaturalLayer data={data} loading={false} />
-              <SunArc sun={data.natural.sun} time={time} loading={false} />
-              <CalendarSystems data={data} loading={false} onOpenWeton={() => setWetonOpen(true)} />
-            </div>
-
-            <div className="flex flex-col gap-6 lg:col-span-4">
-              <MonthCalendar
-                dateISO={iso(context.selectedDate)}
-                onSelect={(value) => context.setSelectedDate(new Date(`${value}T12:00:00`))}
-                time={time}
-                onTimeChange={setTime}
-                onJumpToday={context.goLive}
-                quickJumps={data.quick_jumps}
-              />
-              <ScheduleTimeline data={data} loading={false} time={time} />
-            </div>
-          </div>
-        </div>
+        <AppContent
+          data={data}
+          dateISO={iso(context.selectedDate)}
+          onSelectDate={(value) => context.setSelectedDate(new Date(`${value}T12:00:00`))}
+          time={time}
+          onTimeChange={setTime}
+          onJumpToday={context.goLive}
+          quickJumps={data.quick_jumps}
+          onOpenWeton={() => setWetonOpen(true)}
+        />
       </main>
 
       <WetonModal open={wetonOpen} onOpenChange={setWetonOpen} data={data} />
