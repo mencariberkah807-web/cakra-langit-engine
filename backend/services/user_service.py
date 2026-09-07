@@ -43,5 +43,6 @@ def serialize_user(user: User) -> dict:
         "id": user.id,
         "email": user.email,
         "is_active": user.is_active,
+        "role": user.role,
         "display_name": user.profile.display_name if user.profile else None,
     }
