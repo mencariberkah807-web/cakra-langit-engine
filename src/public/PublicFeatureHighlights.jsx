@@ -12,13 +12,13 @@ export default function PublicFeatureHighlights() {
     <section className="border-b border-[#E2E8F0] bg-white">
       <div className="mx-auto grid max-w-[1360px] grid-cols-1 divide-y divide-[#E2E8F0] px-5 sm:grid-cols-2 sm:px-7 sm:divide-y-0 lg:grid-cols-4 lg:px-10">
         {items.map(([Icon, title, description]) => (
-          <div key={title} className="flex items-center gap-3 px-4 py-5 lg:px-7">
-            <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#EFF6FF] text-[#2563EB]">
-              <Icon className="h-4 w-4" strokeWidth={1.7} />
+          <div key={title} className="flex items-center gap-4 px-4 py-6 lg:px-7 lg:py-7">
+            <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-[#EFF6FF] text-[#2563EB]">
+              <Icon className="h-5 w-5" strokeWidth={1.7} />
             </span>
             <span>
-              <span className="block text-[10px] font-semibold text-[#334155]">{title}</span>
-              <span className="mt-0.5 block text-[10px] text-[#64748B]">{description}</span>
+              <span className="block text-[13px] font-semibold text-[#334155] sm:text-[14px]">{title}</span>
+              <span className="mt-1 block text-[11px] leading-4 text-[#64748B] sm:text-[12px]">{description}</span>
             </span>
           </div>
         ))}
