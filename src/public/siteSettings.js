@@ -19,8 +19,14 @@ const defaultSettings = {
   feature_4_title: 'Selalu diperbarui',
   feature_4_description: 'setiap hari',
   login_image: null,
-  page_title: null,
+  page_title: 'Personal Almanac',
   meta_description: null,
+}
+
+export function resolveAssetUrl(value) {
+  if (!value) return ''
+  if (/^https?:\/\//i.test(value)) return value
+  return `${API_BASE}${value.startsWith('/') ? value : `/${value}`}`
 }
 
 export async function fetchSiteSettings() {
