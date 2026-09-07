@@ -1,6 +1,6 @@
 import { TodayProvider } from '../core/TodayContext'
 import UserLayout from '../layouts/UserLayout'
-import AppShell from '../dashboard/AppShell'
+import DashboardHome from '../dashboard/DashboardHome'
 import SettingsPage from './SettingsPage'
 import { useAuth } from './AuthContext'
 
@@ -33,7 +33,7 @@ function UserDashboardContent() {
   const path = window.location.pathname
 
   if (path === '/dashboard') {
-    return <AppShell showFooter={true} />
+    return <DashboardHome showFooter={true} />
   }
 
   if (path === '/dashboard/settings') return <SettingsPage />
