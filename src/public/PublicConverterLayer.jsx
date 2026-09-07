@@ -6,7 +6,7 @@ import PublicNavigation from './PublicNavigation'
 import PublicHero from './PublicHero'
 import PublicFeatureHighlights from './PublicFeatureHighlights'
 import Ticker from '../cakra-ui/Ticker'
-import { defaultSettings, fetchSiteSettings } from './siteSettings'
+import { defaultSettings, fetchSiteSettings, resolveAssetUrl } from './siteSettings'
 
 function PublicPageContent({ isAuthenticated, settings }) {
   const context = useTodayContext()
@@ -16,6 +16,30 @@ function PublicPageContent({ isAuthenticated, settings }) {
     location: context.location,
     selectedDate: context.selectedDate,
   }
+
+  useEffect(() => {
+    if (settings.page_title) document.title = settings.page_title
+    if (settings.meta_description !== null) {
+      let meta = document.querySelector('meta[name="description"]')
+      if (!meta) {
+        meta = document.createElement('meta')
+        meta.name = 'description'
+        document.head.appendChild(meta)
+      }
+      meta.content = settings.meta_description || ''
+    }
+
+    const faviconUrl = resolveAssetUrl(settings.favicon)
+    if (faviconUrl) {
+      let link = document.querySelector('link[rel="icon"]')
+      if (!link) {
+        link = document.createElement('link')
+        link.rel = 'icon'
+        document.head.appendChild(link)
+      }
+      link.href = faviconUrl
+    }
+  }, [settings])
 
   return (
     <>
