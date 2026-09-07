@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useAuth } from './AuthContext'
 import { getImage } from '../cakra-ui/imagePreferences'
-import { defaultSettings, fetchSiteSettings, resolveAssetUrl } from '../public/siteSettings'
+import { fetchSiteSettings, resolveAssetUrl } from '../public/siteSettings'
 
 export default function LoginPage() {
   const { login, register } = useAuth()
@@ -19,6 +19,29 @@ export default function LoginPage() {
 
     fetchSiteSettings().then((settings) => {
       if (!active) return
+
+      if (settings.page_title) document.title = `Masuk — ${settings.page_title}`
+      if (settings.meta_description !== null) {
+        let meta = document.querySelector('meta[name="description"]')
+        if (!meta) {
+          meta = document.createElement('meta')
+          meta.name = 'description'
+          document.head.appendChild(meta)
+        }
+        meta.content = settings.meta_description || ''
+      }
+
+      const faviconUrl = resolveAssetUrl(settings.favicon)
+      if (faviconUrl) {
+        let link = document.querySelector('link[rel="icon"]')
+        if (!link) {
+          link = document.createElement('link')
+          link.rel = 'icon'
+          document.head.appendChild(link)
+        }
+        link.href = faviconUrl
+      }
+
       const remoteUrl = resolveAssetUrl(settings.login_image)
       if (remoteUrl) {
         setLoginImage(remoteUrl)
@@ -43,30 +66,6 @@ export default function LoginPage() {
     return () => {
       active = false
       if (localUrl) URL.revokeObjectURL(localUrl)
-    }
-  }, [])
-
-  useEffect(() => {
-    if (defaultSettings.page_title) document.title = `Masuk — ${defaultSettings.page_title}`
-    if (defaultSettings.meta_description !== null) {
-      let meta = document.querySelector('meta[name="description"]')
-      if (!meta) {
-        meta = document.createElement('meta')
-        meta.name = 'description'
-        document.head.appendChild(meta)
-      }
-      meta.content = defaultSettings.meta_description || ''
-    }
-
-    const faviconUrl = resolveAssetUrl(defaultSettings.favicon)
-    if (faviconUrl) {
-      let link = document.querySelector('link[rel="icon"]')
-      if (!link) {
-        link = document.createElement('link')
-        link.rel = 'icon'
-        document.head.appendChild(link)
-      }
-      link.href = faviconUrl
     }
   }, [])
 
