@@ -3,6 +3,7 @@ import { LanguageProvider } from '../core/LanguageContext'
 import UserLayout from '../layouts/UserLayout'
 import DashboardHome from '../dashboard/DashboardHome'
 import WetonPage from '../dashboard/WetonPage'
+import BaZiPage from '../dashboard/BaZiPage'
 import { useAuth } from './AuthContext'
 
 const pageMap = {
@@ -38,6 +39,10 @@ function UserDashboardContent({ user }) {
 
   if (path === '/dashboard/weton') {
     return <WetonPage />
+  }
+
+  if (path === '/dashboard/bazi') {
+    return <BaZiPage />
   }
 
   const page = pageMap[path]
