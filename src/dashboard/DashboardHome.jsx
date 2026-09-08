@@ -37,9 +37,9 @@ function EclipseCountdown({ totalityAt }) {
   return <p className="mt-1 font-mono text-lg font-semibold tabular-nums">{value || "No countdown available"}</p>;
 }
 
-export default function DashboardHome({ showFooter = true }) {
+export default function DashboardHome({ showFooter = true, user }) {
   const context = useTodayContext();
-  const { language, setLanguage, t } = useLanguage();
+  const { language, t } = useLanguage();
   const apiData = context.apiData;
   const [wetonOpen, setWetonOpen] = useState(false);
   const [eclipseOpen, setEclipseOpen] = useState(false);
@@ -84,11 +84,7 @@ export default function DashboardHome({ showFooter = true }) {
 
   return (
     <div className={`min-h-screen font-sans antialiased transition-colors duration-700 ${isNight ? "bg-[#0F172A] text-[#0F172A]" : "bg-[#F8FAFC] text-[#0F172A]"}`} data-cakra-mode={isNight ? "night" : "day"}>
-      <div className="fixed right-4 top-3 z-50 flex w-[150px] items-center gap-1 rounded-md border border-[#E2E8F0] bg-white/95 p-1 shadow-sm backdrop-blur">
-        <button type="button" onClick={() => setLanguage("id")} className={`flex-1 rounded px-2 py-1 text-center text-[10px] font-bold ${language === "id" ? "bg-[#0F172A] text-white" : "text-[#475569]"}`}>Indonesia</button>
-        <button type="button" onClick={() => setLanguage("en")} className={`flex-1 rounded px-2 py-1 text-center text-[10px] font-bold ${language === "en" ? "bg-[#0F172A] text-white" : "text-[#475569]"}`}>English</button>
-      </div>
-      <Header data={data} locations={cakraLocations} city={context.selectedLocation?.id || ""} onCityChange={context.setLocationById} isToday={context.mode === "live"} />
+      <Header data={data} locations={cakraLocations} city={context.selectedLocation?.id || ""} onCityChange={context.setLocationById} isToday={context.mode === "live"} user={user} />
       <main className="min-w-0 flex-1">
         <AppContent data={data} dateISO={iso(context.selectedDate)} onSelectDate={(value) => context.setSelectedDate(new Date(`${value}T12:00:00`))} time={context.selectedTime.slice(0, 5)} onTimeChange={context.setSelectedTime} onJumpToday={context.goLive} quickJumps={data.quick_jumps} onOpenWeton={() => setWetonOpen(true)} onOpenEclipse={() => setEclipseOpen(true)} />
       </main>
