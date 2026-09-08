@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 
 import Header from "../cakra-ui/Header";
 import WetonModal from "../cakra-ui/WetonModal";
@@ -8,6 +8,7 @@ import AppContent from "./AppContent";
 
 import { useTodayContext } from "../core/TodayContext";
 import { getResultsByGroup } from "../core/resultRegistry.js";
+import { adaptSun } from "../adapters/sun.adapter.js";
 
 const iso = (d) =>
   `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
@@ -17,12 +18,22 @@ export default function DashboardHome({ showFooter = true }) {
   const apiData = context.apiData;
   const [time, setTime] = useState("12:00");
   const [wetonOpen, setWetonOpen] = useState(false);
+  const [eclipseOpen, setEclipseOpen] = useState(false);
 
   const naturalResults = getResultsByGroup("natural", context);
   const calendarResults = getResultsByGroup("calendar", context);
 
   const sunResult = naturalResults.find((result) => result.id === "sun") || null;
-  const sunData = sunResult?.data || sunResult?.value || sunResult || {};
+  const selectedSun = useMemo(() => {
+    if (!context.selectedDate) return sunResult;
+    return adaptSun({
+      ...context,
+      sunTime: time,
+      time: { ...context.time, instant: context.selectedDate },
+    });
+  }, [context, time, sunResult]);
+
+  const sunData = selectedSun?.data || selectedSun?.value || selectedSun || {};
   const sun = {
     ...sunData,
     sunrise: sunData.sunrise ?? null,
@@ -31,9 +42,11 @@ export default function DashboardHome({ showFooter = true }) {
     noon: sunData.noon ?? null,
     dusk: sunData.dusk ?? null,
     golden_hour: sunData.golden_hour ?? null,
+    altitude: sunData.altitude ?? null,
+    selectedTime: sunData.selectedTime ?? time,
   };
 
-  const sunEvents = Array.isArray(sunResult?.events) ? sunResult.events : [];
+  const sunEvents = Array.isArray(selectedSun?.events) ? selectedSun.events : [];
   const schedule = sunEvents.map((event) => ({
     time: event.time,
     title: event.title,
@@ -65,7 +78,8 @@ export default function DashboardHome({ showFooter = true }) {
           }).format(context.selectedDate)
         : null,
     },
-    natural: apiData?.natural || context.natural || {
+    natural: {
+      ...(apiData?.natural || context.natural || {}),
       sun,
       moon: naturalResults.find((r) => r.id === "moon")?.data || naturalResults.find((r) => r.id === "moon") || null,
       eclipse: naturalResults.find((r) => r.id === "eclipse")?.data || naturalResults.find((r) => r.id === "eclipse") || null,
@@ -124,10 +138,40 @@ export default function DashboardHome({ showFooter = true }) {
           onJumpToday={context.goLive}
           quickJumps={data.quick_jumps}
           onOpenWeton={() => setWetonOpen(true)}
+          onOpenEclipse={() => setEclipseOpen(true)}
         />
       </main>
 
       <WetonModal open={wetonOpen} onOpenChange={setWetonOpen} data={data} />
+      {eclipseOpen ? (
+        <div className="fixed inset-0 z-50" aria-label="Eclipse detail drawer">
+          <button
+            type="button"
+            aria-label="Close eclipse details"
+            className="absolute inset-0 bg-black/20"
+            onClick={() => setEclipseOpen(false)}
+          />
+          <aside className="absolute right-0 top-0 h-full w-full max-w-md overflow-y-auto border-l border-[#E2E8F0] bg-white p-6 shadow-2xl">
+            <div className="flex items-start justify-between gap-4">
+              <div>
+                <p className="text-[10px] font-bold uppercase tracking-[0.12em] text-[#7C3AED]">Eclipse Detail</p>
+                <h2 className="mt-2 text-xl font-semibold">{eclipseData.today?.name || "No eclipse today"}</h2>
+              </div>
+              <button type="button" onClick={() => setEclipseOpen(false)} className="rounded-md border border-[#E2E8F0] px-3 py-1.5 text-sm text-[#475569]">Close</button>
+            </div>
+            {eclipseData.today ? (
+              <div className="mt-6 space-y-4 text-sm">
+                <div className="rounded-lg border border-[#E2E8F0] p-4"><span className="text-[#64748B]">Type</span><p className="mt-1 font-semibold">{eclipseData.today.type}</p></div>
+                <div className="rounded-lg border border-[#E2E8F0] p-4"><span className="text-[#64748B]">Visibility region</span><p className="mt-1 font-semibold">{eclipseData.today.visibilityRegion || "Global visibility data unavailable"}</p></div>
+                <div className="rounded-lg border border-[#E2E8F0] p-4"><span className="text-[#64748B]">Selected location</span><p className="mt-1 font-semibold">{eclipseData.today.visibility?.Indonesia ? "Visible from Indonesia" : "Not visible from Indonesia"}</p></div>
+                <div className="rounded-lg border border-[#E2E8F0] bg-[#F8FAFC] p-4"><span className="text-[#64748B]">Countdown to totality</span><p className="mt-1 font-mono text-lg font-semibold">{eclipseData.today.totalityAt ? "Calculating…" : eclipseData.today.type === "SOLAR" ? "Location-dependent" : "No totality"}</p></div>
+              </div>
+            ) : (
+              <div className="mt-6 rounded-lg border border-[#E2E8F0] bg-[#F8FAFC] p-4 text-sm text-[#475569]">There is no eclipse event on the selected date.</div>
+            )}
+          </aside>
+        </div>
+      ) : null}
       <Ticker data={data} />
       {showFooter ? <Footer data={data} /> : null}
     </div>
