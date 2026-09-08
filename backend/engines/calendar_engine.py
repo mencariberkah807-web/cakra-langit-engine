@@ -27,23 +27,6 @@ PASARAN_NEPTU = {
     "Kliwon": 8,
 }
 
-NEPTU_WATAK = [
-    (10, "Lakuning Bumi", "Tenang dan membumi — sabar, tekun, disegani karena keteguhannya."),
-    (13, "Lakuning Geni", "Laksana api — bersemangat, cepat bertindak, penuh tekad."),
-    (16, "Lakuning Banyu", "Laksana air — luwes bergaul, menyejukkan, mudah beradaptasi."),
-    (19, "Lakuning Srengenge", "Laksana matahari — terbuka, berwibawa, menjadi pusat perhatian."),
-    (22, "Lakuning Wulan", "Laksana rembulan — teduh, mengayomi, disukai banyak orang."),
-    (99, "Lakuning Lintang", "Laksana bintang — bercita-cita tinggi, berpandangan jauh."),
-]
-
-
-def get_watak(neptu):
-    for cap, name, desc in NEPTU_WATAK:
-        if neptu <= cap:
-            return name, desc
-    return NEPTU_WATAK[-1][1], NEPTU_WATAK[-1][2]
-
-
 DAYS_ID = [
     "Senin",
     "Selasa",
@@ -115,7 +98,6 @@ def get_calendar_data(
     dino_neptu = DINO_NEPTU[jawa["dayName"]]
     pasaran_neptu = PASARAN_NEPTU[jawa["pasaran"]]
     neptu_total = dino_neptu + pasaran_neptu
-    watak_name, watak_desc = get_watak(neptu_total)
 
     pawukon_day = jawa["pawukonDay"]
     wuku_index = ((pawukon_day - 1) // 7) + 1
@@ -125,7 +107,7 @@ def get_calendar_data(
         "bali": {
             "id": "bali",
             "name": "Bali",
-            "headline": f"{bali["saptawara"]} {bali["pancawara"]}",
+            "headline": f"{bali[\"saptawara\"]} {bali[\"pancawara\"]}",
             "sub": bali["wuku"],
             "fields": [
                 {"k": "Saptawara", "v": bali["saptawara"]},
@@ -148,7 +130,7 @@ def get_calendar_data(
         "kalacakra": {
             "id": "kalacakra",
             "name": "Kalacakra",
-            "headline": f"{kalacakra["number"]} {kalacakra["name"]}",
+            "headline": f"{kalacakra[\"number\"]} {kalacakra[\"name\"]}",
             "sub": kalacakra["indung"],
             "fields": [
                 {"k": "Indung", "v": kalacakra["indung"]},
@@ -179,12 +161,12 @@ def get_calendar_data(
             "id": "chinese-lunar",
             "name": "Chinese Lunar",
             "headline": (
-                f"{chinese_lunar["month"]} "
-                f"{chinese_lunar["day"]}"
+                f"{chinese_lunar[\"month\"]} "
+                f"{chinese_lunar[\"day\"]}"
             ),
             "sub": (
-                f"{chinese_lunar["year"]} "
-                f"({chinese_lunar["yearName"]})"
+                f"{chinese_lunar[\"year\"]} "
+                f"({chinese_lunar[\"yearName\"]})"
             ),
             "fields": [
                 {"k": "Tahun", "v": str(chinese_lunar["year"])},
@@ -225,7 +207,7 @@ def get_calendar_data(
             "headline": f"{hijri['day']} {hijri['month_name']} {hijri['year']} H",
             "sub": hijri["system"],
             "fields": [
-                {"k": "Tanggal", "v": str(hijri["day"])},
+                {"k": "Tanggal", "v": str(hijri["day"] )},
                 {"k": "Bulan", "v": hijri["month_name"]},
                 {"k": "Tahun", "v": f"{hijri['year']} H"},
                 {"k": "Hari", "v": DAYS_ID[target_date.weekday()]},
@@ -234,7 +216,6 @@ def get_calendar_data(
             "boundary": hijri["boundary"],
             "meta": hijri["meta"],
         },
-
         "jawa": {
             "id": "jawa",
             "name": "Jawa",
@@ -269,10 +250,6 @@ def get_calendar_data(
                     "neptu": pasaran_neptu,
                 },
                 "neptu_total": neptu_total,
-                "watak": {
-                    "name": watak_name,
-                    "desc": watak_desc,
-                },
                 "wuku": {
                     "name": jawa["wuku"],
                     "index": wuku_index,
