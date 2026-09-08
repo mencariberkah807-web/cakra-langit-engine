@@ -31,16 +31,16 @@ export default function MoonPhaseCanvas({ phase, illumination }) {
           <radialGradient id="moonPhaseSurface" cx="38%" cy="32%" r="72%">
             <stop offset="0%" stopColor="#F8FAFC" />
             <stop offset="72%" stopColor="#E2E8F0" />
-            <stop offset="100%" stopColor="#CBD5E1" />
+            <stop offset="100%" stopColor="#94A3B8" />
           </radialGradient>
         </defs>
-        <circle cx="30" cy="30" r="28" fill="#0F172A" />
+        <circle cx="30" cy="30" r="28" fill="#020B14" />
         {lit > 0 && <path d={path} fill="url(#moonPhaseSurface)" />}
-        <circle cx="30" cy="30" r="28" fill="none" stroke="#CBD5E1" strokeWidth="1" opacity="0.65" />
+        <circle cx="30" cy="30" r="28" fill="none" stroke="#6F8BA5" strokeWidth="1" opacity="0.7" />
       </svg>
       <div className="min-w-0">
-        <p className="text-[9px] font-semibold uppercase tracking-[0.08em] text-[#64748B]">Illumination</p>
-        <p className="font-mono text-[11px] font-semibold tabular-nums text-[#475569]">{lit}%</p>
+        <p className="text-[9px] font-semibold uppercase tracking-[0.08em] text-[#718CA8]">Illumination</p>
+        <p className="font-mono text-[11px] font-semibold tabular-nums text-[#D7E4F0]">{lit}%</p>
       </div>
     </div>
   );
