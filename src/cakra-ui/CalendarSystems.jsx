@@ -44,7 +44,7 @@ export default function CalendarSystems({ data }) {
           <h2 className="text-[11px] font-bold uppercase tracking-[0.12em] text-[#C7D9EA]">
             Calendar Systems
           </h2>
-          <p className="mt-1 text-xs text-[#7894AF]">Multiple traditional and modern systems</p>
+          <p className="mt-1 text-xs text-[#7894AF]">Today calculation snapshot</p>
         </div>
       </div>
 
