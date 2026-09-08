@@ -84,9 +84,9 @@ export default function DashboardHome({ showFooter = true }) {
 
   return (
     <div className={`min-h-screen font-sans antialiased transition-colors duration-700 ${isNight ? "bg-[#0F172A] text-[#0F172A]" : "bg-[#F8FAFC] text-[#0F172A]"}`} data-cakra-mode={isNight ? "night" : "day"}>
-      <div className="fixed right-4 top-3 z-50 flex items-center gap-1 rounded-md border border-[#E2E8F0] bg-white/95 p-1 shadow-sm backdrop-blur">
-        <button type="button" onClick={() => setLanguage("id")} className={`rounded px-2 py-1 text-[10px] font-bold ${language === "id" ? "bg-[#0F172A] text-white" : "text-[#475569]"}`}>Indonesia</button>
-        <button type="button" onClick={() => setLanguage("en")} className={`rounded px-2 py-1 text-[10px] font-bold ${language === "en" ? "bg-[#0F172A] text-white" : "text-[#475569]"}`}>English</button>
+      <div className="fixed right-4 top-3 z-50 flex w-[150px] items-center gap-1 rounded-md border border-[#E2E8F0] bg-white/95 p-1 shadow-sm backdrop-blur">
+        <button type="button" onClick={() => setLanguage("id")} className={`flex-1 rounded px-2 py-1 text-center text-[10px] font-bold ${language === "id" ? "bg-[#0F172A] text-white" : "text-[#475569]"}`}>Indonesia</button>
+        <button type="button" onClick={() => setLanguage("en")} className={`flex-1 rounded px-2 py-1 text-center text-[10px] font-bold ${language === "en" ? "bg-[#0F172A] text-white" : "text-[#475569]"}`}>English</button>
       </div>
       <Header data={data} locations={cakraLocations} city={context.selectedLocation?.id || ""} onCityChange={context.setLocationById} isToday={context.mode === "live"} />
       <main className="min-w-0 flex-1">
