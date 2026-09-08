@@ -12,14 +12,10 @@ const item = {
 
 const CALENDAR_ROUTES = {
   jawa: "/dashboard/weton",
-  "chinese-lunar": "/dashboard/bazi",
-  "saka-sunda": "/dashboard/paririmbon",
 };
 
 const CALENDAR_LABELS = {
   jawa: "Weton →",
-  "chinese-lunar": "BaZi →",
-  "saka-sunda": "Paririmbon →",
 };
 
 export default function CalendarSystems({ data }) {
