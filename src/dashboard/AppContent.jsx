@@ -20,7 +20,7 @@ export default function AppContent({
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-12">
         <div className="flex flex-col gap-6 lg:col-span-8">
           <NaturalLayer data={data} loading={false} onOpenEclipse={onOpenEclipse} />
-          <SunArc sun={data.natural.sun} time={time} loading={false} />
+          <SunArc sun={data.natural.sun} moon={data.natural.moon} time={time} onTimeChange={onTimeChange} loading={false} />
           <CalendarSystems data={data} loading={false} onOpenWeton={onOpenWeton} />
         </div>
         <div className="flex flex-col gap-6 lg:col-span-4">
