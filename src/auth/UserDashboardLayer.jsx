@@ -1,7 +1,6 @@
 import { TodayProvider } from '../core/TodayContext'
 import UserLayout from '../layouts/UserLayout'
 import DashboardHome from '../dashboard/DashboardHome'
-import SettingsPage from './SettingsPage'
 import { useAuth } from './AuthContext'
 
 const pageMap = {
@@ -35,8 +34,6 @@ function UserDashboardContent() {
   if (path === '/dashboard') {
     return <DashboardHome showFooter={true} />
   }
-
-  if (path === '/dashboard/settings') return <SettingsPage />
 
   const page = pageMap[path]
   if (page) return <PagePlaceholder title={page[0]} description={page[1]} />
