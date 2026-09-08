@@ -19,6 +19,9 @@ depends_on: Union[str, Sequence[str], None] = None
 
 def upgrade() -> None:
     with op.batch_alter_table("users", recreate="always") as batch_op:
+        batch_op.add_column(
+            sa.Column("role", sa.String(length=20), nullable=False, server_default="user")
+        )
         batch_op.create_check_constraint(
             "ck_users_role",
             "role IN ('user', 'admin')",
