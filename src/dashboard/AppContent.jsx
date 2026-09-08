@@ -86,7 +86,6 @@ export default function AppContent({
   onTimeChange,
   onJumpToday,
   quickJumps,
-  onOpenWeton,
   onOpenEclipse,
 }) {
   return (
@@ -98,7 +97,7 @@ export default function AppContent({
             <NaturalLayer data={data} loading={false} onOpenEclipse={onOpenEclipse} />
             <SunArc sun={data.natural.sun} moon={data.natural.moon} time={time} onTimeChange={onTimeChange} loading={false} embedded />
           </div>
-          <CalendarSystems data={data} loading={false} onOpenWeton={onOpenWeton} />
+          <CalendarSystems data={data} loading={false} />
         </section>
 
         <aside className="flex min-w-0 flex-col gap-6 lg:sticky lg:top-6 lg:col-span-4 lg:self-start" aria-label="Almanac context">
