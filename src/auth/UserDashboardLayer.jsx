@@ -2,13 +2,13 @@ import { TodayProvider } from '../core/TodayContext'
 import { LanguageProvider } from '../core/LanguageContext'
 import UserLayout from '../layouts/UserLayout'
 import DashboardHome from '../dashboard/DashboardHome'
+import WetonPage from '../dashboard/WetonPage'
 import { useAuth } from './AuthContext'
 
 const pageMap = {
   '/dashboard/today': ['Kalkulasi Hari Ini', 'Konteks kalkulasi untuk hari ini.'],
   '/dashboard/natural': ['Natural Layer', 'Eksplorasi lapisan perhitungan alam.'],
   '/dashboard/birth-converter': ['Birth Converter', 'Konversi data kelahiran untuk kalkulasi personal.'],
-  '/dashboard/weton': ['Weton', 'Kalkulasi dan informasi Weton.'],
   '/dashboard/bazi': ['BaZi', 'Kalkulasi dan informasi BaZi.'],
   '/dashboard/paririmbon': ['Paririmbon', 'Kalkulasi dan referensi Paririmbon.'],
   '/dashboard/almanac': ['Almanac', 'Informasi almanak personal.'],
@@ -34,6 +34,10 @@ function UserDashboardContent({ user }) {
 
   if (path === '/dashboard') {
     return <DashboardHome showFooter={true} user={user} />
+  }
+
+  if (path === '/dashboard/weton') {
+    return <WetonPage />
   }
 
   const page = pageMap[path]
