@@ -29,11 +29,11 @@ function PagePlaceholder({ title, description }) {
   )
 }
 
-function UserDashboardContent() {
+function UserDashboardContent({ user }) {
   const path = window.location.pathname
 
   if (path === '/dashboard') {
-    return <DashboardHome showFooter={true} />
+    return <DashboardHome showFooter={true} user={user} />
   }
 
   const page = pageMap[path]
@@ -49,7 +49,7 @@ export default function UserDashboardLayer() {
     <LanguageProvider>
       <TodayProvider>
         <UserLayout user={user} onLogout={logout}>
-          <UserDashboardContent />
+          <UserDashboardContent user={user} />
         </UserLayout>
       </TodayProvider>
     </LanguageProvider>
