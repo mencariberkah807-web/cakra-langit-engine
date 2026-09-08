@@ -17,7 +17,6 @@ const authenticatedPaths = new Set([
   '/dashboard/history',
   '/dashboard/tasks',
   '/dashboard/profile',
-  '/dashboard/settings',
 ])
 
 function LoadingScreen() {
