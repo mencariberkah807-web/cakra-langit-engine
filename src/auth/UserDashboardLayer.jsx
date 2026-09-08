@@ -1,4 +1,5 @@
 import { TodayProvider } from '../core/TodayContext'
+import { LanguageProvider } from '../core/LanguageContext'
 import UserLayout from '../layouts/UserLayout'
 import DashboardHome from '../dashboard/DashboardHome'
 import { useAuth } from './AuthContext'
@@ -45,10 +46,12 @@ export default function UserDashboardLayer() {
   const { user, logout } = useAuth()
 
   return (
-    <TodayProvider>
-      <UserLayout user={user} onLogout={logout}>
-        <UserDashboardContent />
-      </UserLayout>
-    </TodayProvider>
+    <LanguageProvider>
+      <TodayProvider>
+        <UserLayout user={user} onLogout={logout}>
+          <UserDashboardContent />
+        </UserLayout>
+      </TodayProvider>
+    </LanguageProvider>
   )
 }
