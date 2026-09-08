@@ -14,44 +14,48 @@ export default function AppSidebar({ user, onLogout }) {
       <a
         key={label}
         href={href}
-        className={`mb-1 flex items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors ${
+        title={label}
+        className={`group mb-2 flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm transition-all ${
           active
-            ? 'bg-[#EFF6FF] font-semibold text-[#2563EB]'
-            : 'text-[#475569] hover:bg-[#F8FAFC]'
+            ? 'bg-[#12324A] font-semibold text-white shadow-[0_0_24px_rgba(34,211,238,0.10)]'
+            : 'text-[#8FA4B8] hover:bg-white/[0.05] hover:text-white'
         }`}
       >
-        <Icon size={16} strokeWidth={1.7} className={active ? 'text-[#2563EB]' : 'text-[#64748B]'} />
-        <span>{label}</span>
+        <Icon size={17} strokeWidth={1.7} className={active ? 'text-[#22D3EE]' : 'text-[#71869A] group-hover:text-[#A9BDCF]'} />
+        <span className="truncate">{label}</span>
       </a>
     )
   }
 
   return (
-    <aside className="hidden w-[220px] shrink-0 border-r border-[#E2E8F0] bg-white lg:flex lg:flex-col">
-      <div className="px-4 py-5">
-        <div className="text-[10px] font-bold uppercase tracking-[0.14em] text-[#94A3B8]">Akun Saya</div>
-        <div className="mt-2 flex items-center gap-2.5">
-          <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#2563EB] text-[10px] font-bold text-white">{initials}</div>
-          <div className="min-w-0">
-            <div className="truncate text-xs font-semibold text-[#0F172A]">{displayName}</div>
-            <div className="truncate text-[10px] text-[#64748B]">Personal Almanac</div>
+    <aside className="hidden w-[76px] shrink-0 border-r border-white/[0.07] bg-[#06111B] lg:flex lg:w-[220px] lg:flex-col">
+      <div className="border-b border-white/[0.07] px-3 py-5 lg:px-4">
+        <div className="flex items-center gap-3">
+          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-cyan-300/20 bg-[#0D2535] text-xs font-bold text-[#22D3EE] shadow-[0_0_22px_rgba(34,211,238,0.08)]">{initials}</div>
+          <div className="hidden min-w-0 lg:block">
+            <div className="truncate text-xs font-semibold text-white">{displayName}</div>
+            <div className="mt-0.5 truncate text-[10px] text-[#71869A]">Personal Almanac</div>
           </div>
         </div>
       </div>
 
-      <nav className="flex-1 px-3 pb-4">
+      <nav className="flex-1 px-2 py-5 lg:px-3">
+        <div className="hidden px-2 pb-2 text-[10px] font-bold uppercase tracking-[0.14em] text-[#536A7D] lg:block">Workspace</div>
         {primaryNav.map(renderItem)}
-        <div className="my-4 border-t border-[#E2E8F0]" />
+        <div className="my-4 border-t border-white/[0.07]" />
+        <div className="hidden px-2 pb-2 text-[10px] font-bold uppercase tracking-[0.14em] text-[#536A7D] lg:block">Personal</div>
         {personalNav.map(renderItem)}
       </nav>
 
-      <div className="border-t border-[#E2E8F0] px-4 py-3">
+      <div className="border-t border-white/[0.07] px-2 py-3 lg:px-3">
         <button
           type="button"
           onClick={onLogout}
-          className="w-full text-left text-xs font-semibold text-[#64748B] hover:text-[#0F172A]"
+          title="Keluar"
+          className="w-full rounded-xl px-3 py-2.5 text-left text-xs font-semibold text-[#71869A] transition-colors hover:bg-white/[0.05] hover:text-white"
         >
-          Keluar
+          <span className="lg:hidden">↪</span>
+          <span className="hidden lg:inline">Keluar</span>
         </button>
       </div>
     </aside>
