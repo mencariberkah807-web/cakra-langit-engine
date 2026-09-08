@@ -58,17 +58,10 @@ function formatLocation(location) {
     .join(", ");
 }
 
-function getGreeting(hour, language) {
-  if (language === "id") {
-    if (hour >= 5 && hour < 11) return "Selamat Pagi";
-    if (hour >= 11 && hour < 12) return "Selamat Siang";
-    if (hour >= 12 && hour < 18) return "Selamat Tengah Hari";
-    return "Selamat Malam";
-  }
-
+function getGreetingKey(hour) {
   if (hour >= 5 && hour < 11) return "Good Morning";
-  if (hour >= 11 && hour < 12) return "Good Day";
-  if (hour >= 12 && hour < 18) return "Good Noon";
+  if (hour >= 11 && hour < 15) return "Good Afternoon";
+  if (hour >= 15 && hour < 19) return "Good Evening";
   return "Good Night";
 }
 
@@ -176,7 +169,7 @@ export default function Header({
   }
 
   const displayName = user?.display_name || user?.displayName || user?.name || user?.email?.split("@")[0] || "there";
-  const greeting = getGreeting(currentHour, language);
+  const greetingKey = getGreetingKey(currentHour);
 
   return (
     <header className="sticky top-0 z-40 border-b border-[#E2E8F0] bg-white/90 backdrop-blur-xl">
@@ -207,12 +200,12 @@ export default function Header({
                 }}
                 className="font-display text-[25px] font-bold leading-8 tracking-[-0.02em]"
               >
-                {t("Greetings")}, {t("Hello")} {displayName}
+                {t("Hello")} {displayName}
               </motion.div>
             </div>
 
             <div className="mt-0.5 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-[#475569]">
-              <span className="font-medium text-[#0F172A]">{greeting}</span>
+              <span className="font-medium text-[#0F172A]">{t(greetingKey)}</span>
               <span className="flex items-center gap-1.5" data-testid="header-date-line">
                 <CalendarDays className="h-3.5 w-3.5" strokeWidth={1.8} />
                 {data?.date_info ? data.date_info.date_long : "—"}
