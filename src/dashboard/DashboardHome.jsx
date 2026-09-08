@@ -42,7 +42,6 @@ function EclipseCountdown({ totalityAt }) {
 export default function DashboardHome({ showFooter = true }) {
   const context = useTodayContext();
   const apiData = context.apiData;
-  const [time, setTime] = useState("12:00");
   const [wetonOpen, setWetonOpen] = useState(false);
   const [eclipseOpen, setEclipseOpen] = useState(false);
 
@@ -51,13 +50,12 @@ export default function DashboardHome({ showFooter = true }) {
 
   const sunResult = naturalResults.find((result) => result.id === "sun") || null;
   const selectedSun = useMemo(() => {
-    if (!context.selectedDate) return sunResult;
     return adaptSun({
       ...context,
-      sunTime: time,
+      sunTime: context.selectedTime,
       time: { ...context.time, instant: context.selectedDate },
     });
-  }, [context, time, sunResult]);
+  }, [context, context.selectedTime, context.selectedDate, sunResult]);
 
   const sunData = selectedSun?.data || selectedSun?.value || selectedSun || {};
   const sun = {
@@ -69,7 +67,7 @@ export default function DashboardHome({ showFooter = true }) {
     dusk: sunData.dusk ?? null,
     golden_hour: sunData.golden_hour ?? null,
     altitude: sunData.altitude ?? null,
-    selectedTime: sunData.selectedTime ?? time,
+    selectedTime: sunData.selectedTime ?? context.selectedTime,
   };
 
   const sunEvents = Array.isArray(selectedSun?.events) ? selectedSun.events : [];
@@ -148,6 +146,14 @@ export default function DashboardHome({ showFooter = true }) {
   const eclipseEvent = eclipse.today || null;
   const totalityAt = eclipseEvent?.totality?.at || null;
 
+  function handleTimeChange(value) {
+    if (!value) return;
+    const [hours, minutes] = value.split(":").map(Number);
+    const base = new Date(context.selectedDate || context.now || new Date());
+    base.setHours(hours, minutes, 0, 0);
+    context.setSelectedDate(base);
+  }
+
   return (
     <div className="min-h-screen bg-[#F8FAFC] font-sans text-[#0F172A] antialiased">
       <Header
@@ -163,8 +169,8 @@ export default function DashboardHome({ showFooter = true }) {
           data={data}
           dateISO={iso(context.selectedDate)}
           onSelectDate={(value) => context.setSelectedDate(new Date(`${value}T12:00:00`))}
-          time={time}
-          onTimeChange={setTime}
+          time={context.selectedTime.slice(0, 5)}
+          onTimeChange={handleTimeChange}
           onJumpToday={context.goLive}
           quickJumps={data.quick_jumps}
           onOpenWeton={() => setWetonOpen(true)}
