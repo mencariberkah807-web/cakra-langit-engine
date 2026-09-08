@@ -74,10 +74,7 @@ export default function DashboardHome({ showFooter = true }) {
 
   function handleTimeChange(value) {
     if (!value) return;
-    const [hours, minutes] = value.split(":").map(Number);
-    const base = new Date(context.selectedDate || context.now || new Date());
-    base.setHours(hours, minutes, 0, 0);
-    context.setSelectedDate(base);
+    context.setSelectedTime(value);
   }
 
   return (
