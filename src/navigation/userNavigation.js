@@ -5,7 +5,6 @@ import {
   Leaf,
   ListChecks,
   Moon,
-  Settings,
   Sparkles,
   Sun,
   UserRound,
@@ -27,5 +26,4 @@ export const primaryNav = [
 export const personalNav = [
   [ListChecks, 'Personal Tasks', '/dashboard/tasks'],
   [UserRound, 'Profil Saya', '/dashboard/profile'],
-  [Settings, 'Pengaturan', '/dashboard/settings'],
 ]
