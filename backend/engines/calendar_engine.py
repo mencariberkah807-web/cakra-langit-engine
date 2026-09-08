@@ -107,7 +107,7 @@ def get_calendar_data(
         "bali": {
             "id": "bali",
             "name": "Bali",
-            "headline": f"{bali[\"saptawara\"]} {bali[\"pancawara\"]}",
+            "headline": f"{bali['saptawara']} {bali['pancawara']}",
             "sub": bali["wuku"],
             "fields": [
                 {"k": "Saptawara", "v": bali["saptawara"]},
@@ -130,7 +130,7 @@ def get_calendar_data(
         "kalacakra": {
             "id": "kalacakra",
             "name": "Kalacakra",
-            "headline": f"{kalacakra[\"number\"]} {kalacakra[\"name\"]}",
+            "headline": f"{kalacakra['number']} {kalacakra['name']}",
             "sub": kalacakra["indung"],
             "fields": [
                 {"k": "Indung", "v": kalacakra["indung"]},
@@ -161,12 +161,12 @@ def get_calendar_data(
             "id": "chinese-lunar",
             "name": "Chinese Lunar",
             "headline": (
-                f"{chinese_lunar[\"month\"]} "
-                f"{chinese_lunar[\"day\"]}"
+                f"{chinese_lunar['month']} "
+                f"{chinese_lunar['day']}"
             ),
             "sub": (
-                f"{chinese_lunar[\"year\"]} "
-                f"({chinese_lunar[\"yearName\"]})"
+                f"{chinese_lunar['year']} "
+                f"({chinese_lunar['yearName']})"
             ),
             "fields": [
                 {"k": "Tahun", "v": str(chinese_lunar["year"])},
