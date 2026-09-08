@@ -166,7 +166,7 @@ def jawa_from_gregorian(y, m, d):
             kurup_index = i
             break
 
-    windu_index = (record["y"] - 1555) // 8
+    windu_index = mod(((record["y"] - 1555) // 8) + 1, 4)
 
     return {
         "day": day,
@@ -178,7 +178,7 @@ def jawa_from_gregorian(y, m, d):
         "pasaran": pasaran,
         "weton": f"{day_name} {pasaran}",
         "wuku": wuku,
-        "windu": WINDU[mod(windu_index, 4)],
+        "windu": WINDU[windu_index],
         "lambang": LAMBANG[mod(windu_index, 2)],
         "kurup": KURUP[
             kurup_index if kurup_index >= 0 else len(KURUP) - 1
