@@ -14,12 +14,12 @@ const item = {
 
 function buildCards(n, t) {
   return [
-    { id: "sun", icon: Sun, label: "SUN", title: `${t("Sunrise")} ${n.sun.sunrise}`, sub: `${t("Sunset")} ${n.sun.sunset}`, accent: "#F59E0B", bg: "#FEF3C7" },
-    { id: "moon", icon: Moon, label: "MOON", title: n.moon.phase, sub: `${t("Age")} ${n.moon.age} ${t("days")} · ${n.moon.illumination}%`, accent: "#60A5FA", bg: "#DBEAFE" },
-    { id: "eclipse", icon: Eclipse, label: "ECLIPSE", title: n.eclipse.today ? n.eclipse.today.type : t("No eclipse event"), sub: n.eclipse.today ? n.eclipse.today.visibilityRegion || t("Visibility data available") : t("No event today"), accent: "#A78BFA", bg: "#EDE9FE" },
-    { id: "sky", icon: Sparkles, label: "SKY", title: n.sky.context || n.sky.primary || "—", sub: `${n.sky.bortle || "—"} · ${n.sky.moonlight || "—"} ${t("moonlight")}`, accent: "#38BDF8", bg: "#E0F2FE" },
-    { id: "earth", icon: Globe, label: "EARTH SPACE", title: `${t("Day")} ${n.earth.day_of_year ?? "—"}`, sub: `${n.earth.annual_pct ?? "—"}% ${t("of annual cycle")}`, accent: "#4ADE80", bg: "#DCFCE7" },
-    { id: "tide", icon: Waves, label: "TIDE", title: n.tide.high?.[0] ? `HIGH ${n.tide.high[0].time.slice(11, 16)} · ${n.tide.high[0].height_m}m` : t("No high tide"), sub: n.tide.low?.[0] ? `LOW ${n.tide.low[0].time.slice(11, 16)} · ${n.tide.low[0].height_m}m` : `${t("No low tide")} · ${n.tide.region || "—"}`, accent: "#38BDF8", bg: "#E0F2FE" },
+    { id: "sun", icon: Sun, label: "SUN", title: `${t("Sunrise")} ${n.sun.sunrise}`, sub: `${t("Sunset")} ${n.sun.sunset}`, accent: "#FBBF24" },
+    { id: "moon", icon: Moon, label: "MOON", title: n.moon.phase, sub: `${t("Age")} ${n.moon.age} ${t("days")} · ${n.moon.illumination}%`, accent: "#A5B4FC" },
+    { id: "eclipse", icon: Eclipse, label: "ECLIPSE", title: n.eclipse.today ? n.eclipse.today.type : t("No eclipse event"), sub: n.eclipse.today ? n.eclipse.today.visibilityRegion || t("Visibility data available") : t("No event today"), accent: "#C4B5FD" },
+    { id: "sky", icon: Sparkles, label: "SKY", title: n.sky.context || n.sky.primary || "—", sub: `${n.sky.bortle || "—"} · ${n.sky.moonlight || "—"} ${t("moonlight")}`, accent: "#38BDF8" },
+    { id: "earth", icon: Globe, label: "EARTH SPACE", title: `${t("Day")} ${n.earth.day_of_year ?? "—"}`, sub: `${n.earth.annual_pct ?? "—"}% ${t("of annual cycle")}`, accent: "#4ADE80" },
+    { id: "tide", icon: Waves, label: "TIDE", title: n.tide.high?.[0] ? `HIGH ${n.tide.high[0].time.slice(11, 16)} · ${n.tide.high[0].height_m}m` : t("No high tide"), sub: n.tide.low?.[0] ? `LOW ${n.tide.low[0].time.slice(11, 16)} · ${n.tide.low[0].height_m}m` : `${t("No low tide")} · ${n.tide.region || "—"}`, accent: "#38BDF8" },
   ];
 }
 
@@ -32,30 +32,43 @@ export default function NaturalLayer({ data, loading, onOpenEclipse }) {
       variants={container}
       initial="hidden"
       animate="show"
-      className="overflow-hidden rounded-2xl border border-[#163452] bg-[radial-gradient(circle_at_50%_18%,rgba(14,165,233,0.16),transparent_42%),radial-gradient(circle_at_82%_80%,rgba(124,58,237,0.12),transparent_34%),#071827] p-5 shadow-[0_18px_50px_rgba(2,12,27,0.28)]"
+      className="relative min-h-[500px] overflow-hidden rounded-2xl border border-[#173B60] bg-[radial-gradient(circle_at_38%_36%,rgba(59,130,246,0.2),transparent_30%),radial-gradient(circle_at_74%_18%,rgba(124,58,237,0.2),transparent_30%),linear-gradient(160deg,#061525_0%,#071D34_48%,#020A14_100%)] p-5 shadow-[0_24px_70px_rgba(2,12,27,0.4)]"
       data-testid="natural-layer-section"
     >
-      <div className="mb-5 flex items-end justify-between gap-4">
+      <div className="pointer-events-none absolute inset-0 opacity-80">
+        <div className="absolute left-[8%] top-[18%] h-1 w-1 rounded-full bg-white shadow-[90px_35px_0_0_rgba(255,255,255,.55),170px_-20px_0_0_rgba(255,255,255,.35),280px_50px_0_0_rgba(255,255,255,.45),390px_5px_0_0_rgba(255,255,255,.3),510px_65px_0_0_rgba(255,255,255,.4)]" />
+        <div className="absolute bottom-0 left-0 h-[42%] w-[72%] bg-[linear-gradient(145deg,transparent_20%,rgba(4,17,30,.9)_21%,rgba(7,28,47,.96)_58%,rgba(2,10,18,1)_59%)] [clip-path:polygon(0_55%,15%_32%,25%_46%,38%_16%,51%_42%,64%_24%,77%_48%,88%_28%,100%_54%,100%_100%,0_100%)]" />
+        <div className="absolute bottom-0 left-0 h-[25%] w-full bg-[linear-gradient(180deg,transparent,rgba(1,7,13,.94))]" />
+      </div>
+
+      <div className="relative z-20 flex items-start justify-between gap-4">
         <div>
           <div className="flex items-center gap-2">
             <Leaf className="h-4 w-4 text-[#38BDF8]" strokeWidth={1.8} />
             <h2 className="text-sm font-semibold tracking-tight text-white">Sky Overview</h2>
           </div>
-          <p className="mt-1 text-[11px] text-[#8EA7C2]">Real-time celestial context for your observation</p>
+          <p className="mt-1 text-[11px] text-[#9DB6D0]">Real-time celestial position for your observation</p>
         </div>
-        <span className="hidden rounded-full border border-[#24496B] bg-[#0B2239]/80 px-3 py-1 text-[10px] font-medium text-[#8EA7C2] sm:inline-flex">
+        <span className="rounded-full border border-[#315A7E] bg-[#071A2E]/75 px-3 py-1 text-[10px] font-medium text-[#B7CBE0] backdrop-blur-sm">
           Natural Layer
         </span>
       </div>
 
-      <div className="grid grid-cols-2 gap-2.5 md:grid-cols-3 xl:grid-cols-6">
-        {loading || !data ? Array.from({ length: 6 }).map((_, i) => <div key={i} className="h-[118px] animate-pulse rounded-xl border border-[#173957] bg-[#0B2239]/70" />) : cards.map((c) => {
-          const isMoon = c.id === "moon";
-          const isEclipse = c.id === "eclipse";
-          const cardClass = "group rounded-xl border border-[#24496B] bg-[#0B2239]/72 p-3.5 text-left backdrop-blur-sm transition-[border-color,background-color,transform,box-shadow] duration-200 hover:-translate-y-0.5 hover:border-[#3A6D96] hover:bg-[#102C46] hover:shadow-[0_10px_28px_rgba(0,0,0,0.18)]";
-          const content = <><div className="flex items-center gap-1.5"><c.icon className="h-3.5 w-3.5" style={{ color: c.accent }} strokeWidth={2} /><span className="text-[10px] font-bold uppercase tracking-[0.08em] text-[#A9BED3]">{c.label}</span></div><p className="mt-3 text-sm font-semibold leading-tight text-white">{c.title}</p><p className="mt-1 text-[11px] leading-snug text-[#8EA7C2]">{c.sub}</p>{isMoon ? <MoonPhaseCanvas phase={data.natural.moon.phase} illumination={data.natural.moon.illumination} /> : null}<div className="mt-3 h-0.5 w-6 rounded-full transition-[width] duration-300 group-hover:w-10" style={{ backgroundColor: c.accent }} /></>;
-          return <motion.div key={c.id} variants={item}>{isEclipse ? <button type="button" onClick={onOpenEclipse} className={`${cardClass} w-full cursor-pointer`} data-testid="natural-card-eclipse">{content}</button> : <div className={cardClass} data-testid={`natural-card-${c.id}`}>{content}</div>}</motion.div>;
-        })}
+      <div className="relative z-20 mt-5 grid grid-cols-1 gap-3 lg:grid-cols-[minmax(0,1fr)_180px]">
+        <div className="min-h-[390px] rounded-xl border border-[#254D70]/70 bg-[#03111F]/25" aria-hidden="true" />
+        <div className="grid content-start gap-2.5 sm:grid-cols-2 lg:grid-cols-1">
+          {loading || !data ? Array.from({ length: 4 }).map((_, i) => <div key={i} className="h-[82px] animate-pulse rounded-xl border border-[#234663] bg-[#0A2238]/70" />) : cards.slice(0, 4).map((c) => {
+            const isMoon = c.id === "moon";
+            const isEclipse = c.id === "eclipse";
+            const cardClass = "group rounded-xl border border-[#315A7E]/75 bg-[#071A2E]/78 p-3 text-left backdrop-blur-md transition duration-200 hover:-translate-y-0.5 hover:border-[#4A789D] hover:bg-[#0A2540] hover:shadow-[0_10px_28px_rgba(0,0,0,.22)]";
+            const content = <><div className="flex items-center gap-1.5"><c.icon className="h-3.5 w-3.5" style={{ color: c.accent }} strokeWidth={2} /><span className="text-[9px] font-bold uppercase tracking-[0.1em] text-[#B7CBE0]">{c.label}</span></div><p className="mt-2 text-xs font-semibold leading-tight text-white">{c.title}</p><p className="mt-1 text-[10px] leading-snug text-[#91A9C0]">{c.sub}</p>{isMoon ? <MoonPhaseCanvas phase={data.natural.moon.phase} illumination={data.natural.moon.illumination} /> : null}<div className="mt-2 h-0.5 w-5 rounded-full transition-all duration-300 group-hover:w-8" style={{ backgroundColor: c.accent }} /></>;
+            return <motion.div key={c.id} variants={item}>{isEclipse ? <button type="button" onClick={onOpenEclipse} className={`${cardClass} w-full cursor-pointer`} data-testid="natural-card-eclipse">{content}</button> : <div className={cardClass} data-testid={`natural-card-${c.id}`}>{content}</div>}</motion.div>;
+          })}
+        </div>
+      </div>
+
+      <div className="absolute bottom-5 left-5 right-5 z-20 flex flex-wrap gap-2 lg:right-[215px]">
+        {cards.slice(4).map((c) => <div key={c.id} className="rounded-full border border-[#315A7E]/70 bg-[#06182A]/75 px-3 py-1.5 text-[9px] text-[#B7CBE0] backdrop-blur-md"><span className="mr-1.5" style={{ color: c.accent }}>●</span>{c.label} · {c.title}</div>)}
       </div>
     </motion.section>
   );
