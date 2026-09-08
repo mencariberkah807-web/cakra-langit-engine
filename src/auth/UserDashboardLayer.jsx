@@ -4,6 +4,7 @@ import UserLayout from '../layouts/UserLayout'
 import DashboardHome from '../dashboard/DashboardHome'
 import WetonPage from '../dashboard/WetonPage'
 import BaZiPage from '../dashboard/BaZiPage'
+import ParirimbonPage from '../dashboard/ParirimbonPage'
 import { useAuth } from './AuthContext'
 
 const pageMap = {
@@ -43,6 +44,10 @@ function UserDashboardContent({ user }) {
 
   if (path === '/dashboard/bazi') {
     return <BaZiPage />
+  }
+
+  if (path === '/dashboard/paririmbon') {
+    return <ParirimbonPage />
   }
 
   const page = pageMap[path]
