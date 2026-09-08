@@ -12,8 +12,14 @@ const item = {
 
 const CALENDAR_ROUTES = {
   jawa: "/dashboard/weton",
-  // Other calendar engines are intentionally mapped only when a dedicated
-  // user-facing page exists. Do not create placeholder navigation here.
+  "chinese-lunar": "/dashboard/bazi",
+  "saka-sunda": "/dashboard/paririmbon",
+};
+
+const CALENDAR_LABELS = {
+  jawa: "Weton →",
+  "chinese-lunar": "BaZi →",
+  "saka-sunda": "Paririmbon →",
 };
 
 export default function CalendarSystems({ data }) {
@@ -101,7 +107,7 @@ export default function CalendarSystems({ data }) {
                       </div>
                       {clickable && (
                         <p className="mt-3 text-[10px] font-bold uppercase tracking-[0.08em] text-[#55CCFF]">
-                          Weton breakdown →
+                          {CALENDAR_LABELS[cal.id]}
                         </p>
                       )}
                     </>
