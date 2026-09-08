@@ -102,6 +102,8 @@ export function TodayProvider({ children }) {
         // Ignore storage errors and continue with browser detection.
       }
 
+      // An explicit manual choice is the only persisted location allowed to
+      // override browser detection.
       if (storedSource === 'manual' && storedId) {
         try {
           const storedLocation = await findLocationById(storedId)
@@ -114,19 +116,7 @@ export function TodayProvider({ children }) {
         }
       }
 
-      if (!navigator.geolocation) {
-        if (storedId) {
-          try {
-            const storedLocation = await findLocationById(storedId)
-            if (!cancelled && storedLocation) {
-              setSelectedLocation(storedLocation)
-            }
-          } catch {
-            // Keep timezone fallback.
-          }
-        }
-        return
-      }
+      if (!navigator.geolocation) return
 
       navigator.geolocation.getCurrentPosition(
         async ({ coords }) => {
@@ -136,16 +126,6 @@ export function TodayProvider({ children }) {
           )
 
           if (!browserLocation || browserLocation.countryCode !== 'ID') {
-            if (storedId) {
-              try {
-                const storedLocation = await findLocationById(storedId)
-                if (!cancelled && storedLocation) {
-                  setSelectedLocation(storedLocation)
-                }
-              } catch {
-                // Keep timezone fallback.
-              }
-            }
             return
           }
 
@@ -165,17 +145,10 @@ export function TodayProvider({ children }) {
             }
           }
         },
-        async () => {
-          if (!storedId) return
-
-          try {
-            const storedLocation = await findLocationById(storedId)
-            if (!cancelled && storedLocation) {
-              setSelectedLocation(storedLocation)
-            }
-          } catch {
-            // Keep timezone fallback.
-          }
+        () => {
+          // Keep the timezone-derived initial location when geolocation is
+          // unavailable, denied, or times out. Do not restore a browser
+          // location from storage because it may be stale.
         },
         {
           enableHighAccuracy: false,
@@ -201,19 +174,6 @@ export function TodayProvider({ children }) {
   }, [])
 
   const activeDate = selectedDate ?? now
-
-  useEffect(() => {
-    try {
-      if (selectedLocation?.id) {
-        window.localStorage.setItem(
-          LOCATION_STORAGE_KEY,
-          selectedLocation.id
-        )
-      }
-    } catch {
-      // Ignore storage errors.
-    }
-  }, [selectedLocation])
 
   useEffect(() => {
     let cancelled = false
