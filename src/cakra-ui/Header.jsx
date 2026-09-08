@@ -44,7 +44,7 @@ function LiveClock({ tz, onHourChange }) {
 }
 
 const labelCls =
-  "text-[11px] font-bold uppercase tracking-[0.08em] text-[#475569]";
+  "text-[10px] font-bold uppercase tracking-[0.14em] text-[#71869A]";
 
 function formatLocation(location) {
   if (!location) return "Select location";
@@ -172,17 +172,14 @@ export default function Header({
   const greetingKey = getGreetingKey(currentHour);
 
   return (
-    <header className="sticky top-0 z-40 border-b border-[#E2E8F0] bg-white/90 backdrop-blur-xl">
-      <div className="mx-auto flex max-w-[1440px] flex-wrap items-center gap-x-12 gap-y-4 px-4 py-4 sm:px-6 lg:px-8">
+    <header className="sticky top-0 z-40 border-b border-white/[0.07] bg-[#07111C]/90 backdrop-blur-xl">
+      <div className="mx-auto flex max-w-[1440px] flex-wrap items-center gap-x-10 gap-y-4 px-4 py-4 sm:px-6 lg:px-8">
         <div className="flex min-w-0 items-center gap-4">
           <div
             data-testid="brand-logo"
-            className="flex h-14 w-14 shrink-0 items-center justify-center rounded-lg border border-dashed border-[#CBD5E1] bg-[#F8FAFC]"
+            className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-cyan-300/20 bg-[#0D2535] shadow-[0_0_24px_rgba(34,211,238,0.08)]"
           >
-            <Mountain
-              className="h-6 w-6 text-[#0F172A]"
-              strokeWidth={1.5}
-            />
+            <Mountain className="h-5 w-5 text-[#22D3EE]" strokeWidth={1.5} />
           </div>
 
           <div className="min-w-0">
@@ -198,14 +195,14 @@ export default function Header({
                   ease: [0.16, 1, 0.3, 1],
                   delay: 0.1,
                 }}
-                className="font-display text-[25px] font-bold leading-8 tracking-[-0.02em]"
+                className="font-display text-[25px] font-bold leading-8 tracking-[-0.02em] text-white"
               >
                 {t("Hello")} {displayName}
               </motion.div>
             </div>
 
-            <div className="mt-0.5 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-[#475569]">
-              <span className="font-medium text-[#0F172A]">{t(greetingKey)}</span>
+            <div className="mt-0.5 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-[#8FA4B8]">
+              <span className="font-medium text-[#C7D5E2]">{t(greetingKey)}</span>
               <span className="flex items-center gap-1.5" data-testid="header-date-line">
                 <CalendarDays className="h-3.5 w-3.5" strokeWidth={1.8} />
                 {data?.date_info ? data.date_info.date_long : "—"}
@@ -214,36 +211,36 @@ export default function Header({
           </div>
         </div>
 
-        <div className="ml-auto flex min-w-0 flex-1 flex-wrap items-center justify-end gap-x-10 gap-y-4">
-          <div className="min-w-[180px]">
+        <div className="ml-auto flex min-w-0 flex-1 flex-wrap items-center justify-end gap-x-8 gap-y-4">
+          <div className="min-w-[170px]">
             <p className={labelCls}>{t("Selected Time")}</p>
 
             <div className="mt-0.5 flex items-center gap-2">
               <span
                 data-testid="live-time-badge"
-                className="font-mono text-[28px] font-semibold leading-8 tracking-[-0.02em] tabular-nums"
+                className="font-mono text-[26px] font-semibold leading-8 tracking-[-0.02em] tabular-nums text-white"
               >
                 <LiveClock tz={loc?.tz || "Asia/Jakarta"} onHourChange={setCurrentHour} />
               </span>
 
-              <span className="rounded-md bg-[#0F172A] px-2 py-0.5 text-[10px] font-bold uppercase tracking-[0.08em] text-white">
+              <span className="rounded-md border border-cyan-300/15 bg-[#0D2535] px-2 py-0.5 text-[10px] font-bold uppercase tracking-[0.08em] text-[#22D3EE]">
                 {loc?.tz_label || "WIB"}
               </span>
             </div>
 
-            <p className="mt-1 text-xs text-[#475569]">
+            <p className="mt-1 text-xs text-[#71869A]">
               {loc ? `${loc.tz} (${loc.utc})` : "—"}
             </p>
           </div>
 
-          <div className="w-[300px]">
+          <div className="w-[280px]">
             <p className={labelCls}>{t("Location")}</p>
 
             <button
               type="button"
               data-testid="location-field"
               onClick={handleOpenLocation}
-              className="mt-1 flex h-10 w-full items-center justify-between rounded-md border border-[#E2E8F0] bg-white px-3 text-left text-sm font-medium shadow-sm transition-colors hover:border-[#CBD5E1] hover:bg-[#F8FAFC] focus:outline-none focus:ring-2 focus:ring-[#2563EB] focus:ring-offset-2"
+              className="mt-1 flex h-10 w-full items-center justify-between rounded-xl border border-white/[0.09] bg-white/[0.04] px-3 text-left text-sm font-medium text-[#D8E3EC] transition-colors hover:border-cyan-300/20 hover:bg-white/[0.06] focus:outline-none focus:ring-2 focus:ring-[#22D3EE]/30 focus:ring-offset-0"
             >
               <span className="truncate">
                 {loc
@@ -255,22 +252,22 @@ export default function Header({
                   : t("Select location")}
               </span>
 
-              <MapPin className="ml-2 h-4 w-4 shrink-0 text-[#64748B]" strokeWidth={1.8} />
+              <MapPin className="ml-2 h-4 w-4 shrink-0 text-[#71869A]" strokeWidth={1.8} />
             </button>
           </div>
 
-          <div className="flex h-10 shrink-0 items-center rounded-md border border-[#E2E8F0] bg-white p-1 shadow-sm" aria-label="Language">
+          <div className="flex h-10 shrink-0 items-center rounded-xl border border-white/[0.09] bg-white/[0.04] p-1" aria-label="Language">
             <button
               type="button"
               onClick={() => setLanguage("id")}
-              className={`h-8 min-w-[72px] rounded px-3 text-center text-[10px] font-bold ${language === "id" ? "bg-[#0F172A] text-white" : "text-[#475569] hover:bg-[#F8FAFC]"}`}
+              className={`h-8 min-w-[68px] rounded-lg px-3 text-center text-[10px] font-bold transition-colors ${language === "id" ? "bg-[#12324A] text-[#22D3EE]" : "text-[#71869A] hover:bg-white/[0.05] hover:text-white"}`}
             >
               Indonesia
             </button>
             <button
               type="button"
               onClick={() => setLanguage("en")}
-              className={`h-8 min-w-[72px] rounded px-3 text-center text-[10px] font-bold ${language === "en" ? "bg-[#0F172A] text-white" : "text-[#475569] hover:bg-[#F8FAFC]"}`}
+              className={`h-8 min-w-[68px] rounded-lg px-3 text-center text-[10px] font-bold transition-colors ${language === "en" ? "bg-[#12324A] text-[#22D3EE]" : "text-[#71869A] hover:bg-white/[0.05] hover:text-white"}`}
             >
               English
             </button>
@@ -279,46 +276,46 @@ export default function Header({
       </div>
 
       <Dialog open={locationOpen} onOpenChange={setLocationOpen}>
-        <DialogContent className="max-w-xl">
+        <DialogContent className="max-w-xl border-white/[0.10] bg-[#0B1825] text-white">
           <DialogHeader>
-            <DialogTitle>{t("Change Location")}</DialogTitle>
-            <DialogDescription>{t("Select a city and province in Indonesia.")}</DialogDescription>
+            <DialogTitle className="text-white">{t("Change Location")}</DialogTitle>
+            <DialogDescription className="text-[#8FA4B8]">{t("Select a city and province in Indonesia.")}</DialogDescription>
           </DialogHeader>
 
           <div className="grid gap-3 sm:grid-cols-2">
             <div className="relative">
-              <label htmlFor="location-city-input" className="mb-1.5 block text-xs font-semibold text-[#475569]">{t("City")}</label>
-              <Search className="absolute left-3 top-[2.35rem] h-4 w-4 -translate-y-1/2 text-[#64748B]" />
-              <input autoFocus id="location-city-input" value={cityQuery} onChange={(event) => setCityQuery(event.target.value)} placeholder="Bandung" className="h-11 w-full rounded-md border border-[#E2E8F0] bg-white pl-10 pr-3 text-sm outline-none transition focus:border-[#2563EB] focus:ring-2 focus:ring-[#2563EB]/20" data-testid="location-city-input" />
+              <label htmlFor="location-city-input" className="mb-1.5 block text-xs font-semibold text-[#AFC0CF]">{t("City")}</label>
+              <Search className="absolute left-3 top-[2.35rem] h-4 w-4 -translate-y-1/2 text-[#71869A]" />
+              <input autoFocus id="location-city-input" value={cityQuery} onChange={(event) => setCityQuery(event.target.value)} placeholder="Bandung" className="h-11 w-full rounded-xl border border-white/[0.10] bg-white/[0.04] pl-10 pr-3 text-sm text-white placeholder:text-[#536A7D] outline-none transition focus:border-[#22D3EE]/40 focus:ring-2 focus:ring-[#22D3EE]/10" data-testid="location-city-input" />
             </div>
 
             <div className="relative">
-              <label htmlFor="location-province-input" className="mb-1.5 block text-xs font-semibold text-[#475569]">{t("Province")}</label>
-              <input id="location-province-input" value={provinceQuery} onFocus={() => setProvinceOpen(true)} onChange={(event) => { setProvinceQuery(event.target.value); setProvinceOpen(true); }} placeholder="Jawa Barat" className="h-11 w-full rounded-md border border-[#E2E8F0] bg-white px-3 text-sm outline-none transition focus:border-[#2563EB] focus:ring-2 focus:ring-[#2563EB]/20" data-testid="location-province-input" />
+              <label htmlFor="location-province-input" className="mb-1.5 block text-xs font-semibold text-[#AFC0CF]">{t("Province")}</label>
+              <input id="location-province-input" value={provinceQuery} onFocus={() => setProvinceOpen(true)} onChange={(event) => { setProvinceQuery(event.target.value); setProvinceOpen(true); }} placeholder="Jawa Barat" className="h-11 w-full rounded-xl border border-white/[0.10] bg-white/[0.04] px-3 text-sm text-white placeholder:text-[#536A7D] outline-none transition focus:border-[#22D3EE]/40 focus:ring-2 focus:ring-[#22D3EE]/10" data-testid="location-province-input" />
 
               {provinceOpen && provinces.length > 0 && (
-                <div className="absolute left-0 right-0 top-full z-50 mt-1 max-h-56 overflow-y-auto rounded-md border border-[#E2E8F0] bg-white py-1 shadow-lg">
+                <div className="absolute left-0 right-0 top-full z-50 mt-1 max-h-56 overflow-y-auto rounded-xl border border-white/[0.10] bg-[#0B1825] py-1 shadow-2xl">
                   {provinces.filter((province) => province.city.toLowerCase().includes(provinceQuery.trim().toLowerCase())).map((province) => (
-                    <button key={province.id} type="button" onClick={() => handleSelectProvince(province)} className="w-full px-3 py-2 text-left text-sm text-[#0F172A] transition-colors hover:bg-[#F8FAFC]">{province.city}</button>
+                    <button key={province.id} type="button" onClick={() => handleSelectProvince(province)} className="w-full px-3 py-2 text-left text-sm text-[#D8E3EC] transition-colors hover:bg-white/[0.06]">{province.city}</button>
                   ))}
                 </div>
               )}
             </div>
           </div>
 
-          <div className="max-h-[420px] overflow-y-auto rounded-md border border-[#E2E8F0]">
-            {!cityQuery.trim() && <div className="px-4 py-8 text-center text-sm text-[#64748B]">{t("Type a city name to search locations.")}</div>}
-            {cityQuery.trim() && searching && <div className="px-4 py-8 text-center text-sm text-[#64748B]">{t("Searching")}</div>}
-            {cityQuery.trim() && !searching && searchError && <div className="px-4 py-8 text-center text-sm text-[#64748B]">{t("Unable to search locations.")}</div>}
-            {cityQuery.trim() && !searching && !searchError && results.length === 0 && <div className="px-4 py-8 text-center text-sm text-[#64748B]">{t("No locations found.")}</div>}
+          <div className="max-h-[420px] overflow-y-auto rounded-xl border border-white/[0.10]">
+            {!cityQuery.trim() && <div className="px-4 py-8 text-center text-sm text-[#71869A]">{t("Type a city name to search locations.")}</div>}
+            {cityQuery.trim() && searching && <div className="px-4 py-8 text-center text-sm text-[#71869A]">{t("Searching")}</div>}
+            {cityQuery.trim() && !searching && searchError && <div className="px-4 py-8 text-center text-sm text-[#71869A]">{t("Unable to search locations.")}</div>}
+            {cityQuery.trim() && !searching && !searchError && results.length === 0 && <div className="px-4 py-8 text-center text-sm text-[#71869A]">{t("No locations found.")}</div>}
 
             {!searching && !searchError && results.map((location) => (
-              <button key={location.id} type="button" onClick={() => handleSelectLocation(location)} className="flex w-full items-start gap-3 border-b border-[#F1F5F9] px-4 py-3 text-left transition-colors last:border-b-0 hover:bg-[#F8FAFC]" data-testid={`location-result-${location.id}`}>
-                <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-[#64748B]" strokeWidth={1.8} />
+              <button key={location.id} type="button" onClick={() => handleSelectLocation(location)} className="flex w-full items-start gap-3 border-b border-white/[0.06] px-4 py-3 text-left transition-colors last:border-b-0 hover:bg-white/[0.05]" data-testid={`location-result-${location.id}`}>
+                <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-[#71869A]" strokeWidth={1.8} />
                 <span className="min-w-0">
-                  <span className="block truncate text-sm font-semibold text-[#0F172A]">{location.city}</span>
-                  <span className="mt-0.5 block truncate text-xs text-[#64748B]">{[location.province, location.country].filter(Boolean).join(" — ")}</span>
-                  <span className="mt-0.5 block text-[11px] text-[#94A3B8]">{location.timezone}</span>
+                  <span className="block truncate text-sm font-semibold text-[#D8E3EC]">{location.city}</span>
+                  <span className="mt-0.5 block truncate text-xs text-[#8FA4B8]">{[location.province, location.country].filter(Boolean).join(" — ")}</span>
+                  <span className="mt-0.5 block text-[11px] text-[#536A7D]">{location.timezone}</span>
                 </span>
               </button>
             ))}
