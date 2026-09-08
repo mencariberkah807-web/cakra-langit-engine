@@ -70,6 +70,16 @@ function getMode(selectedDate, now) {
     : 'future'
 }
 
+function formatSelectedTime(date, timezone) {
+  return new Intl.DateTimeFormat('en-GB', {
+    timeZone: timezone,
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+    hour12: false,
+  }).format(date)
+}
+
 export function TodayProvider({ children }) {
   const [now, setNow] = useState(() => new Date())
   const [selectedDate, setSelectedDate] = useState(null)
@@ -102,8 +112,6 @@ export function TodayProvider({ children }) {
         // Ignore storage errors and continue with browser detection.
       }
 
-      // An explicit manual choice is the only persisted location allowed to
-      // override browser detection.
       if (storedSource === 'manual' && storedId) {
         try {
           const storedLocation = await findLocationById(storedId)
@@ -147,8 +155,7 @@ export function TodayProvider({ children }) {
         },
         () => {
           // Keep the timezone-derived initial location when geolocation is
-          // unavailable, denied, or times out. Do not restore a browser
-          // location from storage because it may be stale.
+          // unavailable, denied, or times out.
         },
         {
           enableHighAccuracy: false,
@@ -174,6 +181,8 @@ export function TodayProvider({ children }) {
   }, [])
 
   const activeDate = selectedDate ?? now
+  const activeTimezone = selectedLocation?.timezone || 'Asia/Jakarta'
+  const selectedTime = formatSelectedTime(activeDate, activeTimezone)
 
   useEffect(() => {
     let cancelled = false
@@ -259,7 +268,9 @@ export function TodayProvider({ children }) {
       location,
       locations: getPopularLocations(100),
       apiData,
+      now,
       selectedDate: activeDate,
+      selectedTime,
       mode: getMode(activeDate, now),
       setSelectedDate,
       setLocation,
@@ -270,7 +281,7 @@ export function TodayProvider({ children }) {
       },
     }
 
-  }, [activeDate, now, selectedLocation, apiData])
+  }, [activeDate, now, selectedLocation, apiData, selectedTime])
 
   return (
     <TodayContext.Provider value={value}>
