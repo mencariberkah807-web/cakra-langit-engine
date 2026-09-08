@@ -13,13 +13,14 @@ export default function MoonPhaseCanvas({ phase, illumination }) {
   const angle = PHASE_ANGLE[phase] ?? 0;
   const waxing = angle <= Math.PI;
   const lit = Math.max(0, Math.min(100, Number(illumination) || 0));
-  const terminator = Math.abs(Math.cos(angle));
-  const rx = 30 * terminator;
-  const sweep = waxing ? 1 : 0;
-  const d = [
-    "M 30 2",
-    "A 28 28 0 0 1 30 58",
-    `A ${Math.max(0.5, rx).toFixed(2)} 28 0 0 ${sweep} 30 2`,
+  const xTerm = 28 * Math.cos(angle);
+  const rx = Math.max(0.01, Math.abs(xTerm));
+  const terminatorSweep = waxing ? (xTerm >= 0 ? 1 : 0) : (xTerm <= 0 ? 1 : 0);
+  const outerSweep = waxing ? 1 : 0;
+  const path = [
+    `M 30 2`,
+    `A 28 28 0 0 ${outerSweep} 30 58`,
+    `A ${rx.toFixed(2)} 28 0 0 ${terminatorSweep} 30 2`,
     "Z",
   ].join(" ");
 
@@ -34,7 +35,7 @@ export default function MoonPhaseCanvas({ phase, illumination }) {
           </radialGradient>
         </defs>
         <circle cx="30" cy="30" r="28" fill="#0F172A" />
-        <path d={d} fill="url(#moonPhaseSurface)" />
+        {lit > 0 && <path d={path} fill="url(#moonPhaseSurface)" />}
         <circle cx="30" cy="30" r="28" fill="none" stroke="#CBD5E1" strokeWidth="1" opacity="0.65" />
       </svg>
       <div className="min-w-0">
