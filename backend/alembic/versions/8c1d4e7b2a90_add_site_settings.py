@@ -18,6 +18,33 @@ depends_on: Union[str, Sequence[str], None] = None
 
 
 def upgrade() -> None:
+    op.create_table(
+        "site_settings",
+        sa.Column("id", sa.Integer(), primary_key=True, autoincrement=True),
+        sa.Column("site_name", sa.String(length=120), nullable=False, server_default="Cakra Langit"),
+        sa.Column("tagline", sa.String(length=255), nullable=True),
+        sa.Column("logo", sa.String(length=500), nullable=True),
+        sa.Column("favicon", sa.String(length=500), nullable=True),
+        sa.Column("hero_image", sa.String(length=500), nullable=True),
+        sa.Column("hero_title", sa.String(length=255), nullable=True),
+        sa.Column("hero_description", sa.Text(), nullable=True),
+        sa.Column("primary_cta_label", sa.String(length=120), nullable=True),
+        sa.Column("secondary_cta_label", sa.String(length=120), nullable=True),
+        sa.Column("feature_1_title", sa.String(length=120), nullable=True),
+        sa.Column("feature_1_description", sa.String(length=255), nullable=True),
+        sa.Column("feature_2_title", sa.String(length=120), nullable=True),
+        sa.Column("feature_2_description", sa.String(length=255), nullable=True),
+        sa.Column("feature_3_title", sa.String(length=120), nullable=True),
+        sa.Column("feature_3_description", sa.String(length=255), nullable=True),
+        sa.Column("feature_4_title", sa.String(length=120), nullable=True),
+        sa.Column("feature_4_description", sa.String(length=255), nullable=True),
+        sa.Column("login_image", sa.String(length=500), nullable=True),
+        sa.Column("page_title", sa.String(length=255), nullable=True),
+        sa.Column("meta_description", sa.Text(), nullable=True),
+        sa.Column("created_at", sa.DateTime(timezone=True), server_default=sa.func.now(), nullable=False),
+        sa.Column("updated_at", sa.DateTime(timezone=True), server_default=sa.func.now(), nullable=False),
+    )
+
     op.execute(
         sa.text(
             "INSERT INTO site_settings "
@@ -44,6 +71,6 @@ def upgrade() -> None:
         )
     )
 
+
 def downgrade() -> None:
-    op.drop_index("ix_site_settings_id", table_name="site_settings")
     op.drop_table("site_settings")
