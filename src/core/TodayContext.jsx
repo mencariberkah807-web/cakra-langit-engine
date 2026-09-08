@@ -80,9 +80,18 @@ function formatSelectedTime(date, timezone) {
   }).format(date)
 }
 
+function applyTimeToDate(date, time) {
+  if (!date || !time) return date
+  const [hours, minutes, seconds = 0] = time.split(':').map(Number)
+  const next = new Date(date)
+  next.setHours(hours || 0, minutes || 0, seconds || 0, 0)
+  return next
+}
+
 export function TodayProvider({ children }) {
   const [now, setNow] = useState(() => new Date())
-  const [selectedDate, setSelectedDate] = useState(null)
+  const [selectedDate, setSelectedDateState] = useState(null)
+  const [selectedTimeState, setSelectedTimeState] = useState(null)
   const [selectedLocation, setSelectedLocation] = useState(() => {
     const browserTimezone =
       Intl.DateTimeFormat().resolvedOptions().timeZone
@@ -180,9 +189,13 @@ export function TodayProvider({ children }) {
     return () => window.clearInterval(timer)
   }, [])
 
-  const activeDate = selectedDate ?? now
+  const liveMode = selectedDate === null
   const activeTimezone = selectedLocation?.timezone || 'Asia/Jakarta'
-  const selectedTime = formatSelectedTime(activeDate, activeTimezone)
+  const liveTime = formatSelectedTime(now, activeTimezone)
+  const selectedTime = selectedTimeState || (liveMode ? liveTime : '12:00:00')
+  const activeDate = liveMode
+    ? now
+    : applyTimeToDate(selectedDate, selectedTime)
 
   useEffect(() => {
     let cancelled = false
@@ -190,7 +203,7 @@ export function TodayProvider({ children }) {
     fetchAlmanac(
       selectedLocation,
       activeDate,
-      selectedDate === null
+      liveMode
     )
       .then((result) => {
         if (!cancelled) setApiData(result)
@@ -202,7 +215,23 @@ export function TodayProvider({ children }) {
     return () => {
       cancelled = true
     }
-  }, [selectedLocation, activeDate, selectedDate])
+  }, [selectedLocation, activeDate, liveMode])
+
+  function setSelectedDate(date) {
+    if (!date) {
+      setSelectedDateState(null)
+      setSelectedTimeState(null)
+      return
+    }
+    setSelectedDateState(date)
+    setSelectedTimeState('12:00:00')
+  }
+
+  function setSelectedTime(time) {
+    if (!time) return
+    const normalized = time.length === 5 ? `${time}:00` : time
+    setSelectedTimeState(normalized)
+  }
 
   function setLocation(location) {
     setSelectedLocation(location)
@@ -273,15 +302,17 @@ export function TodayProvider({ children }) {
       selectedTime,
       mode: getMode(activeDate, now),
       setSelectedDate,
+      setSelectedTime,
       setLocation,
       setLocationByCity,
       setLocationById,
       goLive() {
-        setSelectedDate(null)
+        setSelectedDateState(null)
+        setSelectedTimeState(null)
       },
     }
 
-  }, [activeDate, now, selectedLocation, apiData, selectedTime])
+  }, [activeDate, now, selectedLocation, apiData, selectedTime, liveMode])
 
   return (
     <TodayContext.Provider value={value}>
