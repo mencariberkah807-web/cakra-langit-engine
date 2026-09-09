@@ -206,6 +206,13 @@ def find_location(city, country_code=None, province=None):
             return normalize_indonesia_location(level_two[0])
 
         if len(level_two) > 1:
+            kota_matches = [
+                record
+                for record in level_two
+                if str(record.get("name") or "").strip().lower().startswith("kota ")
+            ]
+            if len(kota_matches) == 1:
+                return normalize_indonesia_location(kota_matches[0])
             return None
 
         if len(candidates) == 1:
