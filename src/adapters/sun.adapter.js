@@ -15,8 +15,7 @@ export function adaptSun(context) {
 
   return {
     ...createCalendarResult({
-      id: 'sun',
-      title: 'Sun',
+      id: 'sun', title: 'Sun',
       primary: result.meta.available ? `Sunrise ${result.sunrise}` : 'Location required',
       secondary: result.meta.available ? `Sunset ${result.sunset}` : 'Coordinates unavailable',
       details: [
@@ -24,19 +23,13 @@ export function adaptSun(context) {
         { label: 'Sunset', value: result.sunset ?? null },
         { label: 'Boundary', value: result.boundary },
         { label: 'Selected altitude', value: result.altitude == null ? null : `${result.altitude}°` },
+        { label: 'Selected azimuth', value: result.azimuth == null ? null : `${result.azimuth}°` },
       ],
-      effectiveDate: result.effectiveDate,
-      boundary: result.boundary,
-      events,
-      meta: result.meta,
+      effectiveDate: result.effectiveDate, boundary: result.boundary, events, meta: result.meta,
     }),
-    sunrise: result.sunrise ?? null,
-    sunset: result.sunset ?? null,
-    dawn: result.dawn ?? null,
-    noon: result.noon ?? null,
-    dusk: result.dusk ?? null,
-    golden_hour: result.golden_hour ?? null,
-    altitude: result.altitude ?? null,
+    sunrise: result.sunrise ?? null, sunset: result.sunset ?? null, dawn: result.dawn ?? null,
+    noon: result.noon ?? null, dusk: result.dusk ?? null, golden_hour: result.golden_hour ?? null,
+    altitude: result.altitude ?? null, azimuth: result.azimuth ?? null, path: result.path ?? [],
     selectedTime: result.selectedTime ?? null,
   }
 }
