@@ -17,7 +17,14 @@ function normalizeLocation(record) {
   return { id: [record.iso2 || '', record.city || '', record.province || '', latitude, longitude].join(':'), city: record.city, province: record.province || '', country: record.country || '', countryCode: record.iso2 || '', timezone: record.timezone, timezoneLabel: getIndonesiaTimezoneLabel(record.timezone), latitude, longitude, population: Number(record.pop) || 0 }
 }
 
-const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://127.0.0.1:8000'
+const ENV_API_BASE = import.meta.env.VITE_API_BASE_URL || ''
+function getApiBase() {
+  if (ENV_API_BASE) return ENV_API_BASE
+  if (typeof window !== 'undefined' && window.location.hostname.includes('-5173.app.github.dev')) {
+    return `https://${window.location.hostname.replace('-5173.app.github.dev', '-8000.app.github.dev')}`
+  }
+  return 'http://127.0.0.1:8000'
+}
 
 function getLocalProvinces() {
   const unique = new Map()
@@ -30,8 +37,9 @@ function getLocalProvinces() {
 }
 
 export async function getIndonesiaProvinces() {
+  const apiBase = getApiBase()
   try {
-    const response = await fetch(`${API_BASE}/api/provinces`)
+    const response = await fetch(`${apiBase}/api/provinces`)
     if (!response.ok) throw new Error(`Province API error: ${response.status}`)
     const results = await response.json()
     return Array.isArray(results) ? results : []
@@ -59,8 +67,9 @@ export async function searchLocations(city, province = '', limit = 20) {
   const normalizedProvince = String(province || '').trim()
   if (!normalizedCity && !normalizedProvince) return []
   const params = new URLSearchParams({ city: normalizedCity, province: normalizedProvince, limit: String(limit) })
+  const apiBase = getApiBase()
   try {
-    const response = await fetch(`${API_BASE}/api/locations?${params}`)
+    const response = await fetch(`${apiBase}/api/locations?${params}`)
     if (!response.ok) throw new Error(`Location API error: ${response.status}`)
     const results = await response.json()
     return Array.isArray(results) ? results : []
@@ -111,7 +120,7 @@ export async function findLocationById(id) {
   if (!id) return null
   const normalizedId = String(id)
   if (/^\d+(?:\.\d+){0,3}$/.test(normalizedId)) {
-    const response = await fetch(`${API_BASE}/api/locations/${encodeURIComponent(normalizedId)}`)
+    const response = await fetch(`${getApiBase()}/api/locations/${encodeURIComponent(normalizedId)}`)
     if (response.status === 404) return null
     if (!response.ok) throw new Error(`Location API error: ${response.status}`)
     return response.json()
