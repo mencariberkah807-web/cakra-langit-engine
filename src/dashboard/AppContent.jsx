@@ -59,7 +59,7 @@ function TodaySummary({ data }) {
           </div>
         </div>
 
-        <div className="grid grid-cols-3 gap-3 border-t border-[#1B4565] pt-4 xl:w-[270px] xl:border-l xl:border-t-0 xl:pl-5 xl:pt-0">
+        <div className="grid grid-cols-1 gap-3 border-t border-[#1B4565] pt-4 xl:w-[270px] xl:border-l xl:border-t-0 xl:pl-5 xl:pt-0">
           <div>
             <p className="text-lg font-semibold text-white">☀ {sun.sunrise || "—"}</p>
             <p className="text-[10px] uppercase tracking-[0.1em] text-[#8FAFC7]">Sunrise</p>
