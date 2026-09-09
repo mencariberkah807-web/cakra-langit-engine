@@ -7,33 +7,15 @@ const item = {
   show: { opacity: 1, y: 0, transition: { duration: 0.45, ease: [0.16, 1, 0.3, 1] } },
 };
 
-const formatTime = (value, seconds = false) => {
-  if (!value) return "—";
-  const text = String(value);
-  return seconds ? text.slice(0, 8) : text.slice(0, 5);
-};
-
 const formatDegrees = (value) => {
   const number = Number(value);
   return Number.isFinite(number) ? `${number.toFixed(1)}°` : "—";
-};
-
-const formatCoordinate = (value, positive, negative) => {
-  const number = Number(value);
-  if (!Number.isFinite(number)) return "—";
-  return `${Math.abs(number).toFixed(4)}° ${number >= 0 ? positive : negative}`;
 };
 
 export default function LiveObservation({ data, onOpenEclipse }) {
   const sun = data?.natural?.sun || {};
   const moon = data?.natural?.moon || {};
   const eclipse = data?.natural?.eclipse || {};
-  const location = data?.location || {};
-  const activeTime = data?.selectedTime || data?.time?.local || "—";
-  const city = location.name || location.city || "—";
-  const region = location.region || location.province || location.country || "";
-  const timezone = location.timezone || "";
-  const timezoneLabel = location.timezoneLabel || "Local time";
   const eclipseToday = eclipse?.today || null;
 
   return (
@@ -43,8 +25,7 @@ export default function LiveObservation({ data, onOpenEclipse }) {
           <Moon className="h-4 w-4 text-[#BFDBFE]" strokeWidth={1.8} />
           <span className="text-[10px] font-bold uppercase tracking-[0.12em] text-[#A7C9DE]">Moon live position</span>
         </div>
-        <p className="mt-3 font-mono text-lg font-semibold tabular-nums text-white">{formatTime(activeTime, true)}</p>
-        <p className="mt-1 text-[10px] text-[#7296B0]">Az {formatDegrees(moon.azimuth)} · Alt {formatDegrees(moon.altitude)}</p>
+        <p className="mt-2 text-[10px] text-[#7296B0]">Az {formatDegrees(moon.azimuth)} · Alt {formatDegrees(moon.altitude)}</p>
         <div className="mt-3 flex items-center gap-3 border-t border-[#1B405D] pt-3">
           <MoonPhaseCanvas phase={moon.phase} illumination={moon.illumination} />
           <div className="min-w-0">
@@ -59,18 +40,7 @@ export default function LiveObservation({ data, onOpenEclipse }) {
           <Sun className="h-4 w-4 text-[#FBBF24]" strokeWidth={1.8} />
           <span className="text-[10px] font-bold uppercase tracking-[0.12em] text-[#F8D66D]">Sun live position</span>
         </div>
-        <p className="mt-3 font-mono text-lg font-semibold tabular-nums text-white">{formatTime(activeTime, true)}</p>
-        <p className="mt-1 text-[10px] text-[#B69B50]">Az {formatDegrees(sun.azimuth)} · Alt {formatDegrees(sun.altitude)}</p>
-      </motion.div>
-
-      <motion.div variants={item} className="rounded-[18px] border border-[#244866] bg-[#061727]/90 p-4">
-        <p className="text-[9px] font-bold uppercase tracking-[0.14em] text-[#668AA4]">Location</p>
-        <p className="mt-2 text-sm font-semibold text-[#DDF4FF]">{city}{region && region !== city ? `, ${region}` : ""}</p>
-        <p className="mt-1 text-[10px] text-[#668AA4]">{formatCoordinate(location.latitude, "N", "S")} · {formatCoordinate(location.longitude, "E", "W")}</p>
-        <div className="mt-3 border-t border-[#1B405D] pt-3">
-          <p className="font-mono text-sm font-semibold tabular-nums text-[#EDF9FF]">{formatTime(activeTime, true)}</p>
-          <p className="mt-1 text-[9px] uppercase tracking-[0.1em] text-[#5F8CA5]">{timezoneLabel}{timezone ? ` · ${timezone}` : ""}</p>
-        </div>
+        <p className="mt-2 text-[10px] text-[#B69B50]">Az {formatDegrees(sun.azimuth)} · Alt {formatDegrees(sun.altitude)}</p>
       </motion.div>
 
       {eclipseToday && onOpenEclipse ? (
