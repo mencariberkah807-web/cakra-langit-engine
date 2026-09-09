@@ -8,7 +8,7 @@ export default function PalintanganPage() {
     <section className="mx-auto max-w-[1180px] px-5 py-7 sm:px-7">
       <div className="mb-7">
         <div className="text-[11px] font-semibold uppercase tracking-[0.16em] text-cyan-400">Cakra Langit · Bali</div>
-        <h1 className="mt-2 text-3xl font-semibold tracking-tight text-white">Palintangan Bali</h1>
+        <h1 className="mt-2 text-3xl font-semibold tracking-tight text-white">Palelintangan Bali</h1>
         <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-400">
           Perhitungan Palelintangan berdasarkan siklus Pawukon dan 35 Lintang.
         </p>
@@ -28,13 +28,13 @@ export default function PalintanganPage() {
             </label>
           </div>
           <button type="button" disabled className="mt-5 w-full rounded-xl border border-white/[0.08] bg-white/[0.04] px-4 py-3 text-sm font-semibold text-slate-500">
-            Hitung Palintangan
+            Hitung Palelintangan
           </button>
           <p className="mt-3 text-xs leading-5 text-slate-500">Boundary saat ini mengikuti kalender Bali yang digunakan engine.</p>
         </div>
 
         <div className="rounded-2xl border border-white/[0.07] bg-[#0A1723] p-5">
-          <div className="text-xs font-semibold uppercase tracking-[0.14em] text-slate-500">Hasil Palintangan</div>
+          <div className="text-xs font-semibold uppercase tracking-[0.14em] text-slate-500">Hasil Palelintangan</div>
           <div className="mt-5 rounded-xl border border-cyan-400/20 bg-cyan-400/[0.04] p-5">
             <div className="text-xs uppercase tracking-[0.14em] text-cyan-400">Lintang</div>
             <div className="mt-2 text-2xl font-semibold text-white">—</div>
