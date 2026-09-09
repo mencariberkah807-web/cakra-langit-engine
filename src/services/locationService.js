@@ -43,15 +43,53 @@ function normalizeLocation(record) {
 const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://127.0.0.1:8000'
 
 export async function getIndonesiaProvinces() {
-  const response = await fetch(`${API_BASE}/api/provinces`)
+  try {
+    const response = await fetch(`${API_BASE}/api/provinces`)
 
-  if (!response.ok) {
-    throw new Error(`Province API error: ${response.status}`)
+    if (!response.ok) {
+      throw new Error(`Province API error: ${response.status}`)
+    }
+
+    const results = await response.json()
+    return Array.isArray(results) ? results : []
+  } catch {
+    return CITY_DATA
+      .filter((record) => String(record.iso2 || '').toUpperCase() === 'ID' && record.province)
+      .reduce((unique, record) => {
+        const province = String(record.province).trim()
+        const key = province.toLowerCase()
+        if (!unique.has(key)) {
+          unique.set(key, {
+            id: `ID:${province}`,
+            city: province,
+            province,
+            country: 'Indonesia',
+            countryCode: 'ID',
+          })
+        }
+        return unique
+      }, new Map())
+      |> Array.from(#.values())
   }
+}
 
-  const results = await response.json()
+function searchLocalLocations(city, province = '', limit = 20) {
+  const normalizedCity = String(city || '').trim().toLowerCase()
+  const normalizedProvince = String(province || '').trim().toLowerCase()
 
-  return Array.isArray(results) ? results : []
+  return CITY_DATA
+    .filter((record) => {
+      if (String(record.iso2 || '').toUpperCase() !== 'ID') return false
+      const recordCity = String(record.city || '').toLowerCase()
+      const recordAscii = String(record.city_ascii || '').toLowerCase()
+      const recordProvince = String(record.province || '').toLowerCase()
+      const cityMatches = !normalizedCity || recordCity.includes(normalizedCity) || recordAscii.includes(normalizedCity)
+      const provinceMatches = !normalizedProvince || recordProvince === normalizedProvince || recordProvince.includes(normalizedProvince)
+      return cityMatches && provinceMatches
+    })
+    .sort((a, b) => (Number(b.pop) || 0) - (Number(a.pop) || 0))
+    .slice(0, limit)
+    .map(normalizeLocation)
 }
 
 export async function searchLocations(city, province = '', limit = 20) {
@@ -66,15 +104,18 @@ export async function searchLocations(city, province = '', limit = 20) {
     limit: String(limit),
   })
 
-  const response = await fetch(`${API_BASE}/api/locations?${params}`)
+  try {
+    const response = await fetch(`${API_BASE}/api/locations?${params}`)
 
-  if (!response.ok) {
-    throw new Error(`Location API error: ${response.status}`)
+    if (!response.ok) {
+      throw new Error(`Location API error: ${response.status}`)
+    }
+
+    const results = await response.json()
+    return Array.isArray(results) ? results : []
+  } catch {
+    return searchLocalLocations(normalizedCity, normalizedProvince, limit)
   }
-
-  const results = await response.json()
-
-  return Array.isArray(results) ? results : []
 }
 
 export function findLocationByTimezone(timezone) {
