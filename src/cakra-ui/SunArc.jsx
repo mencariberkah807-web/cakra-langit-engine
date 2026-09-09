@@ -12,7 +12,7 @@ const formatTime = (value) => {
   return minutes == null ? "—" : `${String(Math.floor(minutes / 60)).padStart(2, "0")}:${String(minutes % 60).padStart(2, "0")}`;
 };
 
-const CENTER = { x: 300, y: 136 };
+const CENTER = { x: 300, y: 180 };
 const RADIUS = 112;
 
 function projectPoint(point) {
@@ -108,13 +108,13 @@ export default function SunArc({ sun, moon, time, loading, embedded = false }) {
             <line x1={CENTER.x} y1={CENTER.y - RADIUS} x2={CENTER.x} y2={CENTER.y + RADIUS} stroke="#315A7E" strokeWidth="1" opacity="0.55" />
             <line x1={CENTER.x - RADIUS} y1={CENTER.y} x2={CENTER.x + RADIUS} y2={CENTER.y} stroke="#315A7E" strokeWidth="1" opacity="0.55" />
 
-            <text x="300" y="11" textAnchor="middle" fontSize="10" fontWeight="700" fill="#B7CBE0">N</text>
-            <text x="300" y="273" textAnchor="middle" fontSize="10" fontWeight="700" fill="#B7CBE0">S</text>
-            <text x="170" y="140" textAnchor="middle" fontSize="10" fontWeight="700" fill="#B7CBE0">W</text>
-            <text x="430" y="140" textAnchor="middle" fontSize="10" fontWeight="700" fill="#B7CBE0">E</text>
-            <text x="307" y="102" fontSize="8" fill="#6F8CA6">30°</text>
-            <text x="307" y="64" fontSize="8" fill="#6F8CA6">60°</text>
-            <text x="307" y="30" fontSize="8" fill="#6F8CA6">90°</text>
+            <text x="300" y="55" textAnchor="middle" fontSize="10" fontWeight="700" fill="#B7CBE0">N</text>
+            <text x="300" y="309" textAnchor="middle" fontSize="10" fontWeight="700" fill="#B7CBE0">S</text>
+            <text x="180" y="184" textAnchor="middle" fontSize="10" fontWeight="700" fill="#B7CBE0">W</text>
+            <text x="420" y="184" textAnchor="middle" fontSize="10" fontWeight="700" fill="#B7CBE0">E</text>
+            <text x="307" y="142" fontSize="8" fill="#6F8CA6">30°</text>
+            <text x="307" y="105" fontSize="8" fill="#6F8CA6">60°</text>
+            <text x="307" y="68" fontSize="8" fill="#6F8CA6">90°</text>
 
             {sunPaths.map((d, index) => <path key={`sun-${index}`} d={d} fill="none" stroke="#FBBF24" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" opacity="0.86" />)}
             {moonPaths.map((d, index) => <path key={`moon-${index}`} d={d} fill="none" stroke="#A5B4FC" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" strokeDasharray="5 5" opacity="0.8" />)}
