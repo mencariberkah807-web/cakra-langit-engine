@@ -1,9 +1,19 @@
 import { motion } from "framer-motion";
+import { Moon as MoonIcon, Sun as SunIcon } from "lucide-react";
 
 const clamp = (value, min, max) => Math.min(max, Math.max(min, value));
+const toMin = (value) => {
+  if (!value) return null;
+  const [hour, minute] = String(value).split(":").map(Number);
+  return Number.isFinite(hour) && Number.isFinite(minute) ? hour * 60 + minute : null;
+};
+const formatTime = (value) => {
+  const minutes = toMin(value);
+  return minutes == null ? "—" : `${String(Math.floor(minutes / 60)).padStart(2, "0")}:${String(minutes % 60).padStart(2, "0")}`;
+};
 
-const CENTER = { x: 500, y: 300 };
-const RADIUS = 205;
+const CENTER = { x: 300, y: 180 };
+const RADIUS = 112;
 
 function projectPoint(point) {
   const altitude = clamp(Number(point?.altitude) || 0, 0, 90);
@@ -49,99 +59,89 @@ export default function SunArc({ sun, moon, time, loading, embedded = false }) {
   const sunPaths = buildPath(sun?.path);
   const moonPaths = buildPath(moon?.path);
 
+  const sunEvents = [
+    ["FAJAR", sun?.dawn], ["TERBIT", sun?.sunrise], ["KULMINASI", sun?.noon],
+    ["GOLDEN", sun?.golden_hour], ["SURUP", sun?.sunset], ["SENJA", sun?.dusk],
+  ].filter(([, value]) => value);
+  const moonEvents = [
+    ["MOONRISE", moon?.rise], ["TRANSIT", moon?.transit], ["MOONSET", moon?.set],
+  ].filter(([, value]) => value);
+
   return (
     <motion.section
-      initial={{ opacity: 0, y: 12 }}
+      initial={{ opacity: 0, y: 18 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.55, ease: [0.16, 1, 0.3, 1], delay: 0.12 }}
-      className={embedded ? "pointer-events-none absolute inset-0 z-10" : "overflow-hidden rounded-2xl border border-[#163452] bg-[#061522] p-5"}
+      transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1], delay: 0.2 }}
+      className={embedded
+        ? "pointer-events-none absolute inset-x-3 bottom-0 z-10"
+        : "overflow-hidden rounded-2xl border border-[#163452] bg-[radial-gradient(circle_at_50%_12%,rgba(245,158,11,0.13),transparent_28%),radial-gradient(circle_at_15%_85%,rgba(14,165,233,0.12),transparent_34%),#061522] p-5 shadow-[0_18px_50px_rgba(2,12,27,0.28)]"}
       data-testid="sun-arc-panel"
     >
+      {!embedded && (
+        <div className="mb-3 flex flex-wrap items-center gap-2">
+          {activeIsSun ? <SunIcon className="h-4 w-4 text-[#FBBF24]" strokeWidth={1.8} /> : <MoonIcon className="h-4 w-4 text-[#CBD5E1]" strokeWidth={1.8} />}
+          <div>
+            <h2 className="text-sm font-semibold tracking-tight text-white">Sun & Moon Path</h2>
+            <p className="text-[10px] text-[#718CA8]">Polar sky diagram · true azimuth / altitude</p>
+          </div>
+          <span className="ml-auto rounded-full border border-[#24496B] bg-[#0B2239]/80 px-2.5 py-1 font-mono text-[10px] text-[#9FB5CB]">
+            {activeBody ? `${Number(activeBody.altitude).toFixed(1)}° alt · ${Number(activeBody.azimuth).toFixed(1)}° az` : "—"}
+          </span>
+        </div>
+      )}
+
       {loading || !sun ? (
-        <div className={embedded ? "h-full w-full animate-pulse" : "h-[520px] animate-pulse rounded-xl bg-[#0B2239]/60"} />
+        <div className={embedded ? "h-[360px]" : "h-[420px] animate-pulse rounded-xl border border-[#173957] bg-[#0B2239]/60"} />
       ) : (
-        <svg
-          viewBox="0 0 1000 600"
-          className={embedded ? "h-full w-full" : "h-[600px] w-full"}
-          preserveAspectRatio="xMidYMid meet"
-          data-testid="sun-moon-path-svg"
-          role="img"
-          aria-label="Polar Sun and Moon path"
-        >
-          <defs>
-            <filter id="celestialGlowLarge" x="-100%" y="-100%" width="300%" height="300%">
-              <feGaussianBlur stdDeviation="7" result="blur" />
-              <feMerge><feMergeNode in="blur" /><feMergeNode in="SourceGraphic" /></feMerge>
-            </filter>
-            <filter id="celestialSoftGlow" x="-100%" y="-100%" width="300%" height="300%">
-              <feGaussianBlur stdDeviation="12" />
-            </filter>
-          </defs>
+        <div className={embedded ? "bg-transparent" : "rounded-xl border border-[#173957] bg-[radial-gradient(circle_at_50%_48%,rgba(245,158,11,0.08),transparent_22%),linear-gradient(180deg,rgba(9,31,52,0.72),rgba(4,18,31,0.92))] px-2 py-3"}>
+          <svg viewBox="0 0 600 360" className="h-[360px] w-full" data-testid="sun-moon-path-svg" role="img" aria-label="Polar Sun and Moon path">
+            <defs>
+              <filter id="celestialGlow" x="-100%" y="-100%" width="300%" height="300%"><feGaussianBlur stdDeviation="5" result="blur" /><feMerge><feMergeNode in="blur" /><feMergeNode in="SourceGraphic" /></feMerge></filter>
+            </defs>
 
-          <circle cx={CENTER.x} cy={CENTER.y} r="290" fill="none" stroke="#31566E" strokeWidth="1" opacity="0.35" />
-          <circle cx={CENTER.x} cy={CENTER.y} r={RADIUS} fill="rgba(5,25,42,.42)" stroke="#74D8E8" strokeWidth="2" opacity="0.92" />
-          {[30, 60].map((altitude) => (
-            <circle key={altitude} cx={CENTER.x} cy={CENTER.y} r={RADIUS * (1 - altitude / 90)} fill="none" stroke="#42758D" strokeWidth="1.2" strokeDasharray="4 7" opacity="0.72" />
-          ))}
-          <circle cx={CENTER.x} cy={CENTER.y} r="5" fill="#E4F8FF" />
-          <circle cx={CENTER.x} cy={CENTER.y} r="18" fill="none" stroke="#67E8F9" strokeWidth="1" opacity="0.45" />
+            <circle cx={CENTER.x} cy={CENTER.y} r={RADIUS} fill="rgba(8,27,45,.38)" stroke="#416681" strokeWidth="1.5" />
+            {[30, 60].map((altitude) => (
+              <circle key={altitude} cx={CENTER.x} cy={CENTER.y} r={RADIUS * (1 - altitude / 90)} fill="none" stroke="#315A7E" strokeWidth="1" strokeDasharray="3 5" opacity="0.75" />
+            ))}
+            <circle cx={CENTER.x} cy={CENTER.y} r="3" fill="#DDEBFA" />
 
-          <line x1={CENTER.x} y1={CENTER.y - RADIUS} x2={CENTER.x} y2={CENTER.y + RADIUS} stroke="#5A879B" strokeWidth="1" opacity="0.55" />
-          <line x1={CENTER.x - RADIUS} y1={CENTER.y} x2={CENTER.x + RADIUS} y2={CENTER.y} stroke="#5A879B" strokeWidth="1" opacity="0.55" />
+            <line x1={CENTER.x} y1={CENTER.y - RADIUS} x2={CENTER.x} y2={CENTER.y + RADIUS} stroke="#315A7E" strokeWidth="1" opacity="0.55" />
+            <line x1={CENTER.x - RADIUS} y1={CENTER.y} x2={CENTER.x + RADIUS} y2={CENTER.y} stroke="#315A7E" strokeWidth="1" opacity="0.55" />
 
-          <text x="500" y="55" textAnchor="middle" fontSize="16" fontWeight="700" fill="#D4F7FF">N</text>
-          <text x="500" y="565" textAnchor="middle" fontSize="16" fontWeight="700" fill="#D4F7FF">S</text>
-          <text x="245" y="307" textAnchor="middle" fontSize="16" fontWeight="700" fill="#D4F7FF">W</text>
-          <text x="755" y="307" textAnchor="middle" fontSize="16" fontWeight="700" fill="#D4F7FF">E</text>
+            <text x="300" y="55" textAnchor="middle" fontSize="10" fontWeight="700" fill="#B7CBE0">N</text>
+            <text x="300" y="309" textAnchor="middle" fontSize="10" fontWeight="700" fill="#B7CBE0">S</text>
+            <text x="180" y="184" textAnchor="middle" fontSize="10" fontWeight="700" fill="#B7CBE0">W</text>
+            <text x="420" y="184" textAnchor="middle" fontSize="10" fontWeight="700" fill="#B7CBE0">E</text>
+            <text x="307" y="142" fontSize="8" fill="#6F8CA6">30°</text>
+            <text x="307" y="105" fontSize="8" fill="#6F8CA6">60°</text>
+            <text x="307" y="68" fontSize="8" fill="#6F8CA6">90°</text>
 
-          <text x="512" y="238" fontSize="13" fill="#86AFC0">30°</text>
-          <text x="512" y="170" fontSize="13" fill="#86AFC0">60°</text>
-          <text x="512" y="100" fontSize="13" fill="#86AFC0">90°</text>
+            {sunPaths.map((d, index) => <path key={`sun-${index}`} d={d} fill="none" stroke="#FBBF24" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" opacity="0.86" />)}
+            {moonPaths.map((d, index) => <path key={`moon-${index}`} d={d} fill="none" stroke="#A5B4FC" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" strokeDasharray="5 5" opacity="0.8" />)}
 
-          <path d={`M ${CENTER.x - 290} ${CENTER.y} A 290 290 0 0 1 ${CENTER.x + 290} ${CENTER.y}`} fill="none" stroke="#6EAFC5" strokeWidth="1" opacity="0.35" />
-          <path d={`M ${CENTER.x - 290} ${CENTER.y} A 290 290 0 0 0 ${CENTER.x + 290} ${CENTER.y}`} fill="none" stroke="#6EAFC5" strokeWidth="1" opacity="0.2" />
+            <motion.line animate={{ x1: activePosition.x, y1: activePosition.y, x2: CENTER.x, y2: CENTER.y }} transition={{ type: "spring", stiffness: 180, damping: 24 }} stroke={activeIsSun ? "#FBBF24" : "#CBD5E1"} strokeWidth="1" strokeDasharray="4 5" opacity="0.7" />
+            <motion.circle data-testid={activeIsSun ? "sun-arc-marker" : "moon-path-marker"} animate={{ cx: activePosition.x, cy: activePosition.y }} transition={{ type: "spring", stiffness: 180, damping: 24, mass: 0.55 }} r={activeIsSun ? 11 : 9} fill={activeIsSun ? "#FBBF24" : "#CBD5E1"} stroke="#FFFFFF" strokeWidth="1.5" filter="url(#celestialGlow)" />
 
-          {sunPaths.map((d, index) => (
-            <path key={`sun-${index}`} d={d} fill="none" stroke="#FBBF24" strokeWidth="5" strokeLinecap="round" strokeLinejoin="round" opacity="0.92" filter="url(#celestialSoftGlow)" />
-          ))}
-          {sunPaths.map((d, index) => (
-            <path key={`sun-core-${index}`} d={d} fill="none" stroke="#FFD45A" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" opacity="0.98" />
-          ))}
-          {moonPaths.map((d, index) => (
-            <path key={`moon-${index}`} d={d} fill="none" stroke="#B9D9F7" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" strokeDasharray="9 10" opacity="0.72" />
-          ))}
+            <g transform="translate(34 312)">
+              <circle cx="0" cy="0" r="4" fill="#FBBF24" /><text x="10" y="3" fontSize="9" fill="#AFC4D8">SUN PATH</text>
+              <circle cx="76" cy="0" r="4" fill="#A5B4FC" /><text x="86" y="3" fontSize="9" fill="#AFC4D8">MOON PATH</text>
+              <text x="196" y="3" fontSize="9" fill="#718CA8">ALTITUDE RINGS · 0° / 30° / 60° / 90°</text>
+            </g>
 
-          <motion.line
-            animate={{ x1: activePosition.x, y1: activePosition.y, x2: CENTER.x, y2: CENTER.y }}
-            transition={{ type: "spring", stiffness: 180, damping: 24 }}
-            stroke={activeIsSun ? "#FBBF24" : "#D8E8F7"}
-            strokeWidth="2"
-            strokeDasharray="8 9"
-            opacity="0.76"
-          />
-          <motion.circle
-            data-testid={activeIsSun ? "sun-arc-marker" : "moon-path-marker"}
-            animate={{ cx: activePosition.x, cy: activePosition.y }}
-            transition={{ type: "spring", stiffness: 180, damping: 24, mass: 0.55 }}
-            r={activeIsSun ? 18 : 15}
-            fill={activeIsSun ? "#FBBF24" : "#D9E9F8"}
-            stroke="#FFFFFF"
-            strokeWidth="2"
-            filter="url(#celestialGlowLarge)"
-          />
+            <text x="300" y="345" textAnchor="middle" fontSize="9" fill="#718CA8" fontFamily="JetBrains Mono, monospace">{time || "—"} · {activeIsSun ? "SUN" : "MOON"} LIVE POSITION</text>
+          </svg>
 
-          <g transform="translate(44 525)">
-            <circle cx="0" cy="0" r="6" fill="#FBBF24" />
-            <text x="15" y="5" fontSize="13" fill="#C1D5E0">SUN PATH</text>
-            <circle cx="120" cy="0" r="6" fill="#B9D9F7" />
-            <text x="135" y="5" fontSize="13" fill="#C1D5E0">MOON PATH</text>
-            <text x="315" y="5" fontSize="13" fill="#7E9AA9">ALTITUDE RINGS · 0° / 30° / 60° / 90°</text>
-          </g>
-
-          <text x="500" y="578" textAnchor="middle" fontSize="13" fill="#A8C2D0" fontFamily="JetBrains Mono, monospace">
-            {time || "—"} · {activeIsSun ? "SUN" : "MOON"} LIVE POSITION
-          </text>
-        </svg>
+          <div className="mt-1 grid grid-cols-2 gap-2 border-t border-[#173957] pt-2">
+            <div>
+              <div className="mb-1 flex items-center gap-1.5 text-[9px] font-bold uppercase tracking-[0.1em] text-[#FBBF24]"><SunIcon className="h-3 w-3" /> Solar Events</div>
+              <div className="flex flex-wrap gap-x-3 gap-y-1 text-[9px] text-[#9DB6D0]">{sunEvents.map(([label, value]) => <span key={label}>{label} <b className="font-mono text-[#D8E5F1]">{formatTime(value)}</b></span>)}</div>
+            </div>
+            <div>
+              <div className="mb-1 flex items-center gap-1.5 text-[9px] font-bold uppercase tracking-[0.1em] text-[#A5B4FC]"><MoonIcon className="h-3 w-3" /> Lunar Events</div>
+              <div className="flex flex-wrap gap-x-3 gap-y-1 text-[9px] text-[#9DB6D0]">{moonEvents.map(([label, value]) => <span key={label}>{label} <b className="font-mono text-[#D8E5F1]">{formatTime(value)}</b></span>)}</div>
+            </div>
+          </div>
+        </div>
       )}
     </motion.section>
   );
