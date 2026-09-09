@@ -70,7 +70,7 @@ export default function Header({ data, locations, city, onCityChange, isToday, u
   function handleSelectProvince(province) { setProvinceQuery(province.city); setProvinceOpen(false); }
   async function handleSelectLocation(location) {
     try {
-      await onCityChange(location.id);
+      await onCityChange(location);
       setLocationOpen(false);
       setCityQuery("");
       setProvinceQuery("");
