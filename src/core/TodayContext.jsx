@@ -196,13 +196,16 @@ export function TodayProvider({ children }) {
   const activeDate = liveMode
     ? now
     : applyTimeToDate(selectedDate, selectedTime)
+  const almanacFetchDate = liveMode
+    ? new Date(Math.floor(now.getTime() / 60000) * 60000)
+    : activeDate
 
   useEffect(() => {
     let cancelled = false
 
     fetchAlmanac(
       selectedLocation,
-      activeDate,
+      almanacFetchDate,
       liveMode
     )
       .then((result) => {
@@ -215,7 +218,7 @@ export function TodayProvider({ children }) {
     return () => {
       cancelled = true
     }
-  }, [selectedLocation, activeDate, liveMode])
+  }, [selectedLocation, almanacFetchDate, liveMode])
 
   function setSelectedDate(date) {
     if (!date) {
