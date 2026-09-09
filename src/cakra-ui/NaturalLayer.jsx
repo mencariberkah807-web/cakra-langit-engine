@@ -8,13 +8,6 @@ const item = {
   show: { opacity: 1, y: 0, transition: { duration: 0.45, ease: [0.16, 1, 0.3, 1] } },
 };
 
-const naturalCard = (label, result, accent) => ({
-  label,
-  primary: result?.primary || result?.title || "—",
-  secondary: result?.secondary || "",
-  accent,
-});
-
 export default function NaturalLayer({ data, loading, onOpenEclipse }) {
   const sun = data?.natural?.sun || {};
   const moon = data?.natural?.moon || {};
@@ -32,12 +25,6 @@ export default function NaturalLayer({ data, loading, onOpenEclipse }) {
     ["TRANSIT", moon.transit],
     ["MOONSET", moon.set],
   ].filter(([, value]) => value);
-
-  const contextCards = [
-    naturalCard("Sky", data?.natural?.sky, "sky"),
-    naturalCard("Earth Space", data?.natural?.earth, "earth"),
-    naturalCard("Tide", data?.natural?.tide, "tide"),
-  ];
 
   return (
     <motion.section
@@ -66,21 +53,8 @@ export default function NaturalLayer({ data, loading, onOpenEclipse }) {
         <SkyWorkspace data={data} loading={loading} />
       </div>
 
-      <div className="relative z-10 grid grid-cols-1 gap-3 px-3 sm:px-5 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] lg:px-6">
+      <div className="relative z-10 px-3 pb-3 sm:px-5 lg:px-6">
         <LiveObservation data={data} onOpenEclipse={onOpenEclipse} />
-        <div className="grid grid-cols-1 gap-3 sm:grid-cols-3 lg:content-start">
-          {contextCards.map((card) => (
-            <motion.article
-              key={card.label}
-              variants={item}
-              className={`rounded-[18px] border p-4 ${card.accent === "sky" ? "border-[#315C7A] bg-[#061A2C]/90" : card.accent === "earth" ? "border-[#315C5A] bg-[#061C1A]/90" : "border-[#4E5564] bg-[#0A1420]/90"}`}
-            >
-              <p className="text-[9px] font-bold uppercase tracking-[0.14em] text-[#7895A8]">{card.label}</p>
-              <p className="mt-2 text-sm font-semibold text-[#E8F5FF]">{card.primary}</p>
-              {card.secondary ? <p className="mt-1 text-[10px] text-[#6F8EA4]">{card.secondary}</p> : null}
-            </motion.article>
-          ))}
-        </div>
       </div>
 
       <div className="relative z-10 grid grid-cols-1 gap-3 px-3 pb-5 pt-3 sm:px-5 lg:grid-cols-2 lg:px-6 lg:pb-6">
