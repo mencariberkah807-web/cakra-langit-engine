@@ -1,4 +1,4 @@
-from datetime import date, datetime, timezone
+from datetime import date
 
 
 WULAN = [
@@ -197,10 +197,8 @@ def get_jawa_data(target_date):
     return {
         **result,
         "effectiveDate": target_date.isoformat(),
-        "boundary": "MIDNIGHT",
         "meta": {
             "engine": "Jawa",
             "phase": "SOURCE_COMPILED",
-            "sunsetApplied": False,
         },
     }
