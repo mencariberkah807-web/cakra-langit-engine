@@ -259,10 +259,15 @@ export function TodayProvider({ children }) {
     setLocation(location)
   }
 
-  async function setLocationById(id) {
-    const location = await findLocationById(id)
+  async function setLocationById(idOrLocation) {
+    if (idOrLocation && typeof idOrLocation === 'object') {
+      setLocation(idOrLocation)
+      return
+    }
+
+    const location = await findLocationById(idOrLocation)
     if (!location) {
-      throw new Error(`Unknown location id: ${id}`)
+      throw new Error(`Unknown location id: ${idOrLocation}`)
     }
     setLocation(location)
   }
