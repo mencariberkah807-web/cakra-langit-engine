@@ -86,9 +86,9 @@ export default function CalendarSystems({ data }) {
                   data-testid={`calendar-snapshot-${cal.id}`}
                   className={`min-w-0 rounded-xl border p-3 text-left transition-[border-color,background,box-shadow,transform] duration-200 focus:outline-none focus:ring-2 focus:ring-[#36C8FF] ${expanded ? "border-[#2C78A8] bg-[#0B2742] shadow-[0_10px_24px_rgba(0,20,45,0.2)]" : "border-[#1B4568] bg-gradient-to-b from-[#0B2742] to-[#071D32] hover:border-[#2C78A8]"}`}
                 >
-                  <p className="truncate text-[10px] font-bold uppercase tracking-[0.08em] text-[#6F8CA6]">{cal.name}</p>
-                  <p className="mt-1 truncate text-sm font-semibold leading-tight text-[#F3F8FC]">{cal.headline || cal.primary || "—"}</p>
-                  <p className="mt-0.5 truncate text-[11px] uppercase tracking-wide text-[#7894AF]">{cal.sub || cal.secondary || "—"}</p>
+                  <p className="truncate text-[10px] font-bold uppercase tracking-[0.08em] text-[#6F8CA6]">{cal.title || cal.name}</p>
+                  <p className="mt-1 truncate text-sm font-semibold leading-tight text-[#F3F8FC]">{cal.primary || cal.headline || "—"}</p>
+                  <p className="mt-0.5 truncate text-[11px] uppercase tracking-wide text-[#7894AF]">{cal.secondary || cal.sub || "—"}</p>
                 </motion.button>
               );
             })}
@@ -104,9 +104,9 @@ export default function CalendarSystems({ data }) {
             >
               <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
                 <div className="min-w-0">
-                  <p className="text-[10px] font-bold uppercase tracking-[0.08em] text-[#6F8CA6]">{expandedCalendar.name}</p>
-                  <p className="mt-1 text-base font-semibold leading-tight text-[#DCEBFA]">{expandedCalendar.headline}</p>
-                  <p className="mt-0.5 text-[11px] uppercase tracking-wide text-[#7894AF]">{expandedCalendar.sub}</p>
+                  <p className="text-[10px] font-bold uppercase tracking-[0.08em] text-[#6F8CA6]">{expandedCalendar.title || expandedCalendar.name}</p>
+                  <p className="mt-1 text-base font-semibold leading-tight text-[#DCEBFA]">{expandedCalendar.primary || expandedCalendar.headline}</p>
+                  <p className="mt-0.5 text-[11px] uppercase tracking-wide text-[#7894AF]">{expandedCalendar.secondary || expandedCalendar.sub}</p>
                 </div>
                 {CALENDAR_ROUTES[expandedCalendar.id] && (
                   <a
@@ -118,10 +118,10 @@ export default function CalendarSystems({ data }) {
                 )}
               </div>
               <div className="mt-4 grid gap-x-6 gap-y-2 border-t border-[#163A5C] pt-4 sm:grid-cols-2 lg:grid-cols-3">
-                {(expandedCalendar.fields || []).map((field) => (
-                  <div key={field.k} className="flex items-baseline justify-between gap-3 text-[11px]">
-                    <span className="text-[#7894AF]">{field.k}</span>
-                    <span className="text-right font-medium text-[#DCEBFA]">{field.v}</span>
+                {(expandedCalendar.details || expandedCalendar.fields || []).map((field) => (
+                  <div key={field.label || field.k} className="flex items-baseline justify-between gap-3 text-[11px]">
+                    <span className="text-[#7894AF]">{field.label || field.k}</span>
+                    <span className="text-right font-medium text-[#DCEBFA]">{field.value || field.v}</span>
                   </div>
                 ))}
               </div>
