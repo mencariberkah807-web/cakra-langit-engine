@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { Sun, Moon, Eclipse, Sparkles, Globe, Waves, Leaf } from "lucide-react";
+import { Sun, Moon, Eclipse, Sparkles, Globe, Waves, Leaf, Cloud, Magnet, Radiation, Wind, Mountain, Activity, Droplets, LockKeyhole } from "lucide-react";
 import MoonPhaseCanvas from "./MoonPhaseCanvas";
 import { useLanguage } from "../core/LanguageContext";
 
@@ -23,6 +23,17 @@ function buildCards(n, t) {
   ];
 }
 
+const futureEngines = [
+  ["atmosphere", Cloud, "Atmosphere"],
+  ["weather", Cloud, "Weather"],
+  ["geomagnetic", Magnet, "Geomagnetic"],
+  ["radiation", Radiation, "Radiation"],
+  ["air-quality", Wind, "Air Quality"],
+  ["volcanic", Mountain, "Volcanic"],
+  ["seismic", Activity, "Seismic"],
+  ["ocean", Droplets, "Ocean"],
+];
+
 export default function NaturalLayer({ data, loading, onOpenEclipse }) {
   const { t } = useLanguage();
   const cards = data ? buildCards(data.natural, t) : [];
@@ -32,7 +43,7 @@ export default function NaturalLayer({ data, loading, onOpenEclipse }) {
       variants={container}
       initial="hidden"
       animate="show"
-      className="relative min-h-[500px] overflow-hidden rounded-2xl border border-[#173B60] bg-[radial-gradient(circle_at_38%_36%,rgba(59,130,246,0.2),transparent_30%),radial-gradient(circle_at_74%_18%,rgba(124,58,237,0.2),transparent_30%),linear-gradient(160deg,#061525_0%,#071D34_48%,#020A14_100%)] p-5 shadow-[0_24px_70px_rgba(2,12,27,0.4)]"
+      className="relative overflow-hidden rounded-2xl border border-[#173B60] bg-[radial-gradient(circle_at_38%_36%,rgba(59,130,246,0.2),transparent_30%),radial-gradient(circle_at_74%_18%,rgba(124,58,237,0.2),transparent_30%),linear-gradient(160deg,#061525_0%,#071D34_48%,#020A14_100%)] p-5 shadow-[0_24px_70px_rgba(2,12,27,0.4)]"
       data-testid="natural-layer-section"
     >
       <div className="pointer-events-none absolute inset-0 opacity-80">
@@ -55,7 +66,7 @@ export default function NaturalLayer({ data, loading, onOpenEclipse }) {
       </div>
 
       <div className="relative z-20 mt-5 grid grid-cols-1 gap-3 lg:grid-cols-[minmax(0,1fr)_180px]">
-        <div className="min-h-[390px] rounded-xl border border-[#254D70]/70 bg-[#03111F]/25" aria-hidden="true" />
+        <div className="relative min-h-[300px] rounded-xl border border-[#254D70]/70 bg-[#03111F]/25" aria-hidden="true" />
         <div className="grid content-start gap-2.5 sm:grid-cols-2 lg:grid-cols-1">
           {loading || !data ? Array.from({ length: 4 }).map((_, i) => <div key={i} className="h-[82px] animate-pulse rounded-xl border border-[#234663] bg-[#0A2238]/70" />) : cards.slice(0, 4).map((c) => {
             const isMoon = c.id === "moon";
@@ -67,8 +78,30 @@ export default function NaturalLayer({ data, loading, onOpenEclipse }) {
         </div>
       </div>
 
-      <div className="absolute bottom-5 left-5 right-5 z-20 flex flex-wrap gap-2 lg:right-[215px]">
-        {cards.slice(4).map((c) => <div key={c.id} className="rounded-full border border-[#315A7E]/70 bg-[#06182A]/75 px-3 py-1.5 text-[9px] text-[#B7CBE0] backdrop-blur-md"><span className="mr-1.5" style={{ color: c.accent }}>●</span>{c.label} · {c.title}</div>)}
+      <div className="relative z-20 mt-3 grid grid-cols-1 gap-2.5 sm:grid-cols-2">
+        {cards.slice(4).map((c) => {
+          const cardClass = "group flex min-h-[82px] items-center gap-3 rounded-xl border border-[#315A7E]/75 bg-[#071A2E]/78 p-3 text-left backdrop-blur-md";
+          return <div key={c.id} className={cardClass} data-testid={`natural-card-${c.id}`}><c.icon className="h-4 w-4 shrink-0" style={{ color: c.accent }} strokeWidth={2} /><div className="min-w-0"><span className="text-[9px] font-bold uppercase tracking-[0.1em] text-[#B7CBE0]">{c.label}</span><p className="mt-1 truncate text-xs font-semibold text-white">{c.title}</p><p className="mt-0.5 truncate text-[10px] text-[#91A9C0]">{c.sub}</p></div><span className="ml-auto h-0.5 w-5 shrink-0 rounded-full" style={{ backgroundColor: c.accent }} /></div>;
+        })}
+      </div>
+
+      <div className="relative z-20 mt-4 border-t border-[#173B60] pt-4">
+        <div className="flex items-center justify-between gap-3">
+          <div>
+            <h3 className="text-[11px] font-bold uppercase tracking-[0.12em] text-[#C7D9EA]">Nature Layer · Future Engines</h3>
+            <p className="mt-1 text-[10px] text-[#718CA8]">Extended natural environment data</p>
+          </div>
+          <LockKeyhole className="h-3.5 w-3.5 text-[#6F8CA6]" strokeWidth={1.8} />
+        </div>
+        <div className="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-4">
+          {futureEngines.map(([id, Icon, label]) => (
+            <div key={id} className="rounded-xl border border-dashed border-[#244765] bg-[#071A2E]/60 p-3 opacity-90" data-testid={`future-natural-${id}`}>
+              <Icon className="h-4 w-4 text-[#6F8CA6]" strokeWidth={1.8} />
+              <p className="mt-2 text-[10px] font-semibold text-[#B7CBE0]">{label}</p>
+              <p className="mt-1 text-[9px] uppercase tracking-wide text-[#607B94]">Coming soon</p>
+            </div>
+          ))}
+        </div>
       </div>
     </motion.section>
   );
