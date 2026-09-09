@@ -19,10 +19,10 @@ function normalizeLocation(record) {
 
 const ENV_API_BASE = import.meta.env.VITE_API_BASE_URL || ''
 function getApiBase() {
-  if (ENV_API_BASE) return ENV_API_BASE
   if (typeof window !== 'undefined' && window.location.hostname.includes('-5173.app.github.dev')) {
     return ''
   }
+  if (ENV_API_BASE) return ENV_API_BASE
   return 'http://127.0.0.1:8000'
 }
 
