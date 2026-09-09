@@ -6,6 +6,7 @@ from engines.jawa_engine import get_jawa_data
 from engines.saka_sunda_engine import get_saka_sunda_calendar
 from engines.chinese_lunar_engine import get_chinese_lunar_calendar
 from engines.bali_engine import get_bali_calendar
+from engines.pararasan_engine import get_pararasan_variants
 from engines.kalacakra_engine import get_kalacakra_calendar
 
 
@@ -93,6 +94,7 @@ def get_calendar_data(
     saka_sunda = get_saka_sunda_calendar(target_date)
     chinese_lunar = get_chinese_lunar_calendar(target_date)
     bali = get_bali_calendar(target_date)
+    pararasan_variants = get_pararasan_variants()
     kalacakra = get_kalacakra_calendar(local_datetime)
 
     dino_neptu = DINO_NEPTU[jawa["dayName"]]
@@ -132,6 +134,7 @@ def get_calendar_data(
                 "pancaSudhaIndex": bali["pancaSudhaIndex"],
                 "rakam": bali["rakam"],
                 "rakamIndex": bali["rakamIndex"],
+                "pararasanVariants": pararasan_variants,
             },
             "meta": {
                 **bali["meta"],
@@ -146,6 +149,7 @@ def get_calendar_data(
                 "pancaSudhaIndex": bali["pancaSudhaIndex"],
                 "rakam": bali["rakam"],
                 "rakamIndex": bali["rakamIndex"],
+                "pararasanVariants": pararasan_variants,
             },
         },
         "kalacakra": {

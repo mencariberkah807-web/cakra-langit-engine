@@ -3,6 +3,7 @@ const SECTIONS = [
   ['Pawukon Context', 'Saptawara, Pancawara, Wuku, Hari Wuku, dan posisi hari.'],
   ['Panca Sudha', 'Hasil klasifikasi Panca Sudha dari Kerta Aji Sapta Wara dan Urip Panca Wara.'],
   ['Rakam', 'Hasil Rakam dari Kupih Sapta Wara dan Kupih Panca Wara.'],
+  ['Pararasan', 'Memuat varian Pararasan yang terdokumentasi tanpa memilih satu varian sebagai universal.'],
 ]
 
 export default function PalelintanganPage() {
@@ -63,7 +64,20 @@ export default function PalelintanganPage() {
           <div><div className="text-xs text-slate-500">Panca Sudha</div><div className="mt-1 text-sm text-white">(Kerta Aji + Urip) mod 7</div></div>
           <div><div className="text-xs text-slate-500">Rakam</div><div className="mt-1 text-sm text-white">(Kupih + Kupih) mod 6</div></div>
         </div>
-        <p className="mt-4 text-xs leading-5 text-slate-500">Implementasi mengikuti reference computation yang telah ditetapkan dalam riset; interpretasi watak/ramalan belum ditambahkan.</p>
+        <div className="mt-4 rounded-xl border border-amber-400/20 bg-amber-400/[0.04] p-4">
+          <div className="text-sm font-semibold text-white">Pararasan · variant boundary</div>
+          <div className="mt-2 grid gap-3 sm:grid-cols-2">
+            <div className="rounded-lg border border-white/[0.06] bg-[#07111C] p-3">
+              <div className="text-xs font-semibold text-slate-300">Babad Bali · 10-value</div>
+              <div className="mt-1 text-xs leading-5 text-slate-500">10 nilai terdokumentasi. Formula input/index belum ditetapkan.</div>
+            </div>
+            <div className="rounded-lg border border-white/[0.06] bg-[#07111C] p-3">
+              <div className="text-xs font-semibold text-slate-300">Sakacalendar · 12-value</div>
+              <div className="mt-1 text-xs leading-5 text-slate-500">12 nilai terdokumentasi. Formula input/index belum ditetapkan.</div>
+            </div>
+          </div>
+        </div>
+        <p className="mt-4 text-xs leading-5 text-slate-500">Implementasi mengikuti reference computation yang telah ditetapkan dalam riset; formula yang belum terverifikasi tidak diisi dengan inferensi dan interpretasi watak/ramalan belum ditambahkan.</p>
       </div>
     </section>
   )
