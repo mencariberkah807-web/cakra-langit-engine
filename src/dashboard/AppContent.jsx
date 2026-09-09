@@ -31,31 +31,11 @@ function TodaySummary({ data }) {
   const weton = calendarValue(jawa, ["Weton"]);
 
   const calendarItems = [
-    {
-      label: "Caka Sunda",
-      value: calendarValue(cakaSunda, ["Tahun", "year"]),
-      sub: calendarValue(cakaSunda, ["Bulan", "month"]),
-    },
-    {
-      label: "Kalacakra",
-      value: calendarValue(kalacakra, ["Nama Tanggal", "Tanggal", "date"]),
-      sub: calendarValue(kalacakra, ["Indung", "Poe", "day"]),
-    },
-    {
-      label: "Weton",
-      value: weton,
-      sub: "Jawa",
-    },
-    {
-      label: "Bali / Palelintangan",
-      value: calendarValue(bali),
-      sub: bali?.sub || bali?.secondary || "Bali",
-    },
-    {
-      label: "Chinese Lunar",
-      value: calendarValue(chineseLunar),
-      sub: chineseLunar?.sub || chineseLunar?.secondary || "Lunar",
-    },
+    { label: "Caka Sunda", value: calendarValue(cakaSunda, ["Tahun", "year"]), sub: calendarValue(cakaSunda, ["Bulan", "month"]) },
+    { label: "Kalacakra", value: calendarValue(kalacakra, ["Nama Tanggal", "Tanggal", "date"]), sub: calendarValue(kalacakra, ["Indung", "Poe", "day"]) },
+    { label: "Weton", value: weton, sub: "Jawa" },
+    { label: "Bali / Palelintangan", value: calendarValue(bali), sub: bali?.sub || bali?.secondary || "Bali" },
+    { label: "Chinese Lunar", value: calendarValue(chineseLunar), sub: chineseLunar?.sub || chineseLunar?.secondary || "Lunar" },
   ];
 
   return (
@@ -69,12 +49,9 @@ function TodaySummary({ data }) {
           </div>
         </div>
 
-        <div className="grid min-w-0 flex-1 grid-cols-2 gap-4 sm:grid-cols-3 xl:grid-cols-5">
+        <div className="grid min-w-0 flex-1 grid-cols-2 gap-x-4 gap-y-4 sm:grid-cols-3 xl:grid-cols-5">
           {calendarItems.map((item, index) => (
-            <div
-              key={item.label}
-              className={`${index < calendarItems.length - 1 ? "border-r border-[#1B4565] pr-4" : ""} min-w-0`}
-            >
+            <div key={item.label} className={`${index < calendarItems.length - 1 ? "xl:border-r xl:border-[#1B4565] xl:pr-4" : ""} min-w-0`}>
               <p className="truncate text-[10px] font-bold uppercase tracking-[0.1em] text-[#7BA7C7]">{item.label}</p>
               <p className="mt-1 truncate text-lg font-semibold text-white">{item.value}</p>
               <p className="truncate text-xs text-[#8FAFC7]">{item.sub}</p>
@@ -109,14 +86,7 @@ export default function AppContent({
         </section>
 
         <aside className="flex min-w-0 flex-col gap-6 xl:sticky xl:top-6 xl:col-span-4 xl:self-start" aria-label="Almanac context">
-          <MonthCalendar
-            dateISO={dateISO}
-            onSelect={onSelectDate}
-            time={time}
-            onTimeChange={onTimeChange}
-            onJumpToday={onJumpToday}
-            quickJumps={quickJumps}
-          />
+          <MonthCalendar dateISO={dateISO} onSelect={onSelectDate} time={time} onTimeChange={onTimeChange} onJumpToday={onJumpToday} quickJumps={quickJumps} />
           <ScheduleTimeline data={data} loading={false} time={time} />
         </aside>
       </div>
