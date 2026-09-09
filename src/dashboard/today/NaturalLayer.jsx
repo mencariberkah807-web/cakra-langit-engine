@@ -1,3 +1,4 @@
+import "./NaturalLayer.css";
 import { useTodayContext } from "../../core/TodayContext";
 import { getResultsByGroup } from "../../core/resultRegistry.js";
 
