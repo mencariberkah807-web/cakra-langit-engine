@@ -21,7 +21,7 @@ const ENV_API_BASE = import.meta.env.VITE_API_BASE_URL || ''
 function getApiBase() {
   if (ENV_API_BASE) return ENV_API_BASE
   if (typeof window !== 'undefined' && window.location.hostname.includes('-5173.app.github.dev')) {
-    return `https://${window.location.hostname.replace('-5173.app.github.dev', '-8000.app.github.dev')}`
+    return ''
   }
   return 'http://127.0.0.1:8000'
 }
