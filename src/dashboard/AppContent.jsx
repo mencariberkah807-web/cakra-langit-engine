@@ -21,6 +21,14 @@ function calendarValue(calendar, keys = []) {
   return String(calendar.headline || calendar.primary || "—");
 }
 
+function calendarSnapshot(calendar, fallbackLabel, fallbackSub = "—") {
+  return {
+    label: calendar?.name || fallbackLabel,
+    value: calendar?.headline || calendar?.primary || "—",
+    sub: calendar?.sub || calendar?.secondary || fallbackSub,
+  };
+}
+
 function TodaySummary({ data }) {
   const cakaSunda = findCalendar(data, (name, id) => /saka|caka|sunda/.test(`${name} ${id}`.toLowerCase()));
   const kalacakra = findCalendar(data, (name, id) => /kalacakra/.test(`${name} ${id}`.toLowerCase()));
@@ -28,14 +36,13 @@ function TodaySummary({ data }) {
   const bali = findCalendar(data, (name, id) => /bali|palelintangan|pawukon/.test(`${name} ${id}`.toLowerCase()));
   const chineseLunar = findCalendar(data, (name, id) => /chinese|lunar/.test(`${name} ${id}`.toLowerCase()));
   const dateLabel = data?.date_info?.date_long || "—";
-  const weton = calendarValue(jawa, ["Weton"]);
 
   const calendarItems = [
-    { label: "Caka Sunda", value: calendarValue(cakaSunda, ["Tahun", "year"]), sub: calendarValue(cakaSunda, ["Bulan", "month"]) },
-    { label: "Kalacakra", value: calendarValue(kalacakra, ["Nama Tanggal", "Tanggal", "date"]), sub: calendarValue(kalacakra, ["Indung", "Poe", "day"]) },
-    { label: "Weton", value: weton, sub: "Jawa" },
-    { label: "Bali / Palelintangan", value: calendarValue(bali), sub: bali?.sub || bali?.secondary || "Bali" },
-    { label: "Chinese Lunar", value: calendarValue(chineseLunar), sub: chineseLunar?.sub || chineseLunar?.secondary || "Lunar" },
+    calendarSnapshot(jawa, "Jawa"),
+    calendarSnapshot(cakaSunda, "Saka Sunda"),
+    calendarSnapshot(bali, "Bali"),
+    calendarSnapshot(kalacakra, "Kalacakra"),
+    calendarSnapshot(chineseLunar, "Chinese Lunar"),
   ];
 
   return (
@@ -52,9 +59,9 @@ function TodaySummary({ data }) {
         <div className="grid min-w-0 flex-1 grid-cols-2 gap-x-4 gap-y-4 sm:grid-cols-3 xl:grid-cols-5">
           {calendarItems.map((item, index) => (
             <div key={item.label} className={`${index < calendarItems.length - 1 ? "xl:border-r xl:border-[#1B4565] xl:pr-4" : ""} min-w-0`}>
-              <p className="truncate text-[10px] font-bold uppercase tracking-[0.1em] text-[#7BA7C7]">{item.label}</p>
-              <p className="mt-1 truncate text-lg font-semibold text-white">{item.value}</p>
-              <p className="truncate text-xs text-[#8FAFC7]">{item.sub}</p>
+              <p className="truncate text-[10px] font-bold uppercase tracking-[0.08em] text-[#6F8CA6]">{item.label}</p>
+              <p className="mt-1 truncate text-sm font-semibold leading-tight text-[#F3F8FC]">{item.value}</p>
+              <p className="mt-0.5 truncate text-[11px] uppercase tracking-wide text-[#7894AF]">{item.sub}</p>
             </div>
           ))}
         </div>
