@@ -81,7 +81,7 @@ export default function DashboardHome({ showFooter = true, user }) {
   const isNight = Number.isFinite(Number(sun.altitude)) ? Number(sun.altitude) < 0 : false;
 
   return (
-    <div className={`min-h-screen font-sans antialiased transition-colors duration-700 ${isNight ? "bg-[#0F172A] text-[#0F172A]" : "bg-[#F8FAFC] text-[#0F172A]"}`} data-cakra-mode={isNight ? "night" : "day"}>
+    <div className="min-h-screen bg-[#07111C] font-sans antialiased text-white transition-colors duration-700" data-cakra-mode={isNight ? "night" : "day"}>
       <Header data={data} locations={cakraLocations} city={context.selectedLocation?.id || ""} onCityChange={context.setLocationById} isToday={context.mode === "live"} user={user} />
       <main className="min-w-0 flex-1">
         <AppContent data={data} dateISO={iso(context.selectedDate)} onSelectDate={(value) => context.setSelectedDate(new Date(`${value}T12:00:00`))} time={context.selectedTime.slice(0, 5)} onTimeChange={context.setSelectedTime} onJumpToday={context.goLive} quickJumps={data.quick_jumps} onOpenEclipse={() => setEclipseOpen(true)} />
