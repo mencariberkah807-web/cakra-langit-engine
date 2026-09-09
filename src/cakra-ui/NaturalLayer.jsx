@@ -3,11 +3,17 @@ import { Moon, Sun } from "lucide-react";
 import SkyWorkspace from "./SkyWorkspace";
 import LiveObservation from "./LiveObservation";
 
-const formatTime = (value, seconds = false) => {
-  if (!value) return "—";
-  const text = String(value);
-  return seconds ? text.slice(0, 8) : text.slice(0, 5);
+const item = {
+  hidden: { opacity: 0, y: 10 },
+  show: { opacity: 1, y: 0, transition: { duration: 0.45, ease: [0.16, 1, 0.3, 1] } },
 };
+
+const naturalCard = (label, result, accent) => ({
+  label,
+  primary: result?.primary || result?.title || "—",
+  secondary: result?.secondary || "",
+  accent,
+});
 
 export default function NaturalLayer({ data, loading, onOpenEclipse }) {
   const sun = data?.natural?.sun || {};
@@ -26,6 +32,12 @@ export default function NaturalLayer({ data, loading, onOpenEclipse }) {
     ["TRANSIT", moon.transit],
     ["MOONSET", moon.set],
   ].filter(([, value]) => value);
+
+  const contextCards = [
+    naturalCard("Sky", data?.natural?.sky, "sky"),
+    naturalCard("Earth Space", data?.natural?.earth, "earth"),
+    naturalCard("Tide", data?.natural?.tide, "tide"),
+  ];
 
   return (
     <motion.section
@@ -50,13 +62,29 @@ export default function NaturalLayer({ data, loading, onOpenEclipse }) {
         </div>
       </div>
 
-      <div className="relative z-10 grid grid-cols-1 gap-3 p-3 sm:p-5 lg:grid-cols-[minmax(0,1.55fr)_minmax(220px,0.72fr)] lg:p-6">
+      <div className="relative z-10 p-3 sm:p-5 lg:p-6">
         <SkyWorkspace data={data} loading={loading} />
-        <LiveObservation data={data} onOpenEclipse={onOpenEclipse} />
       </div>
 
-      <div className="relative z-10 grid grid-cols-1 gap-3 px-3 pb-5 sm:px-5 lg:grid-cols-2 lg:px-6 lg:pb-6">
-        <motion.div variants={{ hidden: { opacity: 0, y: 10 }, show: { opacity: 1, y: 0, transition: { duration: 0.45, ease: [0.16, 1, 0.3, 1] } } }} className="rounded-[18px] border border-[#80641E] bg-[linear-gradient(135deg,rgba(251,191,36,0.13),rgba(6,17,27,0.94)_62%)] p-4 sm:p-5">
+      <div className="relative z-10 grid grid-cols-1 gap-3 px-3 sm:px-5 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] lg:px-6">
+        <LiveObservation data={data} onOpenEclipse={onOpenEclipse} />
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-3 lg:content-start">
+          {contextCards.map((card) => (
+            <motion.article
+              key={card.label}
+              variants={item}
+              className={`rounded-[18px] border p-4 ${card.accent === "sky" ? "border-[#315C7A] bg-[#061A2C]/90" : card.accent === "earth" ? "border-[#315C5A] bg-[#061C1A]/90" : "border-[#4E5564] bg-[#0A1420]/90"}`}
+            >
+              <p className="text-[9px] font-bold uppercase tracking-[0.14em] text-[#7895A8]">{card.label}</p>
+              <p className="mt-2 text-sm font-semibold text-[#E8F5FF]">{card.primary}</p>
+              {card.secondary ? <p className="mt-1 text-[10px] text-[#6F8EA4]">{card.secondary}</p> : null}
+            </motion.article>
+          ))}
+        </div>
+      </div>
+
+      <div className="relative z-10 grid grid-cols-1 gap-3 px-3 pb-5 pt-3 sm:px-5 lg:grid-cols-2 lg:px-6 lg:pb-6">
+        <motion.div variants={item} className="rounded-[18px] border border-[#80641E] bg-[linear-gradient(135deg,rgba(251,191,36,0.13),rgba(6,17,27,0.94)_62%)] p-4 sm:p-5">
           <div className="flex items-center gap-2 border-b border-[#4B3B1C] pb-3">
             <Sun className="h-5 w-5 text-[#FBBF24]" strokeWidth={1.8} />
             <h3 className="text-sm font-bold uppercase tracking-[0.1em] text-[#F8D66D]">Solar Events</h3>
@@ -65,13 +93,13 @@ export default function NaturalLayer({ data, loading, onOpenEclipse }) {
             {sunEvents.map(([label, value]) => (
               <div key={label} className="sm:border-r sm:border-[#3A3523] sm:pr-2 last:border-r-0">
                 <p className="text-[9px] font-medium text-[#A89155]">{label}</p>
-                <p className="mt-1 font-mono text-base font-semibold tabular-nums text-[#EDF9FF] sm:text-lg">{formatTime(value)}</p>
+                <p className="mt-1 font-mono text-base font-semibold tabular-nums text-[#EDF9FF] sm:text-lg">{String(value).slice(0, 5)}</p>
               </div>
             ))}
           </div>
         </motion.div>
 
-        <motion.div variants={{ hidden: { opacity: 0, y: 10 }, show: { opacity: 1, y: 0, transition: { duration: 0.45, ease: [0.16, 1, 0.3, 1] } } }} className="rounded-[18px] border border-[#5579A4] bg-[linear-gradient(135deg,rgba(96,165,250,0.13),rgba(7,18,29,0.94)_62%)] p-4 sm:p-5">
+        <motion.div variants={item} className="rounded-[18px] border border-[#5579A4] bg-[linear-gradient(135deg,rgba(96,165,250,0.13),rgba(7,18,29,0.94)_62%)] p-4 sm:p-5">
           <div className="flex items-center gap-2 border-b border-[#29425E] pb-3">
             <Moon className="h-5 w-5 text-[#BFD7FF]" strokeWidth={1.8} />
             <h3 className="text-sm font-bold uppercase tracking-[0.1em] text-[#BFD7FF]">Lunar Events</h3>
@@ -80,7 +108,7 @@ export default function NaturalLayer({ data, loading, onOpenEclipse }) {
             {moonEvents.length ? moonEvents.map(([label, value]) => (
               <div key={label}>
                 <p className="text-[9px] font-medium text-[#7895B3]">{label}</p>
-                <p className="mt-1 font-mono text-base font-semibold tabular-nums text-[#EDF9FF]">{formatTime(value)}</p>
+                <p className="mt-1 font-mono text-base font-semibold tabular-nums text-[#EDF9FF]">{String(value).slice(0, 5)}</p>
               </div>
             )) : (
               <div className="col-span-full flex items-center justify-between gap-4">
