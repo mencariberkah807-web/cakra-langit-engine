@@ -116,6 +116,7 @@ def get_calendar_data(
                 {"k": "Hari Wuku", "v": str(bali["dayInWuku"])},
                 {"k": "Pawukon Day", "v": str(bali["pawukonDay"])},
                 {"k": "Lintang", "v": bali["lintang"]},
+                {"k": "Panca Sudha", "v": bali["pancaSudha"]},
             ],
             "effectiveDate": bali["effectiveDate"],
             "boundary": bali["boundary"],
@@ -126,6 +127,8 @@ def get_calendar_data(
                 "pancawara": bali["pancawara"],
                 "wuku": bali["wuku"],
                 "pawukonDay": bali["pawukonDay"],
+                "pancaSudha": bali["pancaSudha"],
+                "pancaSudhaIndex": bali["pancaSudhaIndex"],
             },
             "meta": {
                 **bali["meta"],
@@ -136,6 +139,8 @@ def get_calendar_data(
                 "pawukonDay": bali["pawukonDay"],
                 "lintang": bali["lintang"],
                 "lintangIndex": bali["lintangIndex"],
+                "pancaSudha": bali["pancaSudha"],
+                "pancaSudhaIndex": bali["pancaSudhaIndex"],
             },
         },
         "kalacakra": {
