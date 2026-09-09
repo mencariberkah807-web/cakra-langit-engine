@@ -36,10 +36,16 @@ async function fetchAlmanac(location, date, isLive = false) {
   if (!location || !date) return null
 
   const params = new URLSearchParams({
-    location_id: location.id,
     city: location.city,
     datetime_value: date.toISOString(),
   })
+
+  // Local city-timezones IDs are not guaranteed to match the backend's
+  // canonical Indonesia location IDs. Let the backend resolve by city when
+  // the frontend ID uses the local composite form.
+  if (location.id && !String(location.id).includes(':')) {
+    params.set('location_id', location.id)
+  }
 
   if (!isLive) {
     params.set(
