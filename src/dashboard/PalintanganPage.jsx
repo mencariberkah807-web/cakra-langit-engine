@@ -1,5 +1,5 @@
 const SECTIONS = [
-  ['Lintang', 'Nama lintang hasil siklus Palukon 35 hari.'],
+  ['Lintang', 'Nama lintang hasil siklus Pawukon 35 hari.'],
   ['Pawukon Context', 'Saptawara, Pancawara, Wuku, dan posisi hari.'],
 ]
 
