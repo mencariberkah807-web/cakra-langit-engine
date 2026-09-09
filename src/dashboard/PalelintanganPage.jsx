@@ -4,6 +4,7 @@ const SECTIONS = [
   ['Panca Sudha', 'Hasil klasifikasi Panca Sudha dari Kerta Aji Sapta Wara dan Urip Panca Wara.'],
   ['Rakam', 'Hasil Rakam dari Kupih Sapta Wara dan Kupih Panca Wara.'],
   ['Pararasan', 'Memuat varian Pararasan yang terdokumentasi tanpa memilih satu varian sebagai universal.'],
+  ['Ingkel', 'Klasifikasi Ingkel enam siklus berdasarkan indeks Wuku.'],
 ]
 
 export default function PalelintanganPage() {
@@ -57,12 +58,13 @@ export default function PalelintanganPage() {
 
       <div className="mt-5 rounded-2xl border border-white/[0.07] bg-[#0A1723] p-5">
         <div className="text-xs font-semibold uppercase tracking-[0.14em] text-slate-500">Metode & Sumber</div>
-        <div className="mt-4 grid gap-3 sm:grid-cols-5">
+        <div className="mt-4 grid gap-3 sm:grid-cols-6">
           <div><div className="text-xs text-slate-500">Domain</div><div className="mt-1 text-sm text-white">Palelintangan / Wariga Bali</div></div>
           <div><div className="text-xs text-slate-500">Siklus</div><div className="mt-1 text-sm text-white">35 Lintang</div></div>
           <div><div className="text-xs text-slate-500">Lintang</div><div className="mt-1 text-sm text-white">Pawukon day mod 35</div></div>
           <div><div className="text-xs text-slate-500">Panca Sudha</div><div className="mt-1 text-sm text-white">(Kerta Aji + Urip) mod 7</div></div>
           <div><div className="text-xs text-slate-500">Rakam</div><div className="mt-1 text-sm text-white">(Kupih + Kupih) mod 6</div></div>
+          <div><div className="text-xs text-slate-500">Ingkel</div><div className="mt-1 text-sm text-white">Wuku index mod 6</div></div>
         </div>
         <div className="mt-4 rounded-xl border border-amber-400/20 bg-amber-400/[0.04] p-4">
           <div className="text-sm font-semibold text-white">Pararasan · variant boundary</div>
