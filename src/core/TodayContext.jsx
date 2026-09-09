@@ -19,7 +19,7 @@ import {
 
 const TodayContext = createContext(null)
 
-const API_BASE = 'http://127.0.0.1:8000'
+const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://127.0.0.1:8000'
 const LOCATION_STORAGE_KEY = 'personal-almanac:selected-location'
 const LOCATION_SOURCE_STORAGE_KEY = 'personal-almanac:selected-location-source'
 
