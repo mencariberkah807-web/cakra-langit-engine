@@ -24,10 +24,10 @@ const LOCATION_STORAGE_KEY = 'personal-almanac:selected-location'
 const LOCATION_SOURCE_STORAGE_KEY = 'personal-almanac:selected-location-source'
 
 function getApiBase() {
-  if (ENV_API_BASE) return ENV_API_BASE
   if (typeof window !== 'undefined' && window.location.hostname.includes('-5173.app.github.dev')) {
     return ''
   }
+  if (ENV_API_BASE) return ENV_API_BASE
   return 'http://127.0.0.1:8000'
 }
 
