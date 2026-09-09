@@ -1,32 +1,75 @@
-import { TodayProvider } from '../core/TodayContext'
-import { LanguageProvider } from '../core/LanguageContext'
+import { useEffect, useState } from 'react'
+import { TodayProvider, useTodayContext } from '../core/TodayContext'
 import { useAuth } from '../auth/AuthContext'
-import DashboardHome from '../dashboard/DashboardHome'
+import PublicLayout from '../layouts/PublicLayout'
+import PublicNavigation from './PublicNavigation'
+import PublicHero from './PublicHero'
+import PublicFeatureHighlights from './PublicFeatureHighlights'
+import Ticker from '../cakra-ui/Ticker'
+import { defaultSettings, fetchSiteSettings, resolveAssetUrl } from './siteSettings'
+
+function PublicPageContent({ isAuthenticated, settings }) {
+  const context = useTodayContext()
+  const data = {
+    ...context,
+    ...(context.apiData || {}),
+    location: context.location,
+    selectedDate: context.selectedDate,
+  }
+
+  useEffect(() => {
+    if (settings.page_title) document.title = settings.page_title
+    if (settings.meta_description !== null) {
+      let meta = document.querySelector('meta[name="description"]')
+      if (!meta) {
+        meta = document.createElement('meta')
+        meta.name = 'description'
+        document.head.appendChild(meta)
+      }
+      meta.content = settings.meta_description || ''
+    }
+
+    const faviconUrl = resolveAssetUrl(settings.favicon)
+    if (faviconUrl) {
+      let link = document.querySelector('link[rel="icon"]')
+      if (!link) {
+        link = document.createElement('link')
+        link.rel = 'icon'
+        document.head.appendChild(link)
+      }
+      link.href = faviconUrl
+    }
+  }, [settings])
+
+  return (
+    <>
+      <PublicNavigation isAuthenticated={isAuthenticated} settings={settings} />
+      <Ticker data={data} />
+      <PublicHero data={data} isAuthenticated={isAuthenticated} settings={settings} />
+      <PublicFeatureHighlights settings={settings} />
+    </>
+  )
+}
 
 export default function PublicConverterLayer() {
   const { isAuthenticated } = useAuth()
+  const [settings, setSettings] = useState(defaultSettings)
+
+  useEffect(() => {
+    let active = true
+    fetchSiteSettings().then((nextSettings) => {
+      if (active) setSettings(nextSettings)
+    })
+    return () => {
+      active = false
+    }
+  }, [])
 
   return (
-    <LanguageProvider>
+    <PublicLayout>
       <TodayProvider>
-        <DashboardHome showFooter={true} user={isAuthenticated ? undefined : null} />
-        {!isAuthenticated && (
-          <div className="fixed right-5 top-5 z-50 flex items-center gap-2">
-            <a
-              href="/login"
-              className="rounded-md border border-cyan-300/25 bg-[#0D2535]/90 px-4 py-2 text-[11px] font-semibold text-white backdrop-blur hover:bg-[#12324A]"
-            >
-              Masuk
-            </a>
-            <a
-              href="/login"
-              className="rounded-md bg-[#2563EB] px-4 py-2 text-[11px] font-semibold text-white shadow-sm hover:bg-[#1D4ED8]"
-            >
-              Daftar
-            </a>
-          </div>
-        )}
+        <PublicPageContent isAuthenticated={isAuthenticated} settings={settings} />
       </TodayProvider>
-    </LanguageProvider>
+    </PublicLayout>
   )
 }
