@@ -29,7 +29,7 @@ function LoadingScreen() {
 
 export default function App() {
   const { loading, isAuthenticated, user } = useAuth()
-  const rawPath = window.location.pathname
+  const rawPath = window.location.pathname.replace(/\/+$/, '') || '/'
 
   if (loading) return <LoadingScreen />
 
