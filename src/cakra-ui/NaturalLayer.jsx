@@ -1,12 +1,7 @@
 import { motion } from "framer-motion";
 import { Moon, Sun } from "lucide-react";
-import SunArc from "./SunArc";
+import SkyWorkspace from "./SkyWorkspace";
 import LiveObservation from "./LiveObservation";
-
-const item = {
-  hidden: { opacity: 0, y: 10 },
-  show: { opacity: 1, y: 0, transition: { duration: 0.45, ease: [0.16, 1, 0.3, 1] } },
-};
 
 const formatTime = (value, seconds = false) => {
   if (!value) return "—";
@@ -17,7 +12,6 @@ const formatTime = (value, seconds = false) => {
 export default function NaturalLayer({ data, loading, onOpenEclipse }) {
   const sun = data?.natural?.sun || {};
   const moon = data?.natural?.moon || {};
-  const activeTime = data?.selectedTime || data?.time?.local || "—";
   const dateLabel = data?.date_info?.date_long || data?.date_info?.date || "—";
 
   const sunEvents = [
@@ -57,26 +51,12 @@ export default function NaturalLayer({ data, loading, onOpenEclipse }) {
       </div>
 
       <div className="relative z-10 grid grid-cols-1 gap-3 p-3 sm:p-5 lg:grid-cols-[minmax(0,1.55fr)_minmax(220px,0.72fr)] lg:p-6">
-        <motion.div variants={item} className="relative min-h-[430px] overflow-hidden rounded-[20px] border border-[#1B4E6A] bg-[radial-gradient(circle_at_50%_42%,rgba(56,189,248,0.1),transparent_27%),radial-gradient(circle_at_50%_72%,rgba(124,58,237,0.08),transparent_34%),linear-gradient(180deg,#061625_0%,#03101D_62%,#020A13_100%)]" aria-label="Celestial sky workspace">
-          <div className="absolute inset-0 opacity-55 [background-image:linear-gradient(rgba(126,154,174,0.1)_1px,transparent_1px),linear-gradient(90deg,rgba(126,154,174,0.1)_1px,transparent_1px)] [background-size:42px_42px]" />
-          <div className="absolute inset-x-4 top-4 z-20 flex items-center justify-between text-[8px] font-bold uppercase tracking-[0.16em] text-[#527D95] sm:inset-x-5 sm:text-[9px]">
-            <span>Cakra Langit Sky Workspace</span>
-            <span>Live observation</span>
-          </div>
-          <div className="relative h-[430px] sm:h-[500px] lg:h-[530px]">
-            {loading || !data ? (
-              <div className="absolute inset-5 animate-pulse rounded-xl border border-[#1C4966] bg-[#082238]/50" />
-            ) : (
-              <SunArc sun={sun} moon={moon} time={activeTime} loading={false} embedded />
-            )}
-          </div>
-        </motion.div>
-
+        <SkyWorkspace data={data} loading={loading} />
         <LiveObservation data={data} onOpenEclipse={onOpenEclipse} />
       </div>
 
       <div className="relative z-10 grid grid-cols-1 gap-3 px-3 pb-5 sm:px-5 lg:grid-cols-2 lg:px-6 lg:pb-6">
-        <motion.div variants={item} className="rounded-[18px] border border-[#80641E] bg-[linear-gradient(135deg,rgba(251,191,36,0.13),rgba(6,17,27,0.94)_62%)] p-4 sm:p-5">
+        <motion.div variants={{ hidden: { opacity: 0, y: 10 }, show: { opacity: 1, y: 0, transition: { duration: 0.45, ease: [0.16, 1, 0.3, 1] } } }} className="rounded-[18px] border border-[#80641E] bg-[linear-gradient(135deg,rgba(251,191,36,0.13),rgba(6,17,27,0.94)_62%)] p-4 sm:p-5">
           <div className="flex items-center gap-2 border-b border-[#4B3B1C] pb-3">
             <Sun className="h-5 w-5 text-[#FBBF24]" strokeWidth={1.8} />
             <h3 className="text-sm font-bold uppercase tracking-[0.1em] text-[#F8D66D]">Solar Events</h3>
@@ -91,7 +71,7 @@ export default function NaturalLayer({ data, loading, onOpenEclipse }) {
           </div>
         </motion.div>
 
-        <motion.div variants={item} className="rounded-[18px] border border-[#5579A4] bg-[linear-gradient(135deg,rgba(96,165,250,0.13),rgba(7,18,29,0.94)_62%)] p-4 sm:p-5">
+        <motion.div variants={{ hidden: { opacity: 0, y: 10 }, show: { opacity: 1, y: 0, transition: { duration: 0.45, ease: [0.16, 1, 0.3, 1] } } }} className="rounded-[18px] border border-[#5579A4] bg-[linear-gradient(135deg,rgba(96,165,250,0.13),rgba(7,18,29,0.94)_62%)] p-4 sm:p-5">
           <div className="flex items-center gap-2 border-b border-[#29425E] pb-3">
             <Moon className="h-5 w-5 text-[#BFD7FF]" strokeWidth={1.8} />
             <h3 className="text-sm font-bold uppercase tracking-[0.1em] text-[#BFD7FF]">Lunar Events</h3>
