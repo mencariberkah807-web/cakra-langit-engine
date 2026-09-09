@@ -10,16 +10,16 @@ export default function PublicFeatureHighlights({ settings }) {
   ])
 
   return (
-    <section className="border-b border-[#E2E8F0] bg-white">
-      <div className="mx-auto grid max-w-[1360px] grid-cols-1 divide-y divide-[#E2E8F0] px-5 sm:grid-cols-2 sm:px-7 sm:divide-y-0 lg:grid-cols-4 lg:px-10">
+    <section className="border-b border-white/10 bg-[#07111C]">
+      <div className="mx-auto grid max-w-[1360px] grid-cols-1 divide-y divide-white/10 px-5 sm:grid-cols-2 sm:px-7 sm:divide-y-0 lg:grid-cols-4 lg:px-10">
         {items.map(([Icon, title, description]) => (
-          <div key={title} className="flex items-center gap-5 px-5 py-8 lg:px-8 lg:py-9">
-            <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-[#EFF6FF] text-[#2563EB]">
+          <div key={title} className="flex items-center gap-5 px-5 py-8 lg:border-r lg:border-white/10 lg:px-8 lg:py-9 lg:last:border-r-0">
+            <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full border border-cyan-400/20 bg-cyan-400/10 text-cyan-300">
               <Icon className="h-6 w-6" strokeWidth={1.7} />
             </span>
             <span>
-              <span className="block text-[15px] font-semibold tracking-[-0.01em] text-[#1E293B] sm:text-base">{title}</span>
-              <span className="mt-1 block text-xs leading-5 text-[#64748B] sm:text-[13px]">{description}</span>
+              <span className="block text-[15px] font-semibold tracking-[-0.01em] text-white sm:text-base">{title}</span>
+              <span className="mt-1 block text-xs leading-5 text-slate-400 sm:text-[13px]">{description}</span>
             </span>
           </div>
         ))}
