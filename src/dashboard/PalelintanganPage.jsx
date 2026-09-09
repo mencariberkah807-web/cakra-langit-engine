@@ -1,6 +1,6 @@
 const SECTIONS = [
   ['Lintang', 'Nama lintang hasil siklus Pawukon 35 hari.'],
-  ['Pawukon Context', 'Saptawara, Pancawara, Wuku, dan posisi hari.'],
+  ['Pawukon Context', 'Saptawara, Pancawara, Wuku, Hari Wuku, dan posisi hari.'],
 ]
 
 export default function PalelintanganPage() {
