@@ -19,16 +19,24 @@ import {
 
 const TodayContext = createContext(null)
 
-const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://127.0.0.1:8000'
+const ENV_API_BASE = import.meta.env.VITE_API_BASE_URL || ''
 const LOCATION_STORAGE_KEY = 'personal-almanac:selected-location'
 const LOCATION_SOURCE_STORAGE_KEY = 'personal-almanac:selected-location-source'
 
+function getApiBase() {
+  if (ENV_API_BASE) return ENV_API_BASE
+  if (typeof window !== 'undefined' && window.location.hostname.includes('-5173.app.github.dev')) {
+    return `https://${window.location.hostname.replace('-5173.app.github.dev', '-8000.app.github.dev')}`
+  }
+  return 'http://127.0.0.1:8000'
+}
+
 function getLocalDateISO(date, timezone) {
-  return new Intl.DateTimeFormat("en-CA", {
+  return new Intl.DateTimeFormat('en-CA', {
     timeZone: timezone,
-    year: "numeric",
-    month: "2-digit",
-    day: "2-digit",
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
   }).format(date)
 }
 
@@ -40,21 +48,15 @@ async function fetchAlmanac(location, date, isLive = false) {
     datetime_value: date.toISOString(),
   })
 
-  // Local city-timezones IDs are not guaranteed to match the backend's
-  // canonical Indonesia location IDs. Let the backend resolve by city when
-  // the frontend ID uses the local composite form.
   if (location.id && !String(location.id).includes(':')) {
     params.set('location_id', location.id)
   }
 
   if (!isLive) {
-    params.set(
-      "date_value",
-      getLocalDateISO(date, location.timezone)
-    )
+    params.set('date_value', getLocalDateISO(date, location.timezone))
   }
 
-  const response = await fetch(`${API_BASE}/api/almanac?${params}`)
+  const response = await fetch(`${getApiBase()}/api/almanac?${params}`)
 
   if (!response.ok) {
     throw new Error(`Almanac API error: ${response.status}`)
@@ -67,13 +69,8 @@ function getMode(selectedDate, now) {
   const selectedTimestamp = selectedDate.getTime()
   const nowTimestamp = now.getTime()
 
-  if (Math.abs(selectedTimestamp - nowTimestamp) < 1000) {
-    return 'live'
-  }
-
-  return selectedTimestamp < nowTimestamp
-    ? 'past'
-    : 'future'
+  if (Math.abs(selectedTimestamp - nowTimestamp) < 1000) return 'live'
+  return selectedTimestamp < nowTimestamp ? 'past' : 'future'
 }
 
 function formatSelectedTime(date, timezone) {
@@ -99,16 +96,9 @@ export function TodayProvider({ children }) {
   const [selectedDate, setSelectedDateState] = useState(null)
   const [selectedTimeState, setSelectedTimeState] = useState(null)
   const [selectedLocation, setSelectedLocation] = useState(() => {
-    const browserTimezone =
-      Intl.DateTimeFormat().resolvedOptions().timeZone
-
-    const browserLocation =
-      findLocationByTimezone(browserTimezone)
-
-    if (browserLocation?.countryCode === 'ID') {
-      return browserLocation
-    }
-
+    const browserTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone
+    const browserLocation = findLocationByTimezone(browserTimezone)
+    if (browserLocation?.countryCode === 'ID') return browserLocation
     return null
   })
   const [apiData, setApiData] = useState(null)
@@ -123,75 +113,42 @@ export function TodayProvider({ children }) {
       try {
         storedId = window.localStorage.getItem(LOCATION_STORAGE_KEY)
         storedSource = window.localStorage.getItem(LOCATION_SOURCE_STORAGE_KEY)
-      } catch {
-        // Ignore storage errors and continue with browser detection.
-      }
+      } catch {}
 
       if (storedSource === 'manual' && storedId) {
         try {
           const storedLocation = await findLocationById(storedId)
-          if (!cancelled && storedLocation) {
-            setSelectedLocation(storedLocation)
-          }
+          if (!cancelled && storedLocation) setSelectedLocation(storedLocation)
           return
-        } catch {
-          // Fall through to browser geolocation.
-        }
+        } catch {}
       }
 
       if (!navigator.geolocation) return
 
       navigator.geolocation.getCurrentPosition(
         async ({ coords }) => {
-          const browserLocation = findLocationByCoordinates(
-            coords.latitude,
-            coords.longitude
-          )
-
-          if (!browserLocation || browserLocation.countryCode !== 'ID') {
-            return
-          }
+          const browserLocation = findLocationByCoordinates(coords.latitude, coords.longitude)
+          if (!browserLocation || browserLocation.countryCode !== 'ID') return
 
           if (!cancelled) {
             setSelectedLocation(browserLocation)
             try {
-              window.localStorage.setItem(
-                LOCATION_STORAGE_KEY,
-                browserLocation.id
-              )
-              window.localStorage.setItem(
-                LOCATION_SOURCE_STORAGE_KEY,
-                'browser'
-              )
-            } catch {
-              // Ignore storage errors.
-            }
+              window.localStorage.setItem(LOCATION_STORAGE_KEY, browserLocation.id)
+              window.localStorage.setItem(LOCATION_SOURCE_STORAGE_KEY, 'browser')
+            } catch {}
           }
         },
-        () => {
-          // Keep the timezone-derived initial location when geolocation is
-          // unavailable, denied, or times out.
-        },
-        {
-          enableHighAccuracy: false,
-          maximumAge: 300000,
-          timeout: 10000,
-        }
+        () => {},
+        { enableHighAccuracy: false, maximumAge: 300000, timeout: 10000 }
       )
     }
 
     initializeLocation()
-
-    return () => {
-      cancelled = true
-    }
+    return () => { cancelled = true }
   }, [])
 
   useEffect(() => {
-    const timer = window.setInterval(() => {
-      setNow(new Date())
-    }, 1000)
-
+    const timer = window.setInterval(() => setNow(new Date()), 1000)
     return () => window.clearInterval(timer)
   }, [])
 
@@ -199,9 +156,7 @@ export function TodayProvider({ children }) {
   const activeTimezone = selectedLocation?.timezone || 'Asia/Jakarta'
   const liveTime = formatSelectedTime(now, activeTimezone)
   const selectedTime = selectedTimeState || (liveMode ? liveTime : '12:00:00')
-  const activeDate = liveMode
-    ? now
-    : applyTimeToDate(selectedDate, selectedTime)
+  const activeDate = liveMode ? now : applyTimeToDate(selectedDate, selectedTime)
   const almanacFetchDate = liveMode
     ? new Date(Math.floor(now.getTime() / 60000) * 60000)
     : activeDate
@@ -209,11 +164,7 @@ export function TodayProvider({ children }) {
   useEffect(() => {
     let cancelled = false
 
-    fetchAlmanac(
-      selectedLocation,
-      almanacFetchDate,
-      liveMode
-    )
+    fetchAlmanac(selectedLocation, almanacFetchDate, liveMode)
       .then((result) => {
         if (!cancelled) setApiData(result)
       })
@@ -221,9 +172,7 @@ export function TodayProvider({ children }) {
         if (!cancelled) setApiData(null)
       })
 
-    return () => {
-      cancelled = true
-    }
+    return () => { cancelled = true }
   }, [selectedLocation, almanacFetchDate, liveMode])
 
   function setSelectedDate(date) {
@@ -246,25 +195,15 @@ export function TodayProvider({ children }) {
     setSelectedLocation(location)
     try {
       if (location?.id) {
-        window.localStorage.setItem(
-          LOCATION_STORAGE_KEY,
-          location.id
-        )
-        window.localStorage.setItem(
-          LOCATION_SOURCE_STORAGE_KEY,
-          'manual'
-        )
+        window.localStorage.setItem(LOCATION_STORAGE_KEY, location.id)
+        window.localStorage.setItem(LOCATION_SOURCE_STORAGE_KEY, 'manual')
       }
-    } catch {
-      // Ignore storage errors.
-    }
+    } catch {}
   }
 
   function setLocationByCity(city, countryCode = null) {
     const location = findLocation(city, countryCode)
-    if (!location) {
-      throw new Error(`Unknown location: ${city}`)
-    }
+    if (!location) throw new Error(`Unknown location: ${city}`)
     setLocation(location)
   }
 
@@ -273,36 +212,21 @@ export function TodayProvider({ children }) {
       setLocation(idOrLocation)
       return
     }
-
     const location = await findLocationById(idOrLocation)
-    if (!location) {
-      throw new Error(`Unknown location id: ${idOrLocation}`)
-    }
+    if (!location) throw new Error(`Unknown location id: ${idOrLocation}`)
     setLocation(location)
   }
 
   const value = useMemo(() => {
-    const almanacContext = createAlmanacContext({
-      date: activeDate,
-      location: selectedLocation,
-    })
-
+    const almanacContext = createAlmanacContext({ date: activeDate, location: selectedLocation })
     const location = selectedLocation
       ? {
           ...selectedLocation,
           name: selectedLocation.city,
           region: selectedLocation.province,
           tz: selectedLocation.timezone,
-          tz_label:
-            selectedLocation.timezoneLabel ||
-            getTimezoneLabel(
-              selectedLocation.timezone,
-              now
-            ),
-          utc: getLocationUtcOffset(
-            selectedLocation.timezone,
-            now
-          ),
+          tz_label: selectedLocation.timezoneLabel || getTimezoneLabel(selectedLocation.timezone, now),
+          utc: getLocationUtcOffset(selectedLocation.timezone, now),
         }
       : null
 
@@ -325,24 +249,13 @@ export function TodayProvider({ children }) {
         setSelectedTimeState(null)
       },
     }
-
   }, [activeDate, now, selectedLocation, apiData, selectedTime, liveMode])
 
-  return (
-    <TodayContext.Provider value={value}>
-      {children}
-    </TodayContext.Provider>
-  )
+  return <TodayContext.Provider value={value}>{children}</TodayContext.Provider>
 }
 
 export function useTodayContext() {
   const context = useContext(TodayContext)
-
-  if (!context) {
-    throw new Error(
-      'useTodayContext must be used inside TodayProvider'
-    )
-  }
-
+  if (!context) throw new Error('useTodayContext must be used inside TodayProvider')
   return context
 }
