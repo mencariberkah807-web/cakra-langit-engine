@@ -115,9 +115,18 @@ def get_calendar_data(
                 {"k": "Wuku", "v": bali["wuku"]},
                 {"k": "Hari Wuku", "v": str(bali["dayInWuku"])},
                 {"k": "Pawukon Day", "v": str(bali["pawukonDay"])},
+                {"k": "Lintang", "v": bali["lintang"]},
             ],
             "effectiveDate": bali["effectiveDate"],
             "boundary": bali["boundary"],
+            "detail": {
+                "lintang": bali["lintang"],
+                "lintangIndex": bali["lintangIndex"],
+                "saptawara": bali["saptawara"],
+                "pancawara": bali["pancawara"],
+                "wuku": bali["wuku"],
+                "pawukonDay": bali["pawukonDay"],
+            },
             "meta": {
                 **bali["meta"],
                 "saptawara": bali["saptawara"],
@@ -125,6 +134,8 @@ def get_calendar_data(
                 "wuku": bali["wuku"],
                 "dayInWuku": bali["dayInWuku"],
                 "pawukonDay": bali["pawukonDay"],
+                "lintang": bali["lintang"],
+                "lintangIndex": bali["lintangIndex"],
             },
         },
         "kalacakra": {
@@ -192,7 +203,7 @@ def get_calendar_data(
             "headline": f"{saka_sunda['day']} {saka_sunda['monthName']} {saka_sunda['year']}",
             "sub": saka_sunda["yearType"],
             "fields": [
-                {"k": "Tanggal", "v": str(saka_sunda["day"])},
+                {"k": "Tanggal", "v": str(saka_sunda["day"] )},
                 {"k": "Bulan", "v": saka_sunda["monthName"]},
                 {"k": "Tahun", "v": str(saka_sunda["year"])},
                 {"k": "Tipe Tahun", "v": saka_sunda["yearType"]},
