@@ -20,9 +20,9 @@ export default function AppContent({
       <div className="mx-auto grid w-full max-w-[1500px] grid-cols-1 gap-6 xl:grid-cols-12 xl:items-start">
         <section className="flex min-w-0 flex-col gap-6 xl:col-span-8" aria-label="Almanac workspace">
           <CalendarSystems data={data} />
+          <NaturalLayerLegacy />
           <NaturalLayer data={data} loading={false} onOpenEclipse={onOpenEclipse} />
           <NaturalFutureEngines />
-          <NaturalLayerLegacy />
         </section>
 
         <aside className="flex min-w-0 flex-col gap-6 xl:sticky xl:top-6 xl:col-span-4 xl:self-start" aria-label="Almanac context">
