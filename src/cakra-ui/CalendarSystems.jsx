@@ -1,14 +1,25 @@
+import { useState } from "react";
 import { motion } from "framer-motion";
 import { CalendarDays } from "lucide-react";
 
 const container = {
   hidden: {},
-  show: { transition: { staggerChildren: 0.05, delayChildren: 0.25 } },
+  show: { transition: { staggerChildren: 0.05, delayChildren: 0.15 } },
 };
+
 const item = {
-  hidden: { opacity: 0, y: 18 },
-  show: { opacity: 1, y: 0, transition: { duration: 0.6, ease: [0.16, 1, 0.3, 1] } },
+  hidden: { opacity: 0, y: 12 },
+  show: { opacity: 1, y: 0, transition: { duration: 0.45, ease: [0.16, 1, 0.3, 1] } },
 };
+
+const CALENDAR_ORDER = [
+  "jawa",
+  "saka-sunda",
+  "bali",
+  "kalacakra",
+  "chinese-lunar",
+  "hijri",
+];
 
 const CALENDAR_ROUTES = {
   bali: "/dashboard/palelintangan",
@@ -26,11 +37,16 @@ const CALENDAR_LABELS = {
 
 export default function CalendarSystems({ data }) {
   const calendars = data?.calendars || [];
+  const orderedCalendars = CALENDAR_ORDER
+    .map((id) => calendars.find((cal) => cal.id === id))
+    .filter(Boolean);
+  const [expandedId, setExpandedId] = useState(null);
 
-  const openCalendar = (id) => {
-    const href = CALENDAR_ROUTES[id];
-    if (href) window.location.href = href;
+  const toggleCalendar = (id) => {
+    setExpandedId((current) => (current === id ? null : id));
   };
+
+  const expandedCalendar = orderedCalendars.find((cal) => cal.id === expandedId) || null;
 
   return (
     <motion.section
@@ -43,57 +59,76 @@ export default function CalendarSystems({ data }) {
       <div className="mb-4 flex items-center gap-2">
         <CalendarDays className="h-4 w-4 text-[#8ED8FF]" strokeWidth={1.8} />
         <div>
-          <h2 className="text-[11px] font-bold uppercase tracking-[0.12em] text-[#C7D9EA]">
-            Calendar Systems
-          </h2>
+          <h2 className="text-[11px] font-bold uppercase tracking-[0.12em] text-[#C7D9EA]">Calendar Systems</h2>
           <p className="mt-1 text-xs text-[#7894AF]">Today calculation snapshot</p>
         </div>
       </div>
 
-      <div className="grid grid-cols-1 gap-3.5 min-[480px]:grid-cols-2 md:grid-cols-3">
-        {!data
-          ? Array.from({ length: 7 }).map((_, i) => (
-              <div key={i} className="h-[220px] animate-pulse rounded-xl border border-[#163A5C] bg-[#0A2139]" />
-            ))
-          : calendars.map((cal) => {
-              const href = CALENDAR_ROUTES[cal.id];
-              const clickable = !cal.future && Boolean(href);
-
+      {!data ? (
+        <div className="grid grid-cols-2 gap-3 md:grid-cols-3 2xl:grid-cols-6">
+          {Array.from({ length: 6 }).map((_, i) => (
+            <div key={i} className="h-24 animate-pulse rounded-xl border border-[#163A5C] bg-[#0A2139]" />
+          ))}
+        </div>
+      ) : (
+        <>
+          <div className="grid grid-cols-2 gap-3 md:grid-cols-3 2xl:grid-cols-6">
+            {orderedCalendars.map((cal) => {
+              const expanded = expandedId === cal.id;
               return (
-                <motion.div
+                <motion.button
                   key={cal.id}
+                  type="button"
                   variants={item}
-                  whileHover={clickable ? { y: -3, transition: { duration: 0.2 } } : {}}
-                  onClick={clickable ? () => openCalendar(cal.id) : undefined}
-                  role={clickable ? "button" : undefined}
-                  tabIndex={clickable ? 0 : undefined}
-                  onKeyDown={clickable ? (e) => (e.key === "Enter" || e.key === " ") && openCalendar(cal.id) : undefined}
-                  data-testid={`calendar-card-${cal.id}`}
-                  className={`rounded-xl border p-4 transition-[border-color,background,box-shadow,transform] duration-200 ${cal.future ? "border-dashed border-[#244765] bg-[#081D32]" : "border-[#1B4568] bg-gradient-to-b from-[#0B2742] to-[#071D32] hover:border-[#2C78A8] hover:shadow-[0_10px_24px_rgba(0,20,45,0.24)]"} ${clickable ? "cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#36C8FF] focus:ring-offset-2 focus:ring-offset-[#06172B]" : ""}`}
+                  whileHover={{ y: -2 }}
+                  onClick={() => toggleCalendar(cal.id)}
+                  aria-expanded={expanded}
+                  data-testid={`calendar-snapshot-${cal.id}`}
+                  className={`min-w-0 rounded-xl border p-3 text-left transition-[border-color,background,box-shadow,transform] duration-200 focus:outline-none focus:ring-2 focus:ring-[#36C8FF] ${expanded ? "border-[#2C78A8] bg-[#0B2742] shadow-[0_10px_24px_rgba(0,20,45,0.2)]" : "border-[#1B4568] bg-gradient-to-b from-[#0B2742] to-[#071D32] hover:border-[#2C78A8]"}`}
                 >
-                  <p className="text-[10px] font-bold uppercase tracking-[0.08em] text-[#6F8CA6]">Calendar</p>
-                  <p className="mt-1 text-sm font-semibold text-[#F3F8FC]">{cal.name}</p>
-                  {cal.future ? (
-                    <p className="mt-3 text-[11px] font-medium text-[#718BA2]">Future engine</p>
-                  ) : (
-                    <>
-                      <p className="mt-3 text-[13px] font-semibold leading-tight text-[#DCEBFA]">{cal.headline}</p>
-                      <p className="mt-0.5 text-[11px] uppercase tracking-wide text-[#7894AF]">{cal.sub}</p>
-                      <div className="mt-3 space-y-1.5 border-t border-[#163A5C] pt-3">
-                        {(cal.fields || []).map((f) => (
-                          <div key={f.k} className="flex items-baseline justify-between gap-2 text-[11px]">
-                            <span className="text-[#7894AF]">{f.k}</span>
-                            <span className="text-right font-medium text-[#DCEBFA]">{f.v}</span>
-                          </div>
-                        ))}
-                      </div>
-                      {clickable && <p className="mt-3 text-[10px] font-bold uppercase tracking-[0.08em] text-[#55CCFF]">{CALENDAR_LABELS[cal.id]}</p>}
-                    </>
-                  )}
-                </motion.div>
+                  <p className="truncate text-[10px] font-bold uppercase tracking-[0.08em] text-[#6F8CA6]">{cal.name}</p>
+                  <p className="mt-1 truncate text-sm font-semibold leading-tight text-[#F3F8FC]">{cal.headline || cal.primary || "—"}</p>
+                  <p className="mt-0.5 truncate text-[11px] uppercase tracking-wide text-[#7894AF]">{cal.sub || cal.secondary || "—"}</p>
+                </motion.button>
               );
             })}
-      </div>
+          </div>
+
+          {expandedCalendar && (
+            <motion.div
+              key={expandedCalendar.id}
+              initial={{ opacity: 0, height: 0, y: -6 }}
+              animate={{ opacity: 1, height: "auto", y: 0 }}
+              className="mt-4 rounded-xl border border-[#1B4568] bg-gradient-to-b from-[#0B2742] to-[#071D32] p-4"
+              data-testid={`calendar-detail-${expandedCalendar.id}`}
+            >
+              <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+                <div className="min-w-0">
+                  <p className="text-[10px] font-bold uppercase tracking-[0.08em] text-[#6F8CA6]">{expandedCalendar.name}</p>
+                  <p className="mt-1 text-base font-semibold leading-tight text-[#DCEBFA]">{expandedCalendar.headline}</p>
+                  <p className="mt-0.5 text-[11px] uppercase tracking-wide text-[#7894AF]">{expandedCalendar.sub}</p>
+                </div>
+                {CALENDAR_ROUTES[expandedCalendar.id] && (
+                  <a
+                    href={CALENDAR_ROUTES[expandedCalendar.id]}
+                    className="shrink-0 text-[10px] font-bold uppercase tracking-[0.08em] text-[#55CCFF]"
+                  >
+                    {CALENDAR_LABELS[expandedCalendar.id]}
+                  </a>
+                )}
+              </div>
+              <div className="mt-4 grid gap-x-6 gap-y-2 border-t border-[#163A5C] pt-4 sm:grid-cols-2 lg:grid-cols-3">
+                {(expandedCalendar.fields || []).map((field) => (
+                  <div key={field.k} className="flex items-baseline justify-between gap-3 text-[11px]">
+                    <span className="text-[#7894AF]">{field.k}</span>
+                    <span className="text-right font-medium text-[#DCEBFA]">{field.v}</span>
+                  </div>
+                ))}
+              </div>
+            </motion.div>
+          )}
+        </>
+      )}
     </motion.section>
   );
 }
