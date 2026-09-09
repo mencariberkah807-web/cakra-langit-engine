@@ -49,18 +49,18 @@ export default function SunArc({ sun, moon, time, loading, embedded = false }) {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1], delay: 0.2 }}
       className={embedded
-        ? "pointer-events-none absolute inset-x-5 bottom-12 z-10 lg:right-[220px] lg:bottom-8"
+        ? "pointer-events-none absolute inset-x-5 bottom-4 z-10 lg:right-[220px]"
         : "overflow-hidden rounded-2xl border border-[#163452] bg-[radial-gradient(circle_at_50%_12%,rgba(245,158,11,0.13),transparent_28%),radial-gradient(circle_at_15%_85%,rgba(14,165,233,0.12),transparent_34%),#061522] p-5 shadow-[0_18px_50px_rgba(2,12,27,0.28)]"}
       data-testid="sun-arc-panel"
     >
       {!embedded && <div className="mb-4 flex flex-wrap items-center gap-2">
-        {isDay ? <SunIcon className="h-4 w-4 text-[#FBBF24]" strokeWidth={1.8} /> : <MoonIcon className="h-4 w-4 text-[#A5B4FC]" strokeWidth={1.8} />}
+        {isDay ? <SunIcon className="h-4 w-4 text-[#FBBF24]" strokeWidth={1.8} /> : <MoonIcon className="h-4 w-4 text-[#A5B4C5]" strokeWidth={1.8} />}
         <div><h2 className="text-sm font-semibold tracking-tight text-white">{isDay ? "Sun Path" : "Moon Path"}</h2><p className="text-[10px] text-[#718CA8]">Daily celestial position</p></div>
         <span className="ml-auto flex items-center gap-2"><span data-testid="sun-arc-altitude" className="rounded-full border border-[#24496B] bg-[#0B2239]/80 px-2.5 py-1 font-mono text-[10px] font-medium tabular-nums text-[#9FB5CB]">{sun ? (isDay ? altitudeLabel : `Below horizon · ${altitudeLabel}`) : "—"}</span><span className="rounded-full border border-[#24496B] bg-[#0B2239]/80 px-2.5 py-1 font-mono text-[10px] font-semibold tabular-nums text-white">{time}</span></span>
       </div>}
 
       {loading || !sun ? (
-        <div className={embedded ? "h-[190px]" : "h-[220px] animate-pulse rounded-xl border border-[#173957] bg-[#0B2239]/60"} />
+        <div className={embedded ? "h-[170px]" : "h-[220px] animate-pulse rounded-xl border border-[#173957] bg-[#0B2239]/60"} />
       ) : (
         <div className={embedded ? "bg-transparent" : "rounded-xl border border-[#173957] bg-[radial-gradient(circle_at_50%_48%,rgba(245,158,11,0.08),transparent_22%),linear-gradient(180deg,rgba(9,31,52,0.72),rgba(4,18,31,0.92))] px-2 py-4"}>
           <svg viewBox="0 0 600 210" className="w-full" data-testid={isDay ? "sun-path-svg" : "moon-path-svg"}>
