@@ -5,6 +5,7 @@ import DashboardHome from '../dashboard/DashboardHome'
 import WetonPage from '../dashboard/WetonPage'
 import BaZiPage from '../dashboard/BaZiPage'
 import ParirimbonPage from '../dashboard/ParirimbonPage'
+import PalelintanganPage from '../dashboard/PalelintanganPage'
 import { useAuth } from './AuthContext'
 
 const pageMap = {
@@ -13,6 +14,7 @@ const pageMap = {
   '/dashboard/birth-converter': ['Birth Converter', 'Konversi data kelahiran untuk kalkulasi personal.'],
   '/dashboard/bazi': ['BaZi', 'Kalkulasi dan informasi BaZi.'],
   '/dashboard/paririmbon': ['Paririmbon', 'Kalkulasi dan referensi Paririmbon.'],
+  '/dashboard/palelintangan': ['Palelintangan Bali', 'Kalkulasi dan referensi Palelintangan Bali.'],
   '/dashboard/almanac': ['Almanac', 'Informasi almanak personal.'],
   '/dashboard/history': ['Riwayat', 'Riwayat kalkulasi personal.'],
   '/dashboard/tasks': ['Personal Tasks', 'Daftar tugas personal.'],
@@ -48,6 +50,10 @@ function UserDashboardContent({ user }) {
 
   if (path === '/dashboard/paririmbon') {
     return <ParirimbonPage />
+  }
+
+  if (path === '/dashboard/palelintangan') {
+    return <PalelintanganPage />
   }
 
   const page = pageMap[path]

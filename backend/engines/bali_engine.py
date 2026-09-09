@@ -59,6 +59,44 @@ WUKU = [
     "Watugunung",
 ]
 
+LINTANG = [
+    "Gajah",
+    "Kiriman",
+    "Jong Sarat",
+    "Atiwa-tiwa",
+    "Sangka Tikel",
+    "Bubu Bolong",
+    "Sugenge",
+    "Uluku",
+    "Pedati",
+    "Kuda",
+    "Gajah Mina",
+    "Bade",
+    "Magelut",
+    "Pagelangan",
+    "Kala Sungsang",
+    "Kukus",
+    "Asu",
+    "Kartika",
+    "Naga",
+    "Banak Angerem",
+    "Hru",
+    "Patrem",
+    "Lembu",
+    "Depat",
+    "Tangis",
+    "Salah Ukur",
+    "Perahu Pegat",
+    "Puwuh Atarung",
+    "Lawean",
+    "Kelapa",
+    "Yuyu",
+    "Lumbung",
+    "Kumbha",
+    "Udang",
+    "Begoong",
+]
+
 
 def mod(value, divisor):
     return ((value % divisor) + divisor) % divisor
@@ -91,6 +129,7 @@ def get_bali_calendar(target_date):
 
     saptawara_index = mod(pawukon_day, 7)
     pancawara_index = mod(pawukon_day, 5)
+    lintang_index = mod(pawukon_day, 35)
 
     return {
         "saptawara": SAPTAWARA[saptawara_index],
@@ -98,6 +137,8 @@ def get_bali_calendar(target_date):
         "wuku": WUKU[wuku_index],
         "dayInWuku": day_in_wuku_index + 1,
         "pawukonDay": pawukon_day,
+        "lintang": LINTANG[lintang_index],
+        "lintangIndex": lintang_index,
         "effectiveDate": target_date.isoformat(),
         "boundary": "MIDNIGHT",
         "meta": {
@@ -111,5 +152,8 @@ def get_bali_calendar(target_date):
             "wukuIndex": wuku_index,
             "saptawaraIndex": saptawara_index,
             "pancawaraIndex": pancawara_index,
+            "lintangIndex": lintang_index,
+            "lintangCycle": 35,
+            "lintangMethod": "Pawukon day modulo 35",
         },
     }
