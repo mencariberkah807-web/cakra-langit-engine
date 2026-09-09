@@ -12,6 +12,12 @@ const formatDegrees = (value) => {
   return Number.isFinite(number) ? `${number.toFixed(1)}°` : "—";
 };
 
+const contextCards = (data) => [
+  { label: "Sky", result: data?.natural?.sky, accent: "border-[#315C7A] bg-[#061A2C]/90" },
+  { label: "Earth Space", result: data?.natural?.earth, accent: "border-[#315C5A] bg-[#061C1A]/90" },
+  { label: "Tide", result: data?.natural?.tide, accent: "border-[#4E5564] bg-[#0A1420]/90" },
+];
+
 export default function LiveObservation({ data, onOpenEclipse }) {
   const sun = data?.natural?.sun || {};
   const moon = data?.natural?.moon || {};
@@ -42,6 +48,16 @@ export default function LiveObservation({ data, onOpenEclipse }) {
         </div>
         <p className="mt-2 text-[10px] text-[#B69B50]">Az {formatDegrees(sun.azimuth)} · Alt {formatDegrees(sun.altitude)}</p>
       </motion.div>
+
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+        {contextCards(data).map((card) => (
+          <motion.article key={card.label} variants={item} className={`rounded-[18px] border p-4 ${card.accent}`}>
+            <p className="text-[9px] font-bold uppercase tracking-[0.14em] text-[#7895A8]">{card.label}</p>
+            <p className="mt-2 text-sm font-semibold text-[#E8F5FF]">{card.result?.primary || card.result?.title || "—"}</p>
+            {card.result?.secondary ? <p className="mt-1 text-[10px] text-[#6F8EA4]">{card.result.secondary}</p> : null}
+          </motion.article>
+        ))}
+      </div>
 
       {eclipseToday && onOpenEclipse ? (
         <button type="button" onClick={onOpenEclipse} className="flex items-center justify-center gap-2 rounded-[14px] border border-[#4E4774] bg-[#0A1020]/80 px-3 py-2 text-[9px] font-bold uppercase tracking-[0.1em] text-[#C4B5FD] transition hover:border-[#8176B7]">
