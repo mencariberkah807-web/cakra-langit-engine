@@ -18,12 +18,26 @@ SAPTAWARA = [
     "Saniscara",
 ]
 
+SAPTAWARA_KERTA_AJI = [6, 4, 3, 6, 5, 7, 8]
+
 PANCAWARA = [
     "Umanis",
     "Paing",
     "Pon",
     "Wage",
     "Kliwon",
+]
+
+PANCAWARA_URIP = [5, 9, 7, 4, 8]
+
+PANCA_SUDHA = [
+    "Wisesa Segara",
+    "Tunggak Semi",
+    "Satria Wibhawa",
+    "Sumur Sinaba",
+    "Bumi Kapetak",
+    "Satria Wirang",
+    "Lebu Katiup Angin",
 ]
 
 WUKU = [
@@ -130,6 +144,10 @@ def get_bali_calendar(target_date):
     saptawara_index = mod(pawukon_day, 7)
     pancawara_index = mod(pawukon_day, 5)
     lintang_index = mod(pawukon_day, 35)
+    panca_sudha_index = mod(
+        SAPTAWARA_KERTA_AJI[saptawara_index] + PANCAWARA_URIP[pancawara_index],
+        7,
+    )
 
     return {
         "saptawara": SAPTAWARA[saptawara_index],
@@ -139,6 +157,8 @@ def get_bali_calendar(target_date):
         "pawukonDay": pawukon_day,
         "lintang": LINTANG[lintang_index],
         "lintangIndex": lintang_index,
+        "pancaSudha": PANCA_SUDHA[panca_sudha_index],
+        "pancaSudhaIndex": panca_sudha_index,
         "effectiveDate": target_date.isoformat(),
         "boundary": "MIDNIGHT",
         "meta": {
@@ -155,5 +175,7 @@ def get_bali_calendar(target_date):
             "lintangIndex": lintang_index,
             "lintangCycle": 35,
             "lintangMethod": "Pawukon day modulo 35",
+            "pancaSudhaIndex": panca_sudha_index,
+            "pancaSudhaMethod": "(SaptaWara Kerta Aji + PancaWara Urip) modulo 7",
         },
     }
