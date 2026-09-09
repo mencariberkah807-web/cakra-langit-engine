@@ -1,6 +1,7 @@
 import { motion } from "framer-motion";
 import { Sun, Moon, Eclipse, Sparkles, Globe, Waves, Leaf, Cloud, Magnet, Radiation, Wind, Mountain, Activity, Droplets, LockKeyhole } from "lucide-react";
 import MoonPhaseCanvas from "./MoonPhaseCanvas";
+import SunArc from "./SunArc";
 import { useLanguage } from "../core/LanguageContext";
 
 const container = {
@@ -67,11 +68,15 @@ export default function NaturalLayer({ data, loading, onOpenEclipse }) {
 
       <div className="relative z-20 mt-5 grid grid-cols-1 gap-3 lg:grid-cols-[minmax(0,1fr)_180px]">
         <div className="relative min-h-[300px] overflow-hidden rounded-xl border border-[#315A7E]/70 bg-[radial-gradient(circle_at_50%_34%,rgba(56,189,248,0.14),transparent_24%),radial-gradient(circle_at_50%_58%,rgba(124,58,237,0.11),transparent_34%),linear-gradient(180deg,rgba(3,17,31,.18),rgba(3,12,23,.62))]" aria-label="Celestial sky workspace">
+          <div className="absolute inset-0 opacity-70">
+            <div className="absolute left-[12%] top-[26%] h-1 w-1 rounded-full bg-white shadow-[120px_42px_0_0_rgba(255,255,255,.5),250px_-18px_0_0_rgba(255,255,255,.35),390px_70px_0_0_rgba(255,255,255,.4)]" />
+          </div>
           <div className="absolute left-1/2 top-1/2 h-[230px] w-[230px] -translate-x-1/2 -translate-y-1/2 rounded-full border border-[#315A7E]/35 shadow-[0_0_90px_rgba(56,189,248,0.08)]" />
           <div className="absolute left-1/2 top-1/2 h-[150px] w-[150px] -translate-x-1/2 -translate-y-1/2 rounded-full border border-dashed border-[#315A7E]/30" />
           <div className="absolute inset-x-6 bottom-10 border-t border-[#6A87A0]/30" />
           <div className="absolute left-6 top-5 text-[9px] font-bold uppercase tracking-[0.18em] text-[#718CA8]">Cakra Langit Sky Workspace</div>
           <div className="absolute right-6 top-5 text-right text-[9px] uppercase tracking-[0.12em] text-[#607B94]">Live observation</div>
+          <SunArc sun={data?.natural?.sun} moon={data?.natural?.moon} time={data?.selectedTime || data?.time?.local || "12:00:00"} loading={loading || !data} embedded />
         </div>
         <div className="grid content-start gap-2.5 sm:grid-cols-2 lg:grid-cols-1">
           {loading || !data ? Array.from({ length: 4 }).map((_, i) => <div key={i} className="h-[82px] animate-pulse rounded-xl border border-[#234663] bg-[#0A2238]/70" />) : cards.slice(0, 4).map((c) => {
