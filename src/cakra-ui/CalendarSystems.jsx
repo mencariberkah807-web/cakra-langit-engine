@@ -11,12 +11,14 @@ const item = {
 };
 
 const CALENDAR_ROUTES = {
+  bali: "/dashboard/palintangan",
   jawa: "/dashboard/weton",
   "chinese-lunar": "/dashboard/bazi",
   "saka-sunda": "/dashboard/paririmbon",
 };
 
 const CALENDAR_LABELS = {
+  bali: "Palintangan →",
   jawa: "Weton →",
   "chinese-lunar": "BaZi →",
   "saka-sunda": "Paririmbon →",
