@@ -3,10 +3,18 @@ import { useTodayContext } from '../core/TodayContext'
 
 const CALCULATIONS = [
   { id: 'weton', label: 'Weton', description: 'Dina, Pasaran, dan Neptu', active: true },
-  { id: 'pangarasan', label: 'Pangarasan', description: 'Perhitungan berdasarkan Neptu', active: false },
-  { id: 'pancasuda', label: 'Pancasuda', description: 'Metode Pancasuda yang bersumber', active: false },
-  { id: 'rakam', label: 'Rakam', description: 'Perhitungan Rakam', active: false },
+  { id: 'pancasuda', label: 'Pancasuda', description: 'Klasifikasi sisa Neptu dibagi 5', active: true },
+  { id: 'pangarasan', label: 'Pangarasan', description: 'Menunggu method Jawa yang dikunci', active: false },
+  { id: 'rakam', label: 'Rakam', description: 'Menunggu method Rakam Jawa', active: false },
 ]
+
+const PANCASUDA = {
+  1: { name: 'Sri', meaning: 'Rezeki / kelimpahan' },
+  2: { name: 'Lungguh', meaning: 'Derajat / kedudukan' },
+  3: { name: 'Gedhong', meaning: 'Harta / kekayaan' },
+  4: { name: 'Lara', meaning: 'Kesulitan / sakit' },
+  5: { name: 'Pati', meaning: 'Kehilangan / akhir' },
+}
 
 const CONTEXT_MODES = [
   { id: 'profile', label: 'Profil Saya' },
@@ -79,6 +87,13 @@ export default function WetonPage() {
     return `${dino.name} ${dino.neptu} + ${pasaran.name} ${pasaran.neptu} = ${detail.neptu_total}`
   }, [dino.name, dino.neptu, pasaran.name, pasaran.neptu, detail.neptu_total])
 
+  const pancasuda = useMemo(() => {
+    const total = Number(detail.neptu_total)
+    if (!Number.isFinite(total) || total <= 0) return null
+    const remainder = total % 5 || 5
+    return { remainder, ...PANCASUDA[remainder] }
+  }, [detail.neptu_total])
+
   function activateContext(mode) {
     setContextMode(mode)
     if (mode === 'profile') {
@@ -123,20 +138,9 @@ export default function WetonPage() {
           <SectionCard title="Birth Context" eyebrow="Context">
             <div className="grid grid-cols-1 gap-2 sm:grid-cols-3">
               {CONTEXT_MODES.map((mode) => (
-                <button
-                  key={mode.id}
-                  type="button"
-                  onClick={() => activateContext(mode.id)}
-                  className={`rounded-xl border px-3 py-3 text-left transition ${
-                    contextMode === mode.id
-                      ? 'border-cyan-300/25 bg-[#12324A] shadow-[0_0_24px_rgba(34,211,238,0.06)]'
-                      : 'border-white/[0.06] bg-[#07111C] hover:border-white/[0.12]'
-                  }`}
-                >
+                <button key={mode.id} type="button" onClick={() => activateContext(mode.id)} className={`rounded-xl border px-3 py-3 text-left transition ${contextMode === mode.id ? 'border-cyan-300/25 bg-[#12324A] shadow-[0_0_24px_rgba(34,211,238,0.06)]' : 'border-white/[0.06] bg-[#07111C] hover:border-white/[0.12]'}`}>
                   <div className={`text-xs font-semibold ${contextMode === mode.id ? 'text-white' : 'text-[#8FA4B8]'}`}>{mode.label}</div>
-                  <div className="mt-1 text-[10px] text-[#536A7D]">
-                    {mode.id === 'profile' ? 'Gunakan data profil' : mode.id === 'partner' ? 'Konteks pasangan' : 'Hitung data lain'}
-                  </div>
+                  <div className="mt-1 text-[10px] text-[#536A7D]">{mode.id === 'profile' ? 'Gunakan data profil' : mode.id === 'partner' ? 'Konteks pasangan' : 'Hitung data lain'}</div>
                 </button>
               ))}
             </div>
@@ -144,55 +148,22 @@ export default function WetonPage() {
             {contextMode === 'profile' ? (
               <div className="mt-4 rounded-xl border border-amber-300/15 bg-amber-300/[0.04] p-4">
                 <div className="text-xs font-semibold text-amber-200">Profil kelahiran belum tersedia</div>
-                <p className="mt-1 text-[11px] leading-5 text-[#8FA4B8]">
-                  Lengkapi data kelahiran di Profil Saya untuk menjadikan profil sebagai sumber otomatis. Untuk sementara, pilih Orang Lain atau Pasangan untuk menghitung secara manual.
-                </p>
+                <p className="mt-1 text-[11px] leading-5 text-[#8FA4B8]">Lengkapi data kelahiran di Profil Saya untuk menjadikan profil sebagai sumber otomatis. Untuk sementara, pilih Orang Lain atau Pasangan untuk menghitung secara manual.</p>
               </div>
             ) : (
               <div className="mt-4 space-y-4">
-                <label className="block">
-                  <span className="mb-2 block text-xs font-semibold text-[#A9BDCF]">Nama <span className="font-normal text-[#536A7D]">(opsional)</span></span>
-                  <input
-                    type="text"
-                    value={personName}
-                    onChange={(event) => setPersonName(event.target.value)}
-                    placeholder={contextMode === 'partner' ? 'Nama pasangan' : 'Nama orang yang dihitung'}
-                    className="w-full rounded-xl border border-white/[0.09] bg-[#07111C] px-3 py-3 text-sm text-white placeholder:text-[#536A7D] outline-none transition focus:border-cyan-300/40 focus:ring-2 focus:ring-cyan-300/10"
-                  />
-                </label>
+                <label className="block"><span className="mb-2 block text-xs font-semibold text-[#A9BDCF]">Nama <span className="font-normal text-[#536A7D]">(opsional)</span></span><input type="text" value={personName} onChange={(event) => setPersonName(event.target.value)} placeholder={contextMode === 'partner' ? 'Nama pasangan' : 'Nama orang yang dihitung'} className="w-full rounded-xl border border-white/[0.09] bg-[#07111C] px-3 py-3 text-sm text-white placeholder:text-[#536A7D] outline-none transition focus:border-cyan-300/40 focus:ring-2 focus:ring-cyan-300/10" /></label>
                 <div className="grid gap-4 sm:grid-cols-2">
-                  <label className="block">
-                    <span className="mb-2 block text-xs font-semibold text-[#A9BDCF]">Tanggal lahir</span>
-                    <input type="date" value={manualDate} onChange={handleDateChange} className="w-full rounded-xl border border-white/[0.09] bg-[#07111C] px-3 py-3 text-sm text-white outline-none transition focus:border-cyan-300/40 focus:ring-2 focus:ring-cyan-300/10" />
-                  </label>
-                  <label className="block">
-                    <span className="mb-2 block text-xs font-semibold text-[#A9BDCF]">Waktu lahir</span>
-                    <input type="time" value={manualTime} onChange={handleTimeChange} className="w-full rounded-xl border border-white/[0.09] bg-[#07111C] px-3 py-3 text-sm text-white outline-none transition focus:border-cyan-300/40 focus:ring-2 focus:ring-cyan-300/10" />
-                  </label>
+                  <label className="block"><span className="mb-2 block text-xs font-semibold text-[#A9BDCF]">Tanggal lahir</span><input type="date" value={manualDate} onChange={handleDateChange} className="w-full rounded-xl border border-white/[0.09] bg-[#07111C] px-3 py-3 text-sm text-white outline-none transition focus:border-cyan-300/40 focus:ring-2 focus:ring-cyan-300/10" /></label>
+                  <label className="block"><span className="mb-2 block text-xs font-semibold text-[#A9BDCF]">Waktu lahir</span><input type="time" value={manualTime} onChange={handleTimeChange} className="w-full rounded-xl border border-white/[0.09] bg-[#07111C] px-3 py-3 text-sm text-white outline-none transition focus:border-cyan-300/40 focus:ring-2 focus:ring-cyan-300/10" /></label>
                 </div>
-                <label className="block">
-                  <span className="mb-2 block text-xs font-semibold text-[#A9BDCF]">Lokasi konteks kalender</span>
-                  <select value={location?.id || ''} onChange={handleLocationChange} className="w-full rounded-xl border border-white/[0.09] bg-[#07111C] px-3 py-3 text-sm text-white outline-none transition focus:border-cyan-300/40 focus:ring-2 focus:ring-cyan-300/10">
-                    {locations?.map((item) => <option key={item.id} value={item.id}>{item.city}{item.province ? ` · ${item.province}` : ''}</option>)}
-                  </select>
-                  <span className="mt-2 block text-[10px] leading-4 text-[#536A7D]">Digunakan sebagai konteks lokasi existing untuk boundary kalender. Tidak mengubah data profil.</span>
-                </label>
+                <label className="block"><span className="mb-2 block text-xs font-semibold text-[#A9BDCF]">Lokasi konteks kalender</span><select value={location?.id || ''} onChange={handleLocationChange} className="w-full rounded-xl border border-white/[0.09] bg-[#07111C] px-3 py-3 text-sm text-white outline-none transition focus:border-cyan-300/40 focus:ring-2 focus:ring-cyan-300/10">{locations?.map((item) => <option key={item.id} value={item.id}>{item.city}{item.province ? ` · ${item.province}` : ''}</option>)}</select><span className="mt-2 block text-[10px] leading-4 text-[#536A7D]">Digunakan sebagai konteks lokasi existing untuk boundary kalender. Tidak mengubah data profil.</span></label>
               </div>
             )}
           </SectionCard>
 
           <SectionCard title="Perhitungan Tersedia" eyebrow="Method">
-            <div className="grid gap-2">
-              {CALCULATIONS.map((item) => (
-                <div key={item.id} className={`w-full rounded-xl border px-4 py-3 ${item.active ? 'border-cyan-300/20 bg-[#12324A] shadow-[0_0_24px_rgba(34,211,238,0.06)]' : 'border-white/[0.06] bg-[#07111C]'}`}>
-                  <div className="flex items-center justify-between gap-3">
-                    <span className={`text-sm font-semibold ${item.active ? 'text-white' : 'text-[#71869A]'}`}>{item.label}</span>
-                    <span className={`text-[9px] font-bold uppercase tracking-[0.12em] ${item.active ? 'text-[#22D3EE]' : 'text-[#536A7D]'}`}>{item.active ? 'Terhubung' : 'Menunggu sumber'}</span>
-                  </div>
-                  <div className="mt-1 text-[11px] text-[#71869A]">{item.description}</div>
-                </div>
-              ))}
-            </div>
+            <div className="grid gap-2">{CALCULATIONS.map((item) => <div key={item.id} className={`w-full rounded-xl border px-4 py-3 ${item.active ? 'border-cyan-300/20 bg-[#12324A] shadow-[0_0_24px_rgba(34,211,238,0.06)]' : 'border-white/[0.06] bg-[#07111C]'}`}><div className="flex items-center justify-between gap-3"><span className={`text-sm font-semibold ${item.active ? 'text-white' : 'text-[#71869A]'}`}>{item.label}</span><span className={`text-[9px] font-bold uppercase tracking-[0.12em] ${item.active ? 'text-[#22D3EE]' : 'text-[#536A7D]'}`}>{item.active ? 'Terhubung' : 'Menunggu sumber'}</span></div><div className="mt-1 text-[11px] text-[#71869A]">{item.description}</div></div>)}</div>
           </SectionCard>
         </div>
 
@@ -200,60 +171,31 @@ export default function WetonPage() {
           <SectionCard title="Hasil Weton" eyebrow="Result">
             {jawa ? (
               <>
-                <div className="rounded-xl border border-cyan-300/10 bg-[#07111C] p-5 sm:p-6">
-                  <div className="text-[10px] font-bold uppercase tracking-[0.16em] text-[#536A7D]">{displaySubject}</div>
-                  <div className="mt-2 text-2xl font-semibold text-white">{jawa.sub || '—'}</div>
-                  <div className="mt-1 text-sm text-[#71869A]">{jawa.headline || '—'}</div>
-                </div>
-                <div className="mt-4 grid gap-2 sm:grid-cols-3">
-                  <Metric label="Dina" value={dino.name} />
-                  <Metric label="Pasaran" value={pasaran.name} />
-                  <Metric label="Total Neptu" value={detail.neptu_total} accent="text-amber-300" />
-                </div>
-                <div className="mt-4 grid gap-2 sm:grid-cols-2">
-                  <Metric label="Neptu Dina" value={dino.neptu} />
-                  <Metric label="Neptu Pasaran" value={pasaran.neptu} />
-                </div>
+                <div className="rounded-xl border border-cyan-300/10 bg-[#07111C] p-5 sm:p-6"><div className="text-[10px] font-bold uppercase tracking-[0.16em] text-[#536A7D]">{displaySubject}</div><div className="mt-2 text-2xl font-semibold text-white">{jawa.sub || '—'}</div><div className="mt-1 text-sm text-[#71869A]">{jawa.headline || '—'}</div></div>
+                <div className="mt-4 grid gap-2 sm:grid-cols-3"><Metric label="Dina" value={dino.name} /><Metric label="Pasaran" value={pasaran.name} /><Metric label="Total Neptu" value={detail.neptu_total} accent="text-amber-300" /></div>
+                <div className="mt-4 grid gap-2 sm:grid-cols-2"><Metric label="Neptu Dina" value={dino.neptu} /><Metric label="Neptu Pasaran" value={pasaran.neptu} /></div>
                 {formula && <div className="mt-4 rounded-xl border border-white/[0.06] bg-[#07111C] px-4 py-3 font-mono text-xs text-[#A9BDCF]">{formula}</div>}
-                <div className="mt-4 grid gap-2 sm:grid-cols-2">
-                  <Metric label="Tanggal efektif Jawa" value={jawa.effectiveDate} />
-                  <Metric label="Boundary" value={jawa.boundary || 'SUNSET'} />
-                </div>
-                {sunsetApplied && (
-                  <div className="mt-3 rounded-xl border border-amber-300/15 bg-amber-300/[0.04] px-4 py-3 text-[11px] leading-5 text-[#A9BDCF]">
-                    Waktu lahir melewati sunset lokasi. Engine Jawa menggunakan tanggal efektif hari berikutnya sesuai boundary kalender existing.
-                  </div>
-                )}
+                <div className="mt-4 grid gap-2 sm:grid-cols-2"><Metric label="Tanggal efektif Jawa" value={jawa.effectiveDate} /><Metric label="Boundary" value={jawa.boundary || 'SUNSET'} /></div>
+                {sunsetApplied && <div className="mt-3 rounded-xl border border-amber-300/15 bg-amber-300/[0.04] px-4 py-3 text-[11px] leading-5 text-[#A9BDCF]">Waktu lahir melewati sunset lokasi. Engine Jawa menggunakan tanggal efektif hari berikutnya sesuai boundary kalender existing.</div>}
               </>
             ) : (
-              <div className="rounded-xl border border-white/[0.07] bg-[#07111C] p-5 text-center sm:p-7">
-                <div className="text-[10px] font-bold uppercase tracking-[0.16em] text-[#536A7D]">Birth Context</div>
-                <div className="mt-2 text-lg font-semibold text-white">{contextMode === 'profile' ? 'Profil siap menjadi sumber otomatis' : `Masukkan ${contextLabel.toLowerCase()}`}</div>
-                <p className="mx-auto mt-2 max-w-md text-xs leading-5 text-[#71869A]">
-                  {contextMode === 'profile' ? 'Data kelahiran profil belum tersedia pada schema saat ini.' : 'Setelah tanggal lahir dipilih, hasil dihitung menggunakan Almanac API dan engine Jawa existing.'}
-                </p>
-              </div>
+              <div className="rounded-xl border border-white/[0.07] bg-[#07111C] p-5 text-center sm:p-7"><div className="text-[10px] font-bold uppercase tracking-[0.16em] text-[#536A7D]">Birth Context</div><div className="mt-2 text-lg font-semibold text-white">{contextMode === 'profile' ? 'Profil siap menjadi sumber otomatis' : `Masukkan ${contextLabel.toLowerCase()}`}</div><p className="mx-auto mt-2 max-w-md text-xs leading-5 text-[#71869A]">{contextMode === 'profile' ? 'Data kelahiran profil belum tersedia pada schema saat ini.' : 'Setelah tanggal lahir dipilih, hasil dihitung menggunakan Almanac API dan engine Jawa existing.'}</p></div>
             )}
           </SectionCard>
 
+          {jawa && pancasuda && <SectionCard title="Pancasuda" eyebrow="Petungan Jawa"><div className="rounded-xl border border-amber-300/10 bg-[#07111C] p-5"><div className="flex items-end justify-between gap-4"><div><div className="text-[10px] font-bold uppercase tracking-[0.14em] text-[#536A7D]">Sisa Neptu ÷ 5</div><div className="mt-2 text-2xl font-semibold text-amber-200">{pancasuda.name}</div></div><div className="text-right"><div className="text-[10px] uppercase tracking-[0.12em] text-[#536A7D]">Sisa</div><div className="mt-1 text-xl font-semibold text-white">{pancasuda.remainder}</div></div></div><p className="mt-3 text-xs leading-5 text-[#8FA4B8]">{pancasuda.meaning}. Hasil ini memakai klasifikasi Pancasuda lima sisa; sisa 0 dibaca sebagai 5 (Pati).</p><div className="mt-4 rounded-lg border border-white/[0.05] px-3 py-2 font-mono text-[11px] text-[#71869A]">{detail.neptu_total} mod 5 = {pancasuda.remainder}</div></div></SectionCard>}
+
           <SectionCard title="Konteks Kalender Jawa" eyebrow="Calendar Context">
-            <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
-              {[
-                ['Tanggal Jawa', jawa?.detail?.jawa_date],
-                ['Tahun Jawa', detail.tahun],
-                ['Wuku', wuku.name],
-                ['Hari Wuku', wuku.day_in_wuku],
-                ['Pawukon Day', wuku.pawukon_day],
-                ['Windu', detail.windu],
-                ['Lambang', jawa?.fields?.find((field) => field.k === 'Lambang')?.v],
-                ['Kurup', jawa?.fields?.find((field) => field.k === 'Kurup')?.v],
-              ].map(([label, value]) => (
-                <div key={label} className="rounded-xl border border-white/[0.06] bg-[#07111C] px-3 py-3">
-                  <div className="text-[10px] text-[#536A7D]">{label}</div>
-                  <div className="mt-1 text-xs font-semibold text-[#8FA4B8]">{value ?? '—'}</div>
-                </div>
-              ))}
-            </div>
+            <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">{[
+              ['Tanggal Jawa', jawa?.detail?.jawa_date],
+              ['Tahun Jawa', detail.tahun],
+              ['Wuku', wuku.name],
+              ['Hari Wuku', wuku.day_in_wuku],
+              ['Pawukon Day', wuku.pawukon_day],
+              ['Windu', detail.windu],
+              ['Lambang', jawa?.fields?.find((field) => field.k === 'Lambang')?.v],
+              ['Kurup', jawa?.fields?.find((field) => field.k === 'Kurup')?.v],
+            ].map(([label, value]) => <div key={label} className="rounded-xl border border-white/[0.06] bg-[#07111C] px-3 py-3"><div className="text-[10px] text-[#536A7D]">{label}</div><div className="mt-1 text-xs font-semibold text-[#8FA4B8]">{value ?? '—'}</div></div>)}</div>
           </SectionCard>
         </div>
       </div>
