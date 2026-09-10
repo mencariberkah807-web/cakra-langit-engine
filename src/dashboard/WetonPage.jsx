@@ -1,4 +1,4 @@
-import { useMemo } from 'react'
+import { useMemo, useState } from 'react'
 import { useTodayContext } from '../core/TodayContext'
 
 const CALCULATIONS = [
@@ -6,6 +6,12 @@ const CALCULATIONS = [
   { id: 'pangarasan', label: 'Pangarasan', description: 'Perhitungan berdasarkan Neptu', active: false },
   { id: 'pancasuda', label: 'Pancasuda', description: 'Metode Pancasuda yang bersumber', active: false },
   { id: 'rakam', label: 'Rakam', description: 'Perhitungan Rakam', active: false },
+]
+
+const CONTEXT_MODES = [
+  { id: 'profile', label: 'Profil Saya' },
+  { id: 'other', label: 'Orang Lain' },
+  { id: 'partner', label: 'Pasangan' },
 ]
 
 function SectionCard({ title, eyebrow, children, className = '' }) {
@@ -50,30 +56,65 @@ function localTimeValue(date, timezone) {
 }
 
 export default function WetonPage() {
-  const { apiData, selectedDate, selectedTime, location, setSelectedDate, setSelectedTime } = useTodayContext()
-  const jawa = apiData?.calendars?.find((calendar) => calendar.id === 'jawa')
+  const {
+    apiData,
+    selectedDate,
+    selectedTime,
+    location,
+    locations,
+    setSelectedDate,
+    setSelectedTime,
+    setLocationById,
+    goLive,
+  } = useTodayContext()
+  const [contextMode, setContextMode] = useState('profile')
+  const [manualDate, setManualDate] = useState('')
+  const [manualTime, setManualTime] = useState('12:00')
+  const [personName, setPersonName] = useState('')
+
+  const isManual = contextMode !== 'profile'
+  const hasBirthContext = isManual && Boolean(manualDate)
+  const jawa = hasBirthContext ? apiData?.calendars?.find((calendar) => calendar.id === 'jawa') : null
   const detail = jawa?.detail || {}
   const dino = detail.dino || {}
   const pasaran = detail.pasaran || {}
   const wuku = detail.wuku || {}
   const timezone = location?.tz || location?.timezone || 'Asia/Jakarta'
-  const dateValue = localDateValue(selectedDate, timezone)
-  const timeValue = selectedTime ? String(selectedTime).slice(0, 5) : localTimeValue(selectedDate, timezone)
+  const dateValue = hasBirthContext ? localDateValue(selectedDate, timezone) : manualDate
+  const timeValue = selectedTime ? String(selectedTime).slice(0, 5) : manualTime
 
   const formula = useMemo(() => {
     if (dino.neptu == null || pasaran.neptu == null || detail.neptu_total == null) return null
     return `${dino.name} ${dino.neptu} + ${pasaran.name} ${pasaran.neptu} = ${detail.neptu_total}`
   }, [dino.name, dino.neptu, pasaran.name, pasaran.neptu, detail.neptu_total])
 
+  function activateContext(mode) {
+    setContextMode(mode)
+    if (mode === 'profile') {
+      setManualDate('')
+      setManualTime('12:00')
+      setPersonName('')
+      goLive()
+    }
+  }
+
   function handleDateChange(event) {
     const value = event.target.value
-    if (!value) return
-    setSelectedDate(new Date(`${value}T12:00:00`))
+    setManualDate(value)
+    if (value) setSelectedDate(new Date(`${value}T12:00:00`))
   }
 
   function handleTimeChange(event) {
-    if (event.target.value) setSelectedTime(event.target.value)
+    const value = event.target.value
+    setManualTime(value)
+    if (value) setSelectedTime(value)
   }
+
+  function handleLocationChange(event) {
+    if (event.target.value) setLocationById(event.target.value)
+  }
+
+  const contextLabel = contextMode === 'partner' ? 'Data Kelahiran Pasangan' : 'Data Kelahiran Orang Lain'
 
   return (
     <section className="mx-auto max-w-[1180px] px-5 py-7 sm:px-7 lg:py-9">
@@ -81,24 +122,71 @@ export default function WetonPage() {
         <div className="text-[10px] font-bold uppercase tracking-[0.16em] text-[#22D3EE]">Cakra Langit · Jawa</div>
         <h1 className="mt-2 text-2xl font-semibold tracking-tight text-white sm:text-3xl">Weton Jawa</h1>
         <p className="mt-2 max-w-3xl text-sm leading-6 text-[#8FA4B8]">
-          Perhitungan Weton menggunakan data kalender Jawa yang sudah tersedia di engine Cakra Langit.
+          Eksplorasi Weton berdasarkan konteks kelahiran. Profil menjadi sumber default; data manual hanya berlaku untuk perhitungan ini.
         </p>
       </header>
 
       <div className="grid gap-5 lg:grid-cols-[minmax(0,0.82fr)_minmax(0,1.18fr)]">
         <div className="space-y-5">
-          <SectionCard title="Data Kelahiran" eyebrow="Input">
-            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-1">
-              <label className="block">
-                <span className="mb-2 block text-xs font-semibold text-[#A9BDCF]">Tanggal lahir</span>
-                <input type="date" value={dateValue} onChange={handleDateChange} className="w-full rounded-xl border border-white/[0.09] bg-[#07111C] px-3 py-3 text-sm text-white outline-none transition focus:border-cyan-300/40 focus:ring-2 focus:ring-cyan-300/10" />
-              </label>
-              <label className="block">
-                <span className="mb-2 block text-xs font-semibold text-[#A9BDCF]">Waktu lahir</span>
-                <input type="time" value={timeValue} onChange={handleTimeChange} className="w-full rounded-xl border border-white/[0.09] bg-[#07111C] px-3 py-3 text-sm text-white outline-none transition focus:border-cyan-300/40 focus:ring-2 focus:ring-cyan-300/10" />
-              </label>
+          <SectionCard title="Birth Context" eyebrow="Context">
+            <div className="grid grid-cols-1 gap-2 sm:grid-cols-3">
+              {CONTEXT_MODES.map((mode) => (
+                <button
+                  key={mode.id}
+                  type="button"
+                  onClick={() => activateContext(mode.id)}
+                  className={`rounded-xl border px-3 py-3 text-left transition ${
+                    contextMode === mode.id
+                      ? 'border-cyan-300/25 bg-[#12324A] shadow-[0_0_24px_rgba(34,211,238,0.06)]'
+                      : 'border-white/[0.06] bg-[#07111C] hover:border-white/[0.12]'
+                  }`}
+                >
+                  <div className={`text-xs font-semibold ${contextMode === mode.id ? 'text-white' : 'text-[#8FA4B8]'}`}>{mode.label}</div>
+                  <div className="mt-1 text-[10px] text-[#536A7D]">
+                    {mode.id === 'profile' ? 'Gunakan data profil' : mode.id === 'partner' ? 'Konteks pasangan' : 'Hitung data lain'}
+                  </div>
+                </button>
+              ))}
             </div>
-            <p className="mt-4 text-[11px] leading-5 text-[#536A7D]">Tanggal dan waktu diteruskan ke konteks Almanac existing. Perhitungan kalender Jawa tidak dibuat ulang di halaman ini.</p>
+
+            {contextMode === 'profile' ? (
+              <div className="mt-4 rounded-xl border border-amber-300/15 bg-amber-300/[0.04] p-4">
+                <div className="text-xs font-semibold text-amber-200">Profil kelahiran belum tersedia</div>
+                <p className="mt-1 text-[11px] leading-5 text-[#8FA4B8]">
+                  Lengkapi data kelahiran di Profil Saya untuk menjadikan profil sebagai sumber otomatis. Untuk sementara, pilih Orang Lain atau Pasangan untuk menghitung secara manual.
+                </p>
+              </div>
+            ) : (
+              <div className="mt-4 space-y-4">
+                <label className="block">
+                  <span className="mb-2 block text-xs font-semibold text-[#A9BDCF]">Nama <span className="font-normal text-[#536A7D]">(opsional)</span></span>
+                  <input
+                    type="text"
+                    value={personName}
+                    onChange={(event) => setPersonName(event.target.value)}
+                    placeholder={contextMode === 'partner' ? 'Nama pasangan' : 'Nama orang yang dihitung'}
+                    className="w-full rounded-xl border border-white/[0.09] bg-[#07111C] px-3 py-3 text-sm text-white placeholder:text-[#536A7D] outline-none transition focus:border-cyan-300/40 focus:ring-2 focus:ring-cyan-300/10"
+                  />
+                </label>
+                <div className="grid gap-4 sm:grid-cols-2">
+                  <label className="block">
+                    <span className="mb-2 block text-xs font-semibold text-[#A9BDCF]">Tanggal lahir</span>
+                    <input type="date" value={manualDate} onChange={handleDateChange} className="w-full rounded-xl border border-white/[0.09] bg-[#07111C] px-3 py-3 text-sm text-white outline-none transition focus:border-cyan-300/40 focus:ring-2 focus:ring-cyan-300/10" />
+                  </label>
+                  <label className="block">
+                    <span className="mb-2 block text-xs font-semibold text-[#A9BDCF]">Waktu lahir</span>
+                    <input type="time" value={manualTime} onChange={handleTimeChange} className="w-full rounded-xl border border-white/[0.09] bg-[#07111C] px-3 py-3 text-sm text-white outline-none transition focus:border-cyan-300/40 focus:ring-2 focus:ring-cyan-300/10" />
+                  </label>
+                </div>
+                <label className="block">
+                  <span className="mb-2 block text-xs font-semibold text-[#A9BDCF]">Lokasi konteks kalender</span>
+                  <select value={location?.id || ''} onChange={handleLocationChange} className="w-full rounded-xl border border-white/[0.09] bg-[#07111C] px-3 py-3 text-sm text-white outline-none transition focus:border-cyan-300/40 focus:ring-2 focus:ring-cyan-300/10">
+                    {locations?.map((item) => <option key={item.id} value={item.id}>{item.city}{item.province ? ` · ${item.province}` : ''}</option>)}
+                  </select>
+                  <span className="mt-2 block text-[10px] leading-4 text-[#536A7D]">Digunakan sebagai konteks lokasi existing untuk boundary kalender. Tidak mengubah data profil.</span>
+                </label>
+              </div>
+            )}
           </SectionCard>
 
           <SectionCard title="Perhitungan Tersedia" eyebrow="Method">
@@ -121,7 +209,7 @@ export default function WetonPage() {
             {jawa ? (
               <>
                 <div className="rounded-xl border border-cyan-300/10 bg-[#07111C] p-5 sm:p-6">
-                  <div className="text-[10px] font-bold uppercase tracking-[0.16em] text-[#536A7D]">Weton</div>
+                  <div className="text-[10px] font-bold uppercase tracking-[0.16em] text-[#536A7D]">{personName || (contextMode === 'partner' ? 'Pasangan' : 'Weton')}</div>
                   <div className="mt-2 text-2xl font-semibold text-white">{jawa.sub || '—'}</div>
                   <div className="mt-1 text-sm text-[#71869A]">{jawa.headline || '—'}</div>
                 </div>
@@ -138,9 +226,11 @@ export default function WetonPage() {
               </>
             ) : (
               <div className="rounded-xl border border-white/[0.07] bg-[#07111C] p-5 text-center sm:p-7">
-                <div className="text-[10px] font-bold uppercase tracking-[0.16em] text-[#536A7D]">Memuat data Jawa</div>
-                <div className="mt-2 text-lg font-semibold text-white">Menunggu engine</div>
-                <p className="mx-auto mt-2 max-w-md text-xs leading-5 text-[#71869A]">Halaman menggunakan data dari Almanac API existing.</p>
+                <div className="text-[10px] font-bold uppercase tracking-[0.16em] text-[#536A7D]">Birth Context</div>
+                <div className="mt-2 text-lg font-semibold text-white">{contextMode === 'profile' ? 'Profil siap menjadi sumber otomatis' : `Masukkan ${contextLabel.toLowerCase()}`}</div>
+                <p className="mx-auto mt-2 max-w-md text-xs leading-5 text-[#71869A]">
+                  {contextMode === 'profile' ? 'Data kelahiran profil belum tersedia pada schema saat ini.' : 'Setelah tanggal lahir dipilih, hasil dihitung menggunakan Almanac API dan engine Jawa existing.'}
+                </p>
               </div>
             )}
           </SectionCard>
