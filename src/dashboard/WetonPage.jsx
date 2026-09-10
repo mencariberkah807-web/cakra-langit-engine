@@ -4,8 +4,8 @@ import { useTodayContext } from '../core/TodayContext'
 const CALCULATIONS = [
   { id: 'weton', label: 'Weton', description: 'Dina, Pasaran, dan Neptu', active: true },
   { id: 'pancasuda', label: 'Pancasuda', description: 'Klasifikasi sisa Neptu dibagi 5', active: true },
-  { id: 'pangarasan', label: 'Pangarasan', description: 'Menunggu method Jawa yang dikunci', active: false },
-  { id: 'rakam', label: 'Rakam', description: 'Menunggu method Rakam Jawa', active: false },
+  { id: 'pangarasan', label: 'Pangarasan', description: 'Klasifikasi Neptu Weton 7–18', active: true },
+  { id: 'rakam', label: 'Rakam', description: 'Klasifikasi kupih Dina + Pasaran', active: true },
 ]
 
 const PANCASUDA = {
@@ -14,6 +14,48 @@ const PANCASUDA = {
   3: { name: 'Gedhong', meaning: 'Harta / kekayaan' },
   4: { name: 'Lara', meaning: 'Kesulitan / sakit' },
   5: { name: 'Pati', meaning: 'Kehilangan / akhir' },
+}
+
+const PANGARASAN = {
+  7: { name: 'Lakuning Bumi', meaning: 'Pemurah, pengampun, dan pelindung' },
+  8: { name: 'Lakuning Geni', meaning: 'Berwatak seperti api' },
+  9: { name: 'Lakuning Angin', meaning: 'Berwatak seperti angin' },
+  10: { name: 'Aras Pepet', meaning: 'Tertutup dan cenderung prihatin' },
+  11: { name: 'Aras Tuding', meaning: 'Sering menjadi orang yang ditunjuk' },
+  12: { name: 'Aras Kembang', meaning: 'Memiliki pesona yang memikat' },
+  13: { name: 'Lakuning Lintang', meaning: 'Berwatak seperti bintang' },
+  14: { name: 'Lakuning Rembulan', meaning: 'Simpatik dan penuh daya tarik' },
+  15: { name: 'Lakuning Srengenge', meaning: 'Terang dan berwibawa' },
+  16: { name: 'Lakuning Banyu', meaning: 'Tenang dan mengalir seperti air' },
+  17: { name: 'Lakuning Bumi', meaning: 'Pemurah, pengampun, dan pelindung' },
+  18: { name: 'Lakuning Geni', meaning: 'Berwatak seperti api' },
+}
+
+const RAKAM_DINO_KUPIH = {
+  Jemuwah: 1,
+  Setu: 2,
+  Ngahad: 3,
+  Senen: 4,
+  Selasa: 5,
+  Rebo: 6,
+  Kemis: 7,
+}
+
+const RAKAM_PASARAN_KUPIH = {
+  Kliwon: 1,
+  Legi: 2,
+  Pahing: 3,
+  Pon: 4,
+  Wage: 5,
+}
+
+const RAKAM = {
+  0: 'Pati',
+  1: 'Kala Tinantang',
+  2: 'Demang Kandhuruwan',
+  3: 'Sanggar Waringin',
+  4: 'Mantri Sinaroja',
+  5: 'Macan Ketawan',
 }
 
 const CONTEXT_MODES = [
@@ -78,8 +120,6 @@ export default function WetonPage() {
   const pasaran = detail.pasaran || {}
   const wuku = detail.wuku || {}
   const timezone = location?.tz || location?.timezone || 'Asia/Jakarta'
-  const dateValue = hasBirthContext ? localDateValue(selectedDate, timezone) : manualDate
-  const timeValue = selectedTime ? String(selectedTime).slice(0, 5) : manualTime
   const sunsetApplied = Boolean(jawa?.meta?.sunsetApplied)
 
   const formula = useMemo(() => {
@@ -93,6 +133,20 @@ export default function WetonPage() {
     const remainder = total % 5 || 5
     return { remainder, ...PANCASUDA[remainder] }
   }, [detail.neptu_total])
+
+  const pangarasan = useMemo(() => {
+    const total = Number(detail.neptu_total)
+    if (!Number.isInteger(total) || !PANGARASAN[total]) return null
+    return { total, ...PANGARASAN[total] }
+  }, [detail.neptu_total])
+
+  const rakam = useMemo(() => {
+    const dinoKupih = RAKAM_DINO_KUPIH[dino.name]
+    const pasaranKupih = RAKAM_PASARAN_KUPIH[pasaran.name]
+    if (dinoKupih == null || pasaranKupih == null) return null
+    const remainder = (dinoKupih + pasaranKupih) % 6
+    return { dinoKupih, pasaranKupih, remainder, name: RAKAM[remainder] }
+  }, [dino.name, pasaran.name])
 
   function activateContext(mode) {
     setContextMode(mode)
@@ -128,9 +182,7 @@ export default function WetonPage() {
       <header className="mb-7">
         <div className="text-[10px] font-bold uppercase tracking-[0.16em] text-[#22D3EE]">Cakra Langit · Jawa</div>
         <h1 className="mt-2 text-2xl font-semibold tracking-tight text-white sm:text-3xl">Weton Jawa</h1>
-        <p className="mt-2 max-w-3xl text-sm leading-6 text-[#8FA4B8]">
-          Eksplorasi Weton berdasarkan konteks kelahiran. Profil menjadi sumber default; data manual hanya berlaku untuk perhitungan ini.
-        </p>
+        <p className="mt-2 max-w-3xl text-sm leading-6 text-[#8FA4B8]">Eksplorasi Weton berdasarkan konteks kelahiran. Profil menjadi sumber default; data manual hanya berlaku untuk perhitungan ini.</p>
       </header>
 
       <div className="grid gap-5 lg:grid-cols-[minmax(0,0.82fr)_minmax(0,1.18fr)]">
@@ -144,12 +196,8 @@ export default function WetonPage() {
                 </button>
               ))}
             </div>
-
             {contextMode === 'profile' ? (
-              <div className="mt-4 rounded-xl border border-amber-300/15 bg-amber-300/[0.04] p-4">
-                <div className="text-xs font-semibold text-amber-200">Profil kelahiran belum tersedia</div>
-                <p className="mt-1 text-[11px] leading-5 text-[#8FA4B8]">Lengkapi data kelahiran di Profil Saya untuk menjadikan profil sebagai sumber otomatis. Untuk sementara, pilih Orang Lain atau Pasangan untuk menghitung secara manual.</p>
-              </div>
+              <div className="mt-4 rounded-xl border border-amber-300/15 bg-amber-300/[0.04] p-4"><div className="text-xs font-semibold text-amber-200">Profil kelahiran belum tersedia</div><p className="mt-1 text-[11px] leading-5 text-[#8FA4B8]">Lengkapi data kelahiran di Profil Saya untuk menjadikan profil sebagai sumber otomatis. Untuk sementara, pilih Orang Lain atau Pasangan untuk menghitung secara manual.</p></div>
             ) : (
               <div className="mt-4 space-y-4">
                 <label className="block"><span className="mb-2 block text-xs font-semibold text-[#A9BDCF]">Nama <span className="font-normal text-[#536A7D]">(opsional)</span></span><input type="text" value={personName} onChange={(event) => setPersonName(event.target.value)} placeholder={contextMode === 'partner' ? 'Nama pasangan' : 'Nama orang yang dihitung'} className="w-full rounded-xl border border-white/[0.09] bg-[#07111C] px-3 py-3 text-sm text-white placeholder:text-[#536A7D] outline-none transition focus:border-cyan-300/40 focus:ring-2 focus:ring-cyan-300/10" /></label>
@@ -183,7 +231,23 @@ export default function WetonPage() {
             )}
           </SectionCard>
 
-          {jawa && pancasuda && <SectionCard title="Pancasuda" eyebrow="Petungan Jawa"><div className="rounded-xl border border-amber-300/10 bg-[#07111C] p-5"><div className="flex items-end justify-between gap-4"><div><div className="text-[10px] font-bold uppercase tracking-[0.14em] text-[#536A7D]">Sisa Neptu ÷ 5</div><div className="mt-2 text-2xl font-semibold text-amber-200">{pancasuda.name}</div></div><div className="text-right"><div className="text-[10px] uppercase tracking-[0.12em] text-[#536A7D]">Sisa</div><div className="mt-1 text-xl font-semibold text-white">{pancasuda.remainder}</div></div></div><p className="mt-3 text-xs leading-5 text-[#8FA4B8]">{pancasuda.meaning}. Hasil ini memakai klasifikasi Pancasuda lima sisa; sisa 0 dibaca sebagai 5 (Pati).</p><div className="mt-4 rounded-lg border border-white/[0.05] px-3 py-2 font-mono text-[11px] text-[#71869A]">{detail.neptu_total} mod 5 = {pancasuda.remainder}</div></div></SectionCard>}
+          {jawa && pancasuda && (
+            <SectionCard title="Pancasuda" eyebrow="Petungan Jawa">
+              <div className="rounded-xl border border-amber-300/10 bg-[#07111C] p-5"><div className="flex items-end justify-between gap-4"><div><div className="text-[10px] font-bold uppercase tracking-[0.14em] text-[#536A7D]">Sisa Neptu ÷ 5</div><div className="mt-2 text-2xl font-semibold text-amber-200">{pancasuda.name}</div></div><div className="text-right"><div className="text-[10px] uppercase tracking-[0.12em] text-[#536A7D]">Sisa</div><div className="mt-1 text-xl font-semibold text-white">{pancasuda.remainder}</div></div></div><p className="mt-3 text-xs leading-5 text-[#8FA4B8]">{pancasuda.meaning}. Hasil ini memakai klasifikasi Pancasuda lima sisa; sisa 0 dibaca sebagai 5 (Pati).</p><div className="mt-4 rounded-lg border border-white/[0.05] px-3 py-2 font-mono text-[11px] text-[#71869A]">{detail.neptu_total} mod 5 = {pancasuda.remainder}</div></div>
+            </SectionCard>
+          )}
+
+          {jawa && pangarasan && (
+            <SectionCard title="Pangarasan" eyebrow="Petungan Jawa">
+              <div className="rounded-xl border border-cyan-300/10 bg-[#07111C] p-5"><div className="text-[10px] font-bold uppercase tracking-[0.14em] text-[#536A7D]">Neptu Weton</div><div className="mt-2 text-2xl font-semibold text-cyan-200">{pangarasan.name}</div><p className="mt-3 text-xs leading-5 text-[#8FA4B8]">{pangarasan.meaning}.</p><div className="mt-4 rounded-lg border border-white/[0.05] px-3 py-2 font-mono text-[11px] text-[#71869A]">Neptu {pangarasan.total} → {pangarasan.name}</div></div>
+            </SectionCard>
+          )}
+
+          {jawa && rakam && (
+            <SectionCard title="Rakam" eyebrow="Petungan Jawa">
+              <div className="rounded-xl border border-white/[0.07] bg-[#07111C] p-5"><div className="text-[10px] font-bold uppercase tracking-[0.14em] text-[#536A7D]">Kupih Dina + Pasaran</div><div className="mt-2 text-2xl font-semibold text-white">{rakam.name}</div><p className="mt-3 text-xs leading-5 text-[#8FA4B8]">Klasifikasi berdasarkan kupih hari dan pasaran.</p><div className="mt-4 grid grid-cols-3 gap-2"><Metric label="Kupih Dina" value={rakam.dinoKupih} /><Metric label="Kupih Pasaran" value={rakam.pasaranKupih} /><Metric label="Sisa ÷ 6" value={rakam.remainder} accent="text-amber-300" /></div></div>
+            </SectionCard>
+          )}
 
           <SectionCard title="Konteks Kalender Jawa" eyebrow="Calendar Context">
             <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">{[
