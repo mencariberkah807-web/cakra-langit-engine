@@ -41,7 +41,7 @@ function EventCard({ title, items = [] }) {
         className={
           solar
             ? "mt-4 grid min-w-0 grid-cols-2 gap-3 sm:grid-cols-3 xl:grid-cols-5"
-            : "mt-4 grid min-w-0 grid-cols-2 gap-3 sm:grid-cols-2 xl:grid-cols-4"
+            : "mt-4 grid min-w-0 grid-cols-2 gap-3 2xl:grid-cols-4"
         }
       >
         {items.map(([label, value]) => (
@@ -50,7 +50,7 @@ function EventCard({ title, items = [] }) {
             className={
               solar
                 ? "min-w-0 sm:border-r sm:border-[#3A3523] sm:pr-2 last:border-r-0"
-                : "min-w-0 sm:border-r sm:border-[#2C4158] sm:pr-2 last:border-r-0"
+                : "min-w-0 2xl:border-r 2xl:border-[#2C4158] 2xl:pr-2 last:border-r-0"
             }
           >
             <p
@@ -62,7 +62,13 @@ function EventCard({ title, items = [] }) {
             >
               {label}
             </p>
-            <p className="mt-1 whitespace-nowrap font-mono text-sm font-semibold leading-tight tabular-nums text-[#EDF9FF] sm:text-base xl:text-lg">
+            <p
+              className={
+                solar
+                  ? "mt-1 whitespace-nowrap font-mono text-sm font-semibold leading-tight tabular-nums text-[#EDF9FF] sm:text-base xl:text-lg"
+                  : "mt-1 break-words font-mono text-sm font-semibold leading-tight tabular-nums text-[#EDF9FF] sm:text-base 2xl:text-lg"
+              }
+            >
               {String(value ?? "—")}
             </p>
           </div>
