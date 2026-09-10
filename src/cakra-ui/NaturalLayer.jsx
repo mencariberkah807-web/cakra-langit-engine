@@ -65,8 +65,8 @@ function EventCard({ title, items = [] }) {
             <p
               className={
                 solar
-                  ? "mt-1 whitespace-nowrap font-mono text-sm font-semibold leading-tight tabular-nums text-[#EDF9FF] sm:text-base xl:text-lg"
-                  : "mt-1 break-words font-mono text-sm font-semibold leading-tight tabular-nums text-[#EDF9FF] sm:text-base 2xl:text-lg"
+                  ? "mt-1 whitespace-nowrap font-mono text-xs font-semibold leading-tight tabular-nums text-[#EDF9FF] sm:text-sm xl:text-base"
+                  : "mt-1 break-words font-mono text-xs font-semibold leading-tight tabular-nums text-[#EDF9FF] sm:text-sm 2xl:text-base"
               }
             >
               {String(value ?? "—")}
