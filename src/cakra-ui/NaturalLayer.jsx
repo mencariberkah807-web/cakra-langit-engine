@@ -40,7 +40,7 @@ function EventCard({ title, items = [] }) {
       <div
         className={
           solar
-            ? "mt-4 grid min-w-0 grid-cols-2 gap-3 sm:grid-cols-3 xl:grid-cols-5"
+            ? "mt-4 grid min-w-0 grid-cols-3 gap-x-3 gap-y-4"
             : "mt-4 grid min-w-0 grid-cols-2 gap-3 2xl:grid-cols-4"
         }
       >
