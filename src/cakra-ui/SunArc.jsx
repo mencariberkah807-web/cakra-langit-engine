@@ -138,20 +138,9 @@ export default function SunArc({ sun, moon, time, loading, embedded = false }) {
 
           <text x="500" y="518" textAnchor="middle" fontSize="14" fill="#8FC1D8">ALTITUDE RINGS  0° / 30° / 60° / 90°</text>
 
-          <g transform="translate(378 535)">
-            <rect x="0" y="0" width="244" height="48" rx="24" fill="#071A2A" fillOpacity="0.94" stroke="#FBBF24" strokeWidth="1.5" />
-            <text x="122" y="21" textAnchor="middle" fontSize="14" fontFamily="JetBrains Mono, monospace" fontWeight="700" fill="#F7FAFC">{formatTime(time)}</text>
-            <text x="122" y="37" textAnchor="middle" fontSize="10" fontWeight="700" fill="#F7D96E">{activeIsSun ? "SUN" : "MOON"} LIVE POSITION</text>
-          </g>
 
-          <g transform="translate(710 105)">
-            <rect x="0" y="0" width="238" height="88" rx="14" fill="#061827" fillOpacity="0.9" stroke="#3C6F99" />
-            <circle cx="23" cy="25" r="8" fill="#C4B5FD" filter="url(#celestialGlow)" />
-            <text x="42" y="30" fontSize="13" fontWeight="700" fill="#CFE6FA">MOON LIVE POSITION</text>
-            <text x="20" y="55" fontSize="12" fill="#8DAEC7">ALT <tspan fill="#F3F8FF" fontWeight="700">{formatDegrees(moon?.altitude)}</tspan></text>
-            <text x="112" y="55" fontSize="12" fill="#8DAEC7">AZ <tspan fill="#F3F8FF" fontWeight="700">{formatDegrees(moon?.azimuth)}</tspan></text>
-            <text x="20" y="73" fontSize="10" fill="#62849D">{moon?.phase || "Moon"} · {moon?.illumination ?? "—"}% illumination</text>
-          </g>
+
+
         </svg>
       )}
     </motion.div>
