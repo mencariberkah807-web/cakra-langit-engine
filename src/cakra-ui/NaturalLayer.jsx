@@ -37,14 +37,20 @@ function EventCard({ title, items = [] }) {
         </h3>
       </div>
 
-      <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-5">
-        {items.map(([label, value], index) => (
+      <div
+        className={
+          solar
+            ? "mt-4 grid min-w-0 grid-cols-2 gap-3 sm:grid-cols-3 xl:grid-cols-5"
+            : "mt-4 grid min-w-0 grid-cols-2 gap-3 sm:grid-cols-2 xl:grid-cols-4"
+        }
+      >
+        {items.map(([label, value]) => (
           <div
             key={label}
             className={
               solar
-                ? "sm:border-r sm:border-[#3A3523] sm:pr-2 last:border-r-0"
-                : "sm:border-r sm:border-[#2C4158] sm:pr-2 last:border-r-0"
+                ? "min-w-0 sm:border-r sm:border-[#3A3523] sm:pr-2 last:border-r-0"
+                : "min-w-0 sm:border-r sm:border-[#2C4158] sm:pr-2 last:border-r-0"
             }
           >
             <p
@@ -56,8 +62,8 @@ function EventCard({ title, items = [] }) {
             >
               {label}
             </p>
-            <p className="mt-1 font-mono text-base font-semibold tabular-nums text-[#EDF9FF] sm:text-lg">
-              {String(value ?? "—").slice(0, 5)}
+            <p className="mt-1 whitespace-nowrap font-mono text-sm font-semibold leading-tight tabular-nums text-[#EDF9FF] sm:text-base xl:text-lg">
+              {String(value ?? "—")}
             </p>
           </div>
         ))}
@@ -87,12 +93,12 @@ export default function NaturalLayer({ data, loading }) {
           </div>
         </div>
 
-        <div className="grid items-stretch gap-4 lg:grid-cols-[minmax(0,1fr)_260px]">
+        <div className="grid items-stretch gap-4 xl:grid-cols-[minmax(0,1fr)_260px]">
           <SkyWorkspace data={data} loading={loading} />
           <LiveObservation data={data} />
         </div>
 
-        <div className="mt-4 grid gap-3 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
+        <div className="mt-4 grid gap-3 xl:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
           <EventCard
             title="Solar Events"
             items={[
