@@ -45,16 +45,6 @@ function localDateValue(date, timezone) {
   }).format(date)
 }
 
-function localTimeValue(date, timezone) {
-  if (!date) return ''
-  return new Intl.DateTimeFormat('en-GB', {
-    timeZone: timezone || 'Asia/Jakarta',
-    hour: '2-digit',
-    minute: '2-digit',
-    hour12: false,
-  }).format(date)
-}
-
 export default function WetonPage() {
   const {
     apiData,
@@ -82,6 +72,7 @@ export default function WetonPage() {
   const timezone = location?.tz || location?.timezone || 'Asia/Jakarta'
   const dateValue = hasBirthContext ? localDateValue(selectedDate, timezone) : manualDate
   const timeValue = selectedTime ? String(selectedTime).slice(0, 5) : manualTime
+  const sunsetApplied = Boolean(jawa?.meta?.sunsetApplied)
 
   const formula = useMemo(() => {
     if (dino.neptu == null || pasaran.neptu == null || detail.neptu_total == null) return null
@@ -115,6 +106,7 @@ export default function WetonPage() {
   }
 
   const contextLabel = contextMode === 'partner' ? 'Data Kelahiran Pasangan' : 'Data Kelahiran Orang Lain'
+  const displaySubject = personName || (contextMode === 'partner' ? 'Pasangan' : 'Weton')
 
   return (
     <section className="mx-auto max-w-[1180px] px-5 py-7 sm:px-7 lg:py-9">
@@ -209,7 +201,7 @@ export default function WetonPage() {
             {jawa ? (
               <>
                 <div className="rounded-xl border border-cyan-300/10 bg-[#07111C] p-5 sm:p-6">
-                  <div className="text-[10px] font-bold uppercase tracking-[0.16em] text-[#536A7D]">{personName || (contextMode === 'partner' ? 'Pasangan' : 'Weton')}</div>
+                  <div className="text-[10px] font-bold uppercase tracking-[0.16em] text-[#536A7D]">{displaySubject}</div>
                   <div className="mt-2 text-2xl font-semibold text-white">{jawa.sub || '—'}</div>
                   <div className="mt-1 text-sm text-[#71869A]">{jawa.headline || '—'}</div>
                 </div>
@@ -223,6 +215,15 @@ export default function WetonPage() {
                   <Metric label="Neptu Pasaran" value={pasaran.neptu} />
                 </div>
                 {formula && <div className="mt-4 rounded-xl border border-white/[0.06] bg-[#07111C] px-4 py-3 font-mono text-xs text-[#A9BDCF]">{formula}</div>}
+                <div className="mt-4 grid gap-2 sm:grid-cols-2">
+                  <Metric label="Tanggal efektif Jawa" value={jawa.effectiveDate} />
+                  <Metric label="Boundary" value={jawa.boundary || 'SUNSET'} />
+                </div>
+                {sunsetApplied && (
+                  <div className="mt-3 rounded-xl border border-amber-300/15 bg-amber-300/[0.04] px-4 py-3 text-[11px] leading-5 text-[#A9BDCF]">
+                    Waktu lahir melewati sunset lokasi. Engine Jawa menggunakan tanggal efektif hari berikutnya sesuai boundary kalender existing.
+                  </div>
+                )}
               </>
             ) : (
               <div className="rounded-xl border border-white/[0.07] bg-[#07111C] p-5 text-center sm:p-7">
