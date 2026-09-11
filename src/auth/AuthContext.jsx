@@ -99,6 +99,7 @@ export function AuthProvider({ children }) {
       const next = { ...(current || {}), ...updates }
       try {
         window.localStorage.setItem(USER_KEY, JSON.stringify(next))
+        window.dispatchEvent(new CustomEvent('cakra-langit:user-updated', { detail: next }))
       } catch {
         // Ignore storage errors.
       }
