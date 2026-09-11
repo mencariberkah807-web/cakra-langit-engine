@@ -2,7 +2,7 @@ import { TodayProvider } from '../core/TodayContext'
 import { LanguageProvider } from '../core/LanguageContext'
 import UserLayout from '../layouts/UserLayout'
 import DashboardHome from '../dashboard/DashboardHome'
-import WetonPage from '../dashboard/WetonPage'
+import WetonFullReadingPage from '../dashboard/WetonFullReadingPage'
 import ProfilePage from '../dashboard/ProfilePage'
 import ProfileOverviewPage from '../dashboard/ProfileOverviewPage'
 import BaZiPage from '../dashboard/BaZiPage'
@@ -43,7 +43,7 @@ function UserDashboardContent({ user, onUserUpdated }) {
   }
 
   if (path === '/dashboard/weton') {
-    return <WetonPage />
+    return <WetonFullReadingPage />
   }
 
   if (path === '/dashboard/profile') {
