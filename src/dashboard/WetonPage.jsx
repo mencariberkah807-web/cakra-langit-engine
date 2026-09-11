@@ -1,5 +1,8 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useTodayContext } from '../core/TodayContext'
+
+const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://127.0.0.1:8000'
+const TOKEN_KEY = 'cakra-langit:access-token'
 
 const CALCULATIONS = [
   { id: 'weton', label: 'Weton', description: 'Dina, Pasaran, dan Neptu', active: true },
@@ -85,21 +88,9 @@ function Metric({ label, value, accent = 'text-[#8FA4B8]' }) {
   )
 }
 
-function localDateValue(date, timezone) {
-  if (!date) return ''
-  return new Intl.DateTimeFormat('en-CA', {
-    timeZone: timezone || 'Asia/Jakarta',
-    year: 'numeric',
-    month: '2-digit',
-    day: '2-digit',
-  }).format(date)
-}
-
 export default function WetonPage() {
   const {
     apiData,
-    selectedDate,
-    selectedTime,
     location,
     locations,
     setSelectedDate,
@@ -107,19 +98,46 @@ export default function WetonPage() {
     setLocationById,
     goLive,
   } = useTodayContext()
+  const [profile, setProfile] = useState(null)
   const [contextMode, setContextMode] = useState('profile')
   const [manualDate, setManualDate] = useState('')
   const [manualTime, setManualTime] = useState('12:00')
   const [personName, setPersonName] = useState('')
 
+  useEffect(() => {
+    const token = typeof window !== 'undefined' ? window.localStorage.getItem(TOKEN_KEY) : null
+    let cancelled = false
+    async function loadProfile() {
+      try {
+        const response = await fetch(`${API_BASE}/api/profile`, { headers: token ? { Authorization: `Bearer ${token}` } : {} })
+        if (!response.ok) return
+        const payload = await response.json()
+        if (cancelled) return
+        const nextProfile = payload?.profile || null
+        setProfile(nextProfile)
+        if (nextProfile?.birth_date) {
+          const nextTime = nextProfile.birth_time_unknown ? '12:00' : (nextProfile.birth_time?.slice(0, 5) || '12:00')
+          setManualDate(nextProfile.birth_date)
+          setManualTime(nextTime)
+          setSelectedDate(new Date(`${nextProfile.birth_date}T12:00:00`))
+          setSelectedTime(nextTime)
+        }
+        if (nextProfile?.birth_location_id) setLocationById(nextProfile.birth_location_id)
+      } catch {
+        // Keep the existing context if profile hydration is unavailable.
+      }
+    }
+    loadProfile()
+    return () => { cancelled = true }
+  }, [setSelectedDate, setSelectedTime, setLocationById])
+
   const isManual = contextMode !== 'profile'
-  const hasBirthContext = isManual && Boolean(manualDate)
+  const hasBirthContext = contextMode === 'profile' ? Boolean(profile?.birth_date) : Boolean(manualDate)
   const jawa = hasBirthContext ? apiData?.calendars?.find((calendar) => calendar.id === 'jawa') : null
   const detail = jawa?.detail || {}
   const dino = detail.dino || {}
   const pasaran = detail.pasaran || {}
   const wuku = detail.wuku || {}
-  const timezone = location?.tz || location?.timezone || 'Asia/Jakarta'
   const sunsetApplied = Boolean(jawa?.meta?.sunsetApplied)
 
   const formula = useMemo(() => {
@@ -151,10 +169,17 @@ export default function WetonPage() {
   function activateContext(mode) {
     setContextMode(mode)
     if (mode === 'profile') {
-      setManualDate('')
-      setManualTime('12:00')
       setPersonName('')
-      goLive()
+      if (profile?.birth_date) {
+        const nextTime = profile.birth_time_unknown ? '12:00' : (profile.birth_time?.slice(0, 5) || '12:00')
+        setManualDate(profile.birth_date)
+        setManualTime(nextTime)
+        setSelectedDate(new Date(`${profile.birth_date}T12:00:00`))
+        setSelectedTime(nextTime)
+        if (profile.birth_location_id) setLocationById(profile.birth_location_id)
+      } else {
+        goLive()
+      }
     }
   }
 
@@ -175,7 +200,7 @@ export default function WetonPage() {
   }
 
   const contextLabel = contextMode === 'partner' ? 'Data Kelahiran Pasangan' : 'Data Kelahiran Orang Lain'
-  const displaySubject = personName || (contextMode === 'partner' ? 'Pasangan' : 'Weton')
+  const displaySubject = contextMode === 'profile' ? (profile?.display_name || 'Profil Saya') : (personName || (contextMode === 'partner' ? 'Pasangan' : 'Weton'))
 
   return (
     <section className="mx-auto max-w-[1180px] px-5 py-7 sm:px-7 lg:py-9">
@@ -197,7 +222,11 @@ export default function WetonPage() {
               ))}
             </div>
             {contextMode === 'profile' ? (
-              <div className="mt-4 rounded-xl border border-amber-300/15 bg-amber-300/[0.04] p-4"><div className="text-xs font-semibold text-amber-200">Profil kelahiran belum tersedia</div><p className="mt-1 text-[11px] leading-5 text-[#8FA4B8]">Lengkapi data kelahiran di Profil Saya untuk menjadikan profil sebagai sumber otomatis. Untuk sementara, pilih Orang Lain atau Pasangan untuk menghitung secara manual.</p></div>
+              <div className="mt-4 rounded-xl border border-cyan-300/15 bg-cyan-300/[0.035] p-4">
+                <div className="text-xs font-semibold text-cyan-200">{profile?.birth_date ? 'Profil Saya terhubung' : 'Profil kelahiran belum tersedia'}</div>
+                <p className="mt-1 text-[11px] leading-5 text-[#8FA4B8]">{profile?.birth_date ? 'Tanggal, waktu, dan lokasi kelahiran dari Profil Saya digunakan sebagai konteks default untuk Weton ini.' : 'Lengkapi data kelahiran di Profil Saya untuk menjadikan profil sebagai sumber otomatis.'}</p>
+                {profile?.birth_date && <div className="mt-3 grid gap-2 sm:grid-cols-3"><Metric label="Tanggal" value={profile.birth_date} /><Metric label="Waktu" value={profile.birth_time_unknown ? 'Tidak diketahui' : profile.birth_time?.slice(0, 5)} /><Metric label="Lokasi" value={profile.birth_location?.city || '—'} /></div>}
+              </div>
             ) : (
               <div className="mt-4 space-y-4">
                 <label className="block"><span className="mb-2 block text-xs font-semibold text-[#A9BDCF]">Nama <span className="font-normal text-[#536A7D]">(opsional)</span></span><input type="text" value={personName} onChange={(event) => setPersonName(event.target.value)} placeholder={contextMode === 'partner' ? 'Nama pasangan' : 'Nama orang yang dihitung'} className="w-full rounded-xl border border-white/[0.09] bg-[#07111C] px-3 py-3 text-sm text-white placeholder:text-[#536A7D] outline-none transition focus:border-cyan-300/40 focus:ring-2 focus:ring-cyan-300/10" /></label>
@@ -227,7 +256,7 @@ export default function WetonPage() {
                 {sunsetApplied && <div className="mt-3 rounded-xl border border-amber-300/15 bg-amber-300/[0.04] px-4 py-3 text-[11px] leading-5 text-[#A9BDCF]">Waktu lahir melewati sunset lokasi. Engine Jawa menggunakan tanggal efektif hari berikutnya sesuai boundary kalender existing.</div>}
               </>
             ) : (
-              <div className="rounded-xl border border-white/[0.07] bg-[#07111C] p-5 text-center sm:p-7"><div className="text-[10px] font-bold uppercase tracking-[0.16em] text-[#536A7D]">Birth Context</div><div className="mt-2 text-lg font-semibold text-white">{contextMode === 'profile' ? 'Profil siap menjadi sumber otomatis' : `Masukkan ${contextLabel.toLowerCase()}`}</div><p className="mx-auto mt-2 max-w-md text-xs leading-5 text-[#71869A]">{contextMode === 'profile' ? 'Data kelahiran profil belum tersedia pada schema saat ini.' : 'Setelah tanggal lahir dipilih, hasil dihitung menggunakan Almanac API dan engine Jawa existing.'}</p></div>
+              <div className="rounded-xl border border-white/[0.07] bg-[#07111C] p-5 text-center sm:p-7"><div className="text-[10px] font-bold uppercase tracking-[0.16em] text-[#536A7D]">Birth Context</div><div className="mt-2 text-lg font-semibold text-white">{contextMode === 'profile' ? 'Memuat konteks Profil Saya…' : `Masukkan ${contextLabel.toLowerCase()}`}</div><p className="mx-auto mt-2 max-w-md text-xs leading-5 text-[#71869A]">{contextMode === 'profile' ? 'Weton akan menggunakan data kelahiran profil setelah konteks tersedia.' : 'Setelah tanggal lahir dipilih, hasil dihitung menggunakan Almanac API dan engine Jawa existing.'}</p></div>
             )}
           </SectionCard>
 
