@@ -2,6 +2,7 @@ import {
   createContext,
   useCallback,
   useContext,
+  useEffect,
   useMemo,
   useState,
 } from 'react'
@@ -53,6 +54,40 @@ export function AuthProvider({ children }) {
     }
   })
   const [user, setUser] = useState(readStoredUser)
+
+  useEffect(() => {
+    if (!token) return undefined
+
+    let cancelled = false
+
+    async function hydrateProfile() {
+      try {
+        const payload = await request('/api/profile', {
+          headers: { Authorization: `Bearer ${token}` },
+        })
+        if (cancelled) return
+
+        const profileName = payload?.profile?.display_name
+        if (profileName === undefined) return
+
+        setUser((current) => {
+          const next = { ...(current || {}), display_name: profileName || null }
+          try {
+            window.localStorage.setItem(USER_KEY, JSON.stringify(next))
+            window.dispatchEvent(new CustomEvent('cakra-langit:user-updated', { detail: next }))
+          } catch {
+            // Ignore storage errors.
+          }
+          return next
+        })
+      } catch {
+        // Keep the locally stored session if profile hydration is unavailable.
+      }
+    }
+
+    hydrateProfile()
+    return () => { cancelled = true }
+  }, [token])
 
   const clearSession = useCallback(() => {
     setToken(null)
