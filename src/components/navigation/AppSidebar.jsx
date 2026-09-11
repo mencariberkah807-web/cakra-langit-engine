@@ -1,8 +1,24 @@
+import { useEffect, useState } from 'react'
 import { workspaceNav, converterNav, personalNav } from '../../navigation/userNavigation'
 
 export default function AppSidebar({ user, onLogout }) {
   const currentPath = window.location.pathname
-  const displayName = user?.display_name || user?.email?.split('@')[0] || 'Pengguna'
+  const [displayName, setDisplayName] = useState(user?.display_name || user?.email?.split('@')[0] || 'Pengguna')
+
+  useEffect(() => {
+    setDisplayName(user?.display_name || user?.email?.split('@')[0] || 'Pengguna')
+  }, [user?.display_name, user?.email])
+
+  useEffect(() => {
+    function handleUserUpdated(event) {
+      const nextUser = event.detail || {}
+      setDisplayName(nextUser.display_name || nextUser.email?.split('@')[0] || 'Pengguna')
+    }
+
+    window.addEventListener('cakra-langit:user-updated', handleUserUpdated)
+    return () => window.removeEventListener('cakra-langit:user-updated', handleUserUpdated)
+  }, [])
+
   const initials = displayName.slice(0, 2).toUpperCase()
 
   const renderItem = ([Icon, label, href]) => {
