@@ -33,7 +33,7 @@ function InputField({ label, value, onChange, type = 'text', helper }) {
   return <label className="block"><span className="mb-2 block text-xs font-medium text-slate-400">{label}</span><input type={type} value={value} onChange={(event) => onChange(event.target.value)} className="h-11 w-full rounded-xl border border-slate-800 bg-[#06111d] px-4 text-sm text-slate-100 outline-none transition placeholder:text-slate-600 focus:border-cyan-400/50 focus:ring-1 focus:ring-cyan-400/20" />{helper ? <span className="mt-2 block text-xs leading-5 text-slate-500">{helper}</span> : null}</label>
 }
 
-export default function ProfilePage({ user }) {
+export default function ProfilePage({ user, onUserUpdated }) {
   const [profile, setProfile] = useState(null)
   const [loading, setLoading] = useState(true)
   const [editing, setEditing] = useState(false)
@@ -108,6 +108,7 @@ export default function ProfilePage({ user }) {
       const response = await fetch(`${API_BASE}/api/profile`, { method: 'PUT', headers: { 'Content-Type': 'application/json', ...(token ? { Authorization: `Bearer ${token}` } : {}) }, body: JSON.stringify({ display_name: displayName || null, birth_date: birthDate || null, birth_time: birthTimeUnknown ? null : (birthTime || null), birth_time_unknown: birthTimeUnknown, birth_location_id: birthLocationId || null }) })
       const payload = await response.json().catch(() => null); if (!response.ok) throw new Error(payload?.detail || 'Profil gagal disimpan.')
       setProfile(payload.profile); setBirthLocation(payload.profile?.birth_location || birthLocation); setMessage('Profil tersimpan.'); setEditing(false)
+      if (payload.profile?.display_name !== undefined) onUserUpdated?.({ display_name: payload.profile.display_name || null })
     } catch (err) { setError(err.message || 'Profil gagal disimpan.') } finally { setSaving(false) }
   }
 
