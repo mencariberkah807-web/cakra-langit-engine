@@ -3,6 +3,7 @@ import { LanguageProvider } from '../core/LanguageContext'
 import UserLayout from '../layouts/UserLayout'
 import DashboardHome from '../dashboard/DashboardHome'
 import WetonPage from '../dashboard/WetonPage'
+import ProfilePage from '../dashboard/ProfilePage'
 import BaZiPage from '../dashboard/BaZiPage'
 import ParirimbonPage from '../dashboard/ParirimbonPage'
 import PalelintanganPage from '../dashboard/PalelintanganPage'
@@ -18,16 +19,15 @@ const pageMap = {
   '/dashboard/almanac': ['Almanac', 'Informasi almanak personal.'],
   '/dashboard/history': ['Riwayat', 'Riwayat kalkulasi personal.'],
   '/dashboard/tasks': ['Personal Tasks', 'Daftar tugas personal.'],
-  '/dashboard/profile': ['Profil Saya', 'Informasi dan data profil pengguna.'],
 }
 
 function PagePlaceholder({ title, description }) {
   return (
     <section className="mx-auto max-w-[1180px] px-5 py-7 sm:px-7">
-      <div className="rounded-xl border border-slate-200 bg-white px-6 py-7 shadow-sm">
-        <div className="text-[11px] font-semibold uppercase tracking-[0.12em] text-slate-500">Cakra Langit</div>
-        <h1 className="mt-2 text-2xl font-semibold tracking-tight text-slate-900">{title}</h1>
-        <p className="mt-2 max-w-2xl text-sm text-slate-600">{description}</p>
+      <div className="rounded-xl border border-slate-800 bg-[#081522] px-6 py-7 shadow-sm">
+        <div className="text-[11px] font-semibold uppercase tracking-[0.12em] text-cyan-400/75">Cakra Langit</div>
+        <h1 className="mt-2 text-2xl font-semibold tracking-tight text-slate-100">{title}</h1>
+        <p className="mt-2 max-w-2xl text-sm text-slate-400">{description}</p>
       </div>
     </section>
   )
@@ -42,6 +42,10 @@ function UserDashboardContent({ user }) {
 
   if (path === '/dashboard/weton') {
     return <WetonPage />
+  }
+
+  if (path === '/dashboard/profile') {
+    return <ProfilePage user={user} />
   }
 
   if (path === '/dashboard/bazi') {
