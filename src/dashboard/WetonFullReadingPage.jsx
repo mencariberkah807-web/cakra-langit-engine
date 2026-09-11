@@ -39,7 +39,6 @@ const RAKAM = {
 }
 
 const FUTURE_SECTIONS = [
-  ['Watak', 'Watak Weton dan karakter turunan.', 'Sumber tafsir belum terhubung'],
   ['Pranata Mangsa', 'Mangsa dan pembacaan konteks musim.', 'Sumber mangsa belum terhubung'],
   ['Kesehatan', 'Pembacaan kesehatan berdasarkan sumber yang tervalidasi.', 'Sumber tafsir belum terhubung'],
   ['Rezeki', 'Pembacaan rezeki dan kecenderungan finansial.', 'Sumber tafsir belum terhubung'],
@@ -120,6 +119,7 @@ export default function WetonFullReadingPage() {
   const dino = detail.dino || {}
   const pasaran = detail.pasaran || {}
   const wuku = detail.wuku || {}
+  const watak = detail.watak || {}
   const total = Number(detail.neptu_total)
   const pancasuda = Number.isFinite(total) && total > 0 ? { remainder: total % 5 || 5, ...PANCASUDA[total % 5 || 5] } : null
   const pangarasan = Number.isInteger(total) ? PANGARASAN[total] : null
@@ -221,7 +221,27 @@ export default function WetonFullReadingPage() {
           </Section>
         </div>
 
-        <Section eyebrow="05 · Reading Layers" title="Pembacaan Lanjutan" accent="cyan">
+        <Section eyebrow="05 · Reading" title="Watak Weton" accent="cyan">
+          {watak?.name ? (
+            <div className="grid gap-4 lg:grid-cols-[minmax(0,0.8fr)_minmax(0,1.7fr)] lg:items-stretch">
+              <div className="rounded-2xl border border-[#28546A] bg-[radial-gradient(circle_at_top_right,rgba(34,211,238,0.12),transparent_48%),linear-gradient(135deg,rgba(9,31,44,0.98),rgba(5,16,25,0.98))] p-6 shadow-[0_14px_45px_rgba(34,211,238,0.05)]">
+                <div className="text-[9px] font-bold uppercase tracking-[0.2em] text-[#5FA6BE]">Watak Neptu</div>
+                <div className="mt-3 text-2xl font-semibold tracking-tight text-[#EDF9FF]">{watak.name}</div>
+                <div className="mt-4 inline-flex rounded-full border border-[#244C61] bg-[#0A2230] px-3 py-1 text-[9px] font-bold uppercase tracking-[0.12em] text-[#77BBD4]">Neptu {detail.neptu_total ?? '—'}</div>
+              </div>
+              <div className="flex flex-col justify-center rounded-2xl border border-[#173B50] bg-[linear-gradient(135deg,rgba(9,25,37,0.98),rgba(5,15,24,0.98))] p-6">
+                <div className="text-[9px] font-bold uppercase tracking-[0.18em] text-[#5E8195]">Pembacaan Tradisional</div>
+                <p className="mt-3 max-w-3xl text-sm leading-7 text-[#A9C0CF]">{watak.desc}</p>
+                <div className="mt-4 h-px bg-[#18374A]" />
+                <p className="mt-3 text-[11px] leading-5 text-[#668397]">Penafsiran watak disajikan sebagai referensi tradisional dan bahan pertimbangan dalam panduan kehidupan.</p>
+              </div>
+            </div>
+          ) : (
+            <div className="rounded-xl border border-[#173044] bg-[#06131F] p-6 text-sm text-[#8FAEC1]">Data watak belum tersedia dari konteks Jawa existing.</div>
+          )}
+        </Section>
+
+        <Section eyebrow="06 · Reading Layers" title="Pembacaan Lanjutan" accent="blue">
           <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
             {FUTURE_SECTIONS.map(([title, description, status]) => (
               <div key={title} className="rounded-xl border border-[#173044] bg-[linear-gradient(135deg,rgba(9,25,37,0.98),rgba(5,15,24,0.98))] p-5 shadow-[inset_0_1px_0_rgba(255,255,255,0.02)]">
