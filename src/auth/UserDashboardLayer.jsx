@@ -4,6 +4,7 @@ import UserLayout from '../layouts/UserLayout'
 import DashboardHome from '../dashboard/DashboardHome'
 import WetonPage from '../dashboard/WetonPage'
 import ProfilePage from '../dashboard/ProfilePage'
+import ProfileOverviewPage from '../dashboard/ProfileOverviewPage'
 import BaZiPage from '../dashboard/BaZiPage'
 import ParirimbonPage from '../dashboard/ParirimbonPage'
 import PalelintanganPage from '../dashboard/PalelintanganPage'
@@ -46,6 +47,10 @@ function UserDashboardContent({ user, onUserUpdated }) {
   }
 
   if (path === '/dashboard/profile') {
+    return <ProfileOverviewPage user={user} />
+  }
+
+  if (path === '/dashboard/profile/edit') {
     return <ProfilePage user={user} onUserUpdated={onUserUpdated} />
   }
 
