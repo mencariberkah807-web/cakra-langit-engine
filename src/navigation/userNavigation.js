@@ -11,19 +11,22 @@ import {
   WandSparkles,
 } from 'lucide-react'
 
-export const primaryNav = [
+export const workspaceNav = [
   [Home, 'Dashboard', '/dashboard'],
-  [Sun, 'Kalkulasi Hari Ini', '/dashboard/today'],
   [Leaf, 'Natural Layer', '/dashboard/natural'],
   [WandSparkles, 'Birth Converter', '/dashboard/birth-converter'],
+]
+
+export const converterNav = [
   [Sparkles, 'Weton', '/dashboard/weton'],
+  [Sun, 'Palintangan', '/dashboard/palintangan'],
+  [Moon, 'Palelintangan', '/dashboard/palelintangan'],
   [CircleUserRound, 'BaZi', '/dashboard/bazi'],
-  [ListChecks, 'Paririmbon', '/dashboard/paririmbon'],
-  [Moon, 'Almanac', '/dashboard/almanac'],
-  [CalendarDays, 'Riwayat', '/dashboard/history'],
 ]
 
 export const personalNav = [
-  [ListChecks, 'Personal Tasks', '/dashboard/tasks'],
   [UserRound, 'Profil Saya', '/dashboard/profile'],
+  [ListChecks, 'Personal Tasks', '/dashboard/tasks'],
 ]
+
+export const primaryNav = [...workspaceNav, ...converterNav, ...personalNav]
