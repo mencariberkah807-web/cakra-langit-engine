@@ -1,4 +1,4 @@
-import { primaryNav, personalNav } from '../../navigation/userNavigation'
+import { workspaceNav, converterNav, personalNav } from '../../navigation/userNavigation'
 
 export default function AppSidebar({ user, onLogout }) {
   const currentPath = window.location.pathname
@@ -27,6 +27,13 @@ export default function AppSidebar({ user, onLogout }) {
     )
   }
 
+  const renderGroup = (label, items) => (
+    <div className="mt-5 first:mt-0" key={label}>
+      <div className="hidden px-2 pb-2 text-[10px] font-bold uppercase tracking-[0.14em] text-[#536A7D] lg:block">{label}</div>
+      {items.map(renderItem)}
+    </div>
+  )
+
   return (
     <aside className="hidden w-[76px] shrink-0 border-r border-white/[0.07] bg-[#06111B] lg:flex lg:w-[220px] lg:flex-col">
       <div className="border-b border-white/[0.07] px-3 py-5 lg:px-4">
@@ -34,17 +41,15 @@ export default function AppSidebar({ user, onLogout }) {
           <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-cyan-300/20 bg-[#0D2535] text-xs font-bold text-[#22D3EE] shadow-[0_0_22px_rgba(34,211,238,0.08)]">{initials}</div>
           <div className="hidden min-w-0 lg:block">
             <div className="truncate text-xs font-semibold text-white">{displayName}</div>
-            <div className="mt-0.5 truncate text-[10px] text-[#71869A]">Personal Almanac</div>
+            <div className="mt-0.5 truncate text-[10px] text-[#71869A]">Personal</div>
           </div>
         </div>
       </div>
 
-      <nav className="flex-1 px-2 py-5 lg:px-3">
-        <div className="hidden px-2 pb-2 text-[10px] font-bold uppercase tracking-[0.14em] text-[#536A7D] lg:block">Workspace</div>
-        {primaryNav.map(renderItem)}
-        <div className="my-4 border-t border-white/[0.07]" />
-        <div className="hidden px-2 pb-2 text-[10px] font-bold uppercase tracking-[0.14em] text-[#536A7D] lg:block">Personal</div>
-        {personalNav.map(renderItem)}
+      <nav className="flex-1 overflow-y-auto px-2 py-5 lg:px-3">
+        {renderGroup('Personal', personalNav)}
+        {renderGroup('Workspace', workspaceNav)}
+        {renderGroup('Converter', converterNav)}
       </nav>
 
       <div className="border-t border-white/[0.07] px-2 py-3 lg:px-3">
