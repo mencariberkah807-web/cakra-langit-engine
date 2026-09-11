@@ -33,7 +33,7 @@ function PagePlaceholder({ title, description }) {
   )
 }
 
-function UserDashboardContent({ user }) {
+function UserDashboardContent({ user, onUserUpdated }) {
   const path = window.location.pathname
 
   if (path === '/dashboard') {
@@ -45,7 +45,7 @@ function UserDashboardContent({ user }) {
   }
 
   if (path === '/dashboard/profile') {
-    return <ProfilePage user={user} />
+    return <ProfilePage user={user} onUserUpdated={onUserUpdated} />
   }
 
   if (path === '/dashboard/bazi') {
@@ -67,13 +67,13 @@ function UserDashboardContent({ user }) {
 }
 
 export default function UserDashboardLayer() {
-  const { user, logout } = useAuth()
+  const { user, logout, updateUser } = useAuth()
 
   return (
     <LanguageProvider>
       <TodayProvider>
         <UserLayout user={user} onLogout={logout}>
-          <UserDashboardContent user={user} />
+          <UserDashboardContent user={user} onUserUpdated={updateUser} />
         </UserLayout>
       </TodayProvider>
     </LanguageProvider>
