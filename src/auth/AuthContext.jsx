@@ -94,6 +94,18 @@ export function AuthProvider({ children }) {
     window.location.assign('/dashboard')
   }, [])
 
+  const updateUser = useCallback((updates) => {
+    setUser((current) => {
+      const next = { ...(current || {}), ...updates }
+      try {
+        window.localStorage.setItem(USER_KEY, JSON.stringify(next))
+      } catch {
+        // Ignore storage errors.
+      }
+      return next
+    })
+  }, [])
+
   const value = useMemo(
     () => ({
       token,
@@ -102,10 +114,11 @@ export function AuthProvider({ children }) {
       isAuthenticated: Boolean(token && user),
       login,
       register,
+      updateUser,
       logout: clearSession,
       apiBase: API_BASE,
     }),
-    [token, user, login, register, clearSession]
+    [token, user, login, register, updateUser, clearSession]
   )
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
