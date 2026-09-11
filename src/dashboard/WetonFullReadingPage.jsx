@@ -168,23 +168,24 @@ export default function WetonFullReadingPage() {
       <div className="space-y-5">
         <Section eyebrow="01 · Core" title="Hasil Weton">
           {jawa ? (
-            <>
-              <div className="rounded-2xl border border-cyan-300/15 bg-[radial-gradient(circle_at_top_right,rgba(34,211,238,0.08),transparent_42%),#07111C] p-6 sm:p-8">
+            <div className="grid gap-3 lg:grid-cols-[1fr_2fr] lg:items-stretch">
+              <div className="rounded-2xl border border-cyan-300/15 bg-[radial-gradient(circle_at_top_right,rgba(34,211,238,0.08),transparent_42%),#07111C] p-5 sm:p-6">
                 <div className="text-[10px] font-bold uppercase tracking-[0.18em] text-[#536A7D]">Weton Personal</div>
-                <div className="mt-2 text-3xl font-semibold tracking-tight text-white sm:text-4xl">{jawa.sub || `${dino.name || '—'} ${pasaran.name || ''}`}</div>
+                <div className="mt-2 text-2xl font-semibold tracking-tight text-white sm:text-3xl">{jawa.sub || `${dino.name || '—'} ${pasaran.name || ''}`}</div>
                 <div className="mt-2 text-sm text-[#8FA4B8]">{jawa.headline || 'Hasil kalender Jawa berdasarkan konteks kelahiran.'}</div>
               </div>
-              <div className="mt-4 grid gap-2 sm:grid-cols-3">
+              <div className="grid gap-2 sm:grid-cols-2">
                 <Metric label="Dina" value={dino.name} />
                 <Metric label="Pasaran" value={pasaran.name} />
-                <Metric label="Total Neptu" value={detail.neptu_total} accent="text-amber-300" />
-              </div>
-              <div className="mt-2 grid gap-2 sm:grid-cols-2">
                 <Metric label="Neptu Dina" value={dino.neptu} />
                 <Metric label="Neptu Pasaran" value={pasaran.neptu} />
+                <div className="rounded-xl border border-amber-300/10 bg-[#07111C] px-4 py-4 sm:col-span-2">
+                  <div className="text-[10px] font-semibold uppercase tracking-[0.12em] text-[#536A7D]">Total Neptu</div>
+                  <div className="mt-1 text-xl font-semibold text-amber-300">{detail.neptu_total ?? '—'}</div>
+                  {formula && <div className="mt-1 font-mono text-[11px] text-[#71869A]">{formula}</div>}
+                </div>
               </div>
-              {formula && <div className="mt-4 rounded-xl border border-white/[0.06] bg-[#07111C] px-4 py-3 font-mono text-xs text-[#A9BDCF]">{formula}</div>}
-            </>
+            </div>
           ) : (
             <div className="rounded-xl border border-amber-300/10 bg-amber-300/[0.03] p-6 text-sm text-[#8FA4B8]">Data Weton belum tersedia untuk konteks profil ini.</div>
           )}
