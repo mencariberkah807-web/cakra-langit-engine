@@ -1,6 +1,6 @@
-from datetime import datetime
+from datetime import datetime, date, time
 
-from sqlalchemy import DateTime, ForeignKey, String, Text, func
+from sqlalchemy import DateTime, ForeignKey, String, Text, Date, Time, Boolean, func
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from .connection import Base
@@ -27,6 +27,11 @@ class Profile(Base):
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
     user_id: Mapped[int] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"), unique=True, nullable=False)
     display_name: Mapped[str | None] = mapped_column(String(120), nullable=True)
+    birth_date: Mapped[date | None] = mapped_column(Date(), nullable=True)
+    birth_time: Mapped[time | None] = mapped_column(Time(), nullable=True)
+    birth_time_unknown: Mapped[bool] = mapped_column(Boolean(), default=False, nullable=False)
+    birth_location_id: Mapped[str | None] = mapped_column(String(100), nullable=True)
+    birth_timezone: Mapped[str | None] = mapped_column(String(64), nullable=True)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now(), nullable=False)
     updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now(), nullable=False)
 
@@ -39,7 +44,7 @@ class UserPreference(Base):
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
     user_id: Mapped[int] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"), unique=True, nullable=False)
     location_id: Mapped[str | None] = mapped_column(String(100), nullable=True)
-    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now(), nullable=False)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now(), nullable=False)
     updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now(), nullable=False)
 
     user: Mapped[User] = relationship(back_populates="preferences")
