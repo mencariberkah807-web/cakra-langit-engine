@@ -72,8 +72,15 @@ function getField(jawa, key) {
   return jawa?.fields?.find((field) => field.k === key)?.v
 }
 
+function formatBirthDate(value) {
+  if (!value) return '—'
+  const date = new Date(`${value}T12:00:00`)
+  if (Number.isNaN(date.getTime())) return value
+  return new Intl.DateTimeFormat('id-ID', { day: 'numeric', month: 'long', year: 'numeric' }).format(date)
+}
+
 export default function WetonFullReadingPage() {
-  const { apiData, location, setSelectedDate, setSelectedTime, setLocationById } = useTodayContext()
+  const { apiData, setSelectedDate, setSelectedTime, setLocationById } = useTodayContext()
   const [profile, setProfile] = useState(null)
 
   useEffect(() => {
@@ -118,6 +125,13 @@ export default function WetonFullReadingPage() {
   }, [dino.name, pasaran.name])
 
   const profileName = profile?.display_name || 'Profil Saya'
+  const birthLocation = profile?.birth_location
+  const birthLocationLabel = birthLocation
+    ? [birthLocation.city, birthLocation.province, birthLocation.country].filter(Boolean).join(', ')
+    : '—'
+  const birthTimeLabel = profile?.birth_time_unknown
+    ? 'Waktu tidak diketahui'
+    : (profile?.birth_time?.slice(0, 5) || '—')
   const formula = dino.neptu != null && pasaran.neptu != null && detail.neptu_total != null
     ? `${dino.name} ${dino.neptu} + ${pasaran.name} ${pasaran.neptu} = ${detail.neptu_total}`
     : null
@@ -126,14 +140,27 @@ export default function WetonFullReadingPage() {
     <section className="mx-auto max-w-[1180px] px-5 py-7 sm:px-7 lg:py-9">
       <header className="mb-7">
         <div className="text-[10px] font-bold uppercase tracking-[0.18em] text-[#22D3EE]">Cakra Langit · Jawa</div>
-        <div className="mt-2 flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
+        <div className="mt-2 flex flex-col justify-between gap-5 lg:flex-row lg:items-end">
           <div>
-            <h1 className="text-3xl font-semibold tracking-tight text-white sm:text-4xl">Full Weton Reading</h1>
-            <p className="mt-2 max-w-3xl text-sm leading-6 text-[#8FA4B8]">Pembacaan lengkap Weton personal, dimulai dari hasil inti lalu konteks kalender, petungan, dan layer tafsir yang tervalidasi.</p>
+            <h1 className="text-3xl font-semibold tracking-tight text-white sm:text-4xl">Halo, {profileName}</h1>
+            <p className="mt-2 max-w-2xl text-sm leading-6 text-[#8FA4B8]">Berikut pembacaan Weton personal berdasarkan konteks kelahiran yang tersimpan di profil Anda.</p>
           </div>
-          <div className="rounded-xl border border-cyan-300/10 bg-[#07111C] px-4 py-3 text-right">
-            <div className="text-[10px] uppercase tracking-[0.14em] text-[#536A7D]">Subjek</div>
-            <div className="mt-1 text-sm font-semibold text-white">{profileName}</div>
+          <div className="w-full rounded-2xl border border-cyan-300/10 bg-[#07111C] p-4 lg:max-w-[520px]">
+            <div className="text-[10px] font-bold uppercase tracking-[0.14em] text-[#536A7D]">Profil Kelahiran</div>
+            <div className="mt-3 grid gap-3 sm:grid-cols-3">
+              <div>
+                <div className="text-[9px] uppercase tracking-[0.12em] text-[#536A7D]">Tanggal</div>
+                <div className="mt-1 text-sm font-semibold text-white">{formatBirthDate(profile?.birth_date)}</div>
+              </div>
+              <div>
+                <div className="text-[9px] uppercase tracking-[0.12em] text-[#536A7D]">Waktu</div>
+                <div className="mt-1 text-sm font-semibold text-white">{birthTimeLabel}</div>
+              </div>
+              <div>
+                <div className="text-[9px] uppercase tracking-[0.12em] text-[#536A7D]">Lokasi</div>
+                <div className="mt-1 text-sm font-semibold text-white">{birthLocationLabel}</div>
+              </div>
+            </div>
           </div>
         </div>
       </header>
