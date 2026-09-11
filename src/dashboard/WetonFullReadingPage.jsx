@@ -51,7 +51,7 @@ function Section({ eyebrow, title, children }) {
   return (
     <section className="overflow-hidden rounded-2xl border border-white/[0.07] bg-[#0A1723] shadow-[0_12px_40px_rgba(0,0,0,0.16)]">
       <div className="border-b border-white/[0.07] px-5 py-4 sm:px-6">
-        <div className="text-[10px] font-bold uppercase tracking-[0.16em] text-[#22D3EE]">{eyebrow}</div>
+        <div className="text-[10px] font-bold uppercase tracking-[0.16em] text-[#6F8CA3]">{eyebrow}</div>
         <h2 className="mt-1 text-lg font-semibold tracking-tight text-white">{title}</h2>
       </div>
       <div className="p-5 sm:p-6">{children}</div>
@@ -139,13 +139,14 @@ export default function WetonFullReadingPage() {
   return (
     <section className="mx-auto max-w-[1180px] px-5 py-7 sm:px-7 lg:py-9">
       <header className="mb-7">
-        <div className="text-[10px] font-bold uppercase tracking-[0.18em] text-[#22D3EE]">Cakra Langit · Jawa</div>
+        <div className="text-[10px] font-bold uppercase tracking-[0.18em] text-[#6F8CA3]">Cakra Langit · Jawa</div>
         <div className="mt-2 flex flex-col justify-between gap-5 lg:flex-row lg:items-end">
           <div>
-            <h1 className="text-3xl font-semibold tracking-tight text-white sm:text-4xl">Halo, {profileName}</h1>
-            <p className="mt-2 max-w-2xl text-sm leading-6 text-[#8FA4B8]">Berikut pembacaan Weton personal berdasarkan konteks kelahiran yang tersimpan di profil Anda.</p>
+            <h1 className="text-3xl font-semibold tracking-tight text-white sm:text-4xl">Weton Jawa</h1>
+            <p className="mt-2 max-w-2xl text-sm leading-6 text-[#8FA4B8]">Panduan Weton berdasarkan konteks kelahiran yang tersimpan di profil Anda.</p>
+            <div className="mt-3 text-xs font-medium text-[#71869A]">Profil: <span className="text-[#A9BDCF]">{profileName}</span></div>
           </div>
-          <div className="w-full rounded-2xl border border-cyan-300/10 bg-[#07111C] p-4 lg:max-w-[520px]">
+          <div className="w-full rounded-2xl border border-white/[0.07] bg-[#07111C] p-4 lg:max-w-[520px]">
             <div className="text-[10px] font-bold uppercase tracking-[0.14em] text-[#536A7D]">Profil Kelahiran</div>
             <div className="mt-3 grid gap-3 sm:grid-cols-3">
               <div>
@@ -167,28 +168,29 @@ export default function WetonFullReadingPage() {
 
       <div className="space-y-5">
         <div className="grid gap-5 lg:grid-cols-2">
-          <Section eyebrow="01 · Core" title="Hasil Weton">
+          <Section eyebrow="01 · Core" title="Weton Utama">
             {jawa ? (
               <div className="grid gap-3 lg:grid-cols-[1fr_2fr] lg:items-stretch">
-                <div className="rounded-2xl border border-cyan-300/15 bg-[radial-gradient(circle_at_top_right,rgba(34,211,238,0.08),transparent_42%),#07111C] p-5">
-                  <div className="text-[10px] font-bold uppercase tracking-[0.18em] text-[#536A7D]">Weton Personal</div>
-                  <div className="mt-2 text-2xl font-semibold tracking-tight text-white">{jawa.sub || `${dino.name || '—'} ${pasaran.name || ''}`}</div>
-                  <div className="mt-2 text-sm text-[#8FA4B8]">{jawa.headline || 'Hasil kalender Jawa berdasarkan konteks kelahiran.'}</div>
+                <div className="rounded-2xl border border-white/[0.08] bg-[radial-gradient(circle_at_top_right,rgba(93,135,164,0.10),transparent_42%),#07111C] p-5">
+                  <div className="text-[10px] font-bold uppercase tracking-[0.18em] text-[#536A7D]">Weton</div>
+                  <div className="mt-3 text-3xl font-semibold tracking-tight text-white">{jawa.sub || `${dino.name || '—'} ${pasaran.name || ''}`}</div>
+                  <div className="mt-3 h-px bg-white/[0.06]" />
+                  <div className="mt-3 text-xs leading-5 text-[#71869A]">Dina dan Pasaran menjadi dasar pembacaan Weton Jawa.</div>
                 </div>
                 <div className="grid gap-2 sm:grid-cols-2">
                   <Metric label="Dina" value={dino.name} />
                   <Metric label="Pasaran" value={pasaran.name} />
                   <Metric label="Neptu Dina" value={dino.neptu} />
                   <Metric label="Neptu Pasaran" value={pasaran.neptu} />
-                  <div className="rounded-xl border border-amber-300/10 bg-[#07111C] px-4 py-3 sm:col-span-2">
+                  <div className="rounded-xl border border-white/[0.07] bg-[#07111C] px-4 py-3 sm:col-span-2">
                     <div className="text-[10px] font-semibold uppercase tracking-[0.12em] text-[#536A7D]">Total Neptu</div>
-                    <div className="mt-1 text-xl font-semibold text-amber-300">{detail.neptu_total ?? '—'}</div>
+                    <div className="mt-1 text-xl font-semibold text-[#C7D4DF]">{detail.neptu_total ?? '—'}</div>
                     {formula && <div className="mt-1 font-mono text-[11px] text-[#71869A]">{formula}</div>}
                   </div>
                 </div>
               </div>
             ) : (
-              <div className="rounded-xl border border-amber-300/10 bg-amber-300/[0.03] p-6 text-sm text-[#8FA4B8]">Data Weton belum tersedia untuk konteks profil ini.</div>
+              <div className="rounded-xl border border-white/[0.07] bg-[#07111C] p-6 text-sm text-[#8FA4B8]">Data Weton belum tersedia untuk konteks profil ini.</div>
             )}
           </Section>
 
@@ -206,24 +208,24 @@ export default function WetonFullReadingPage() {
               ].map(([label, value]) => <Metric key={label} label={label} value={value} />)}
             </div>
             {jawa?.effectiveDate && <div className="mt-3 rounded-xl border border-white/[0.06] bg-[#07111C] px-4 py-3 text-xs text-[#71869A]">Tanggal efektif: <span className="font-semibold text-[#A9BDCF]">{jawa.effectiveDate}</span> · Boundary: <span className="font-semibold text-[#A9BDCF]">{jawa.boundary || 'SUNSET'}</span></div>}
-            {jawa?.meta?.sunsetApplied && <div className="mt-2 rounded-xl border border-amber-300/15 bg-amber-300/[0.04] px-4 py-3 text-[11px] leading-5 text-[#A9BDCF]">Boundary sunset diterapkan oleh engine kalender existing.</div>}
+            {jawa?.meta?.sunsetApplied && <div className="mt-2 rounded-xl border border-white/[0.06] bg-[#07111C] px-4 py-3 text-[11px] leading-5 text-[#A9BDCF]">Boundary sunset diterapkan oleh engine kalender existing.</div>}
           </Section>
         </div>
 
         <div className="grid gap-5 lg:grid-cols-2">
           <Section eyebrow="03 · Symbol" title="Lambang">
-            <div className="rounded-2xl border border-amber-300/10 bg-amber-300/[0.025] p-6 text-center">
+            <div className="rounded-2xl border border-white/[0.07] bg-[#07111C] p-6 text-center">
               <div className="text-[10px] font-bold uppercase tracking-[0.16em] text-[#536A7D]">Lambang Weton</div>
-              <div className="mt-3 text-2xl font-semibold text-amber-200">{getField(jawa, 'Lambang') || '—'}</div>
+              <div className="mt-3 text-2xl font-semibold text-[#C7D4DF]">{getField(jawa, 'Lambang') || '—'}</div>
               <p className="mt-2 text-xs leading-5 text-[#71869A]">Nilai lambang ditampilkan dari data kalender Jawa existing. Tafsir naratif tidak ditambahkan tanpa sumber tervalidasi.</p>
             </div>
           </Section>
 
           <Section eyebrow="04 · Petungan" title="Analisis Petungan">
             <div className="grid gap-2 sm:grid-cols-3">
-              <div className="rounded-xl border border-amber-300/10 bg-[#07111C] p-4"><div className="text-[10px] font-bold uppercase tracking-[0.14em] text-[#536A7D]">Pancasuda</div><div className="mt-2 text-lg font-semibold text-amber-200">{pancasuda?.name || '—'}</div><p className="mt-1 text-xs leading-5 text-[#8FA4B8]">{pancasuda?.meaning || 'Menunggu data Neptu.'}</p><div className="mt-2 font-mono text-[10px] text-[#536A7D]">{pancasuda ? `${detail.neptu_total} mod 5 = ${pancasuda.remainder}` : '—'}</div></div>
-              <div className="rounded-xl border border-cyan-300/10 bg-[#07111C] p-4"><div className="text-[10px] font-bold uppercase tracking-[0.14em] text-[#536A7D]">Pangarasan</div><div className="mt-2 text-lg font-semibold text-cyan-200">{pangarasan?.name || '—'}</div><p className="mt-1 text-xs leading-5 text-[#8FA4B8]">{pangarasan?.meaning || 'Menunggu data Neptu.'}</p><div className="mt-2 font-mono text-[10px] text-[#536A7D]">{pangarasan ? `Neptu ${total} → ${pangarasan.name}` : '—'}</div></div>
-              <div className="rounded-xl border border-white/[0.07] bg-[#07111C] p-4"><div className="text-[10px] font-bold uppercase tracking-[0.14em] text-[#536A7D]">Rakam</div><div className="mt-2 text-lg font-semibold text-white">{rakam?.name || '—'}</div><p className="mt-1 text-xs leading-5 text-[#8FA4B8]">Klasifikasi berdasarkan kupih Dina + Pasaran.</p><div className="mt-2 font-mono text-[10px] text-[#536A7D]">{rakam ? `${rakam.dinoKupih} + ${rakam.pasaranKupih} → sisa ${rakam.remainder}` : '—'}</div></div>
+              <div className="rounded-xl border border-white/[0.07] bg-[#07111C] p-4"><div className="text-[10px] font-bold uppercase tracking-[0.14em] text-[#536A7D]">Pancasuda</div><div className="mt-2 text-lg font-semibold text-[#C7D4DF]">{pancasuda?.name || '—'}</div><p className="mt-1 text-xs leading-5 text-[#8FA4B8]">{pancasuda?.meaning || 'Menunggu data Neptu.'}</p><div className="mt-2 font-mono text-[10px] text-[#536A7D]">{pancasuda ? `${detail.neptu_total} mod 5 = ${pancasuda.remainder}` : '—'}</div></div>
+              <div className="rounded-xl border border-white/[0.07] bg-[#07111C] p-4"><div className="text-[10px] font-bold uppercase tracking-[0.14em] text-[#536A7D]">Pangarasan</div><div className="mt-2 text-lg font-semibold text-[#C7D4DF]">{pangarasan?.name || '—'}</div><p className="mt-1 text-xs leading-5 text-[#8FA4B8]">{pangarasan?.meaning || 'Menunggu data Neptu.'}</p><div className="mt-2 font-mono text-[10px] text-[#536A7D]">{pangarasan ? `Neptu ${total} → ${pangarasan.name}` : '—'}</div></div>
+              <div className="rounded-xl border border-white/[0.07] bg-[#07111C] p-4"><div className="text-[10px] font-bold uppercase tracking-[0.14em] text-[#536A7D]">Rakam</div><div className="mt-2 text-lg font-semibold text-[#C7D4DF]">{rakam?.name || '—'}</div><p className="mt-1 text-xs leading-5 text-[#8FA4B8]">Klasifikasi berdasarkan kupih Dina + Pasaran.</p><div className="mt-2 font-mono text-[10px] text-[#536A7D]">{rakam ? `${rakam.dinoKupih} + ${rakam.pasaranKupih} → sisa ${rakam.remainder}` : '—'}</div></div>
             </div>
           </Section>
         </div>
@@ -239,7 +241,7 @@ export default function WetonFullReadingPage() {
           </div>
         </Section>
 
-        <div className="rounded-2xl border border-cyan-300/10 bg-[#07111C] px-5 py-4 text-xs leading-5 text-[#71869A]">
+        <div className="rounded-2xl border border-white/[0.07] bg-[#07111C] px-5 py-4 text-xs leading-5 text-[#71869A]">
           Struktur ini memisahkan <span className="font-semibold text-[#A9BDCF]">hasil kalender</span>, <span className="font-semibold text-[#A9BDCF]">petungan</span>, dan <span className="font-semibold text-[#A9BDCF]">tafsir</span>. Layer tafsir hanya akan diisi setelah sumber/metode masing-masing tervalidasi; engine Jawa existing tetap menjadi sumber perhitungan.
         </div>
       </div>
