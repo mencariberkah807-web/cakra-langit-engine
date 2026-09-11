@@ -13,6 +13,7 @@ const pageMap = {
   '/dashboard/today': ['Kalkulasi Hari Ini', 'Konteks kalkulasi untuk hari ini.'],
   '/dashboard/natural': ['Natural Layer', 'Eksplorasi lapisan perhitungan alam.'],
   '/dashboard/birth-converter': ['Birth Converter', 'Konversi data kelahiran untuk kalkulasi personal.'],
+  '/dashboard/palintangan': ['Palintangan Sunda', 'Kalkulasi dan referensi Palintangan Sunda.'],
   '/dashboard/bazi': ['BaZi', 'Kalkulasi dan informasi BaZi.'],
   '/dashboard/paririmbon': ['Paririmbon', 'Kalkulasi dan referensi Paririmbon.'],
   '/dashboard/palelintangan': ['Palelintangan Bali', 'Kalkulasi dan referensi Palelintangan Bali.'],
