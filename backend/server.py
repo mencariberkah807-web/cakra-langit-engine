@@ -26,6 +26,7 @@ from engines.sky_engine import get_sky_data
 from engines.solar_engine import get_solar_data
 from engines.tide_engine import get_tide_data
 from routes.auth import router as auth_router
+from routes.profile import router as profile_router
 from routes.site_assets import admin_router as admin_site_assets_router
 from routes.site_assets import router as site_assets_router
 from routes.site_settings import admin_router as admin_site_settings_router
@@ -37,6 +38,7 @@ from services.user_service import create_user, get_user_by_email, serialize_user
 
 app = FastAPI(title="Personal Almanac V1 API")
 app.include_router(auth_router)
+app.include_router(profile_router)
 app.include_router(site_settings_router)
 app.include_router(admin_site_settings_router)
 app.include_router(site_assets_router)
@@ -96,7 +98,7 @@ def register(payload: RegisterRequest, db: DbSession):
 def login(payload: LoginRequest, db: DbSession):
     user = get_user_by_email(db, payload.email)
     if user is None or not verify_password(payload.password, user.password_hash):
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid email or password", headers={"WWW-Authenticate": "Bearer"})
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid email or password", headers={"WWW-Authenticate": "bearer"})
     if not user.is_active:
         raise HTTPException(status_code=403, detail="User is inactive")
     return {"access_token": create_access_token(user.id), "token_type": "bearer", "user": serialize_user(user)}
