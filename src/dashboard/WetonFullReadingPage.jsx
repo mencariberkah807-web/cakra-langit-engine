@@ -89,7 +89,7 @@ function WorkspaceCard({ title, eyebrow, description, children, accent = 'blue' 
     <div className="rounded-2xl border border-[#21425A] bg-[radial-gradient(circle_at_top_right,rgba(96,165,250,0.07),transparent_48%),linear-gradient(135deg,rgba(10,28,42,0.98),rgba(5,15,24,0.98))] p-5">
       <div className={`text-[9px] font-bold uppercase tracking-[0.18em] ${accent === 'gold' ? 'text-[#D4B75E]' : 'text-[#78A9C7]'}`}>{eyebrow}</div>
       <h3 className="mt-2 text-base font-semibold text-[#D8F3FF]">{title}</h3>
-      <p className="mt-2 text-xs leading-5 text-[#7896A8]">{description}</p>
+      {description ? <p className="mt-2 text-xs leading-5 text-[#7896A8]">{description}</p> : null}
       <div className="mt-4 border-t border-[#18374A] pt-4">{children}</div>
     </div>
   )
@@ -208,17 +208,17 @@ export default function WetonFullReadingPage() {
 
         <Section eyebrow="03 · Symbol" title="Lambang & Petungan" accent="gold">
           <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-            <WorkspaceCard title="Pancasuda" eyebrow="Petungan · Neptu" description="Pembagian total Neptu dengan lima menghasilkan kelompok Pancasuda.">
+            <WorkspaceCard title="Pancasuda" eyebrow="Petungan · Neptu">
               <div className="text-2xl font-semibold text-[#E6D58B]">{pancasuda?.name || '—'}</div>
               <div className="mt-1 text-xs text-[#A99362]">Sisa {pancasuda?.remainder ?? '—'} · {pancasuda?.meaning || 'Belum tersedia'}</div>
               <div className="mt-3 font-mono text-[10px] text-[#6F6247]">{pancasuda ? `${total} ÷ 5 → sisa ${pancasuda.remainder}` : '—'}</div>
             </WorkspaceCard>
-            <WorkspaceCard title="Pangarasan" eyebrow="Petungan · Neptu" description="Kelompok Pangarasan dibaca dari total Neptu yang tersedia pada kalender Jawa.">
+            <WorkspaceCard title="Pangarasan" eyebrow="Petungan · Neptu">
               <div className="text-2xl font-semibold text-[#E6D58B]">{pangarasan?.name || '—'}</div>
               <div className="mt-1 text-xs text-[#A99362]">{pangarasan?.meaning || 'Belum tersedia'}</div>
               <div className="mt-3 font-mono text-[10px] text-[#6F6247]">Neptu {Number.isInteger(total) ? total : '—'}</div>
             </WorkspaceCard>
-            <WorkspaceCard title="Rakam" eyebrow="Petungan · Kupih" description="Klasifikasi berdasarkan kupih Dina dan Pasaran yang telah ada pada pembacaan Jawa.">
+            <WorkspaceCard title="Rakam" eyebrow="Petungan · Kupih">
               <div className="text-2xl font-semibold text-[#E6D58B]">{rakam?.name || '—'}</div>
               <div className="mt-1 text-xs text-[#A99362]">Sisa {rakam?.remainder ?? '—'}</div>
               <div className="mt-3 font-mono text-[10px] text-[#6F6247]">{rakam ? `${rakam.dinoKupih} + ${rakam.pasaranKupih} → sisa ${rakam.remainder}` : '—'}</div>
