@@ -244,8 +244,19 @@ export default function WetonFullReadingPage() {
           ) : <div className="rounded-xl border border-[#173044] bg-[#06131F] p-6 text-sm text-[#8FAEC1]">Data watak belum tersedia dari konteks Jawa existing.</div>}
         </Section>
 
-        <Section eyebrow="05 · Jawa Workspace" title="Fitur Jawa Lainnya" accent="blue">
-          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+        <Section eyebrow="05 · Reading Layers" title="Pembacaan Lanjutan" accent="blue">
+          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+            {READING_LAYERS.map(([title, description, status]) => (
+              <div key={title} className="rounded-xl border border-[#173044] bg-[linear-gradient(135deg,rgba(9,25,37,0.98),rgba(5,15,24,0.98))] p-5">
+                <div className="flex items-center justify-between gap-3"><h3 className="text-sm font-semibold text-[#D8F3FF]">{title}</h3><span className="rounded-full border border-[#254155] bg-[#091A28] px-2 py-1 text-[8px] font-bold uppercase tracking-[0.1em] text-[#668397]">{status}</span></div>
+                <p className="mt-2 text-xs leading-5 text-[#7896A8]">{description}</p>
+              </div>
+            ))}
+          </div>
+        </Section>
+
+        <Section eyebrow="06 · Jawa Workspace" title="Fitur Jawa Lainnya" accent="blue">
+          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
             <WorkspaceCard title="Kecocokan Jodoh" eyebrow="Repok · Jodoh" description="Ruang untuk metode kecocokan pasangan berbasis sumber yang tervalidasi.">
               <div className="text-sm font-semibold text-[#BFD8E7]">Pancaka 7</div>
               <div className="mt-1 text-[11px] leading-5 text-[#7896A8]">Metode: gabungan nilai Naktu nama → ÷ 7 → sisa 1–7.</div>
@@ -261,22 +272,6 @@ export default function WetonFullReadingPage() {
               <div className="mt-1 text-[11px] leading-5 text-[#7896A8]">Tidak membuat hasil sintetis tanpa formula dan provenance yang dapat diverifikasi.</div>
               <div className="mt-2 text-[9px] uppercase tracking-[0.12em] text-[#587388]">Belum terhubung</div>
             </WorkspaceCard>
-            <WorkspaceCard title="Kalender Jawa" eyebrow="Calendar · Existing" description="Kalender Jawa adalah layer yang sudah dihitung oleh engine existing dan menjadi fondasi halaman ini.">
-              <div className="text-sm font-semibold text-[#BFD8E7]">{detail.jawa_date || '—'}</div>
-              <div className="mt-1 text-[11px] leading-5 text-[#7896A8]">Wuku {wuku.name || '—'} · Windu {detail.windu || '—'} · Kurup {getField(jawa, 'Kurup') || '—'}</div>
-              <div className="mt-2 text-[9px] uppercase tracking-[0.12em] text-[#587388]">Engine Jawa existing</div>
-            </WorkspaceCard>
-          </div>
-        </Section>
-
-        <Section eyebrow="06 · Reading Layers" title="Pembacaan Lanjutan" accent="blue">
-          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-            {READING_LAYERS.map(([title, description, status]) => (
-              <div key={title} className="rounded-xl border border-[#173044] bg-[linear-gradient(135deg,rgba(9,25,37,0.98),rgba(5,15,24,0.98))] p-5">
-                <div className="flex items-center justify-between gap-3"><h3 className="text-sm font-semibold text-[#D8F3FF]">{title}</h3><span className="rounded-full border border-[#254155] bg-[#091A28] px-2 py-1 text-[8px] font-bold uppercase tracking-[0.1em] text-[#668397]">{status}</span></div>
-                <p className="mt-2 text-xs leading-5 text-[#7896A8]">{description}</p>
-              </div>
-            ))}
           </div>
         </Section>
 
