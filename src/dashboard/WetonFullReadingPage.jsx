@@ -252,6 +252,26 @@ export default function WetonFullReadingPage() {
           </div>
         </Section>
 
+        <Section eyebrow="07 · Jawa Workspace" title="Fitur Jawa Lainnya" accent="blue">
+          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+            {[
+              ['Kecocokan Jodoh', 'Metode kecocokan pasangan', 'Metode belum terhubung'],
+              ['Arah Rejeki', 'Petungan arah rejeki', 'Metode belum terhubung'],
+              ['Pal Laduni', 'Pembacaan Pal Laduni', 'Metode belum terhubung'],
+              ['Kalender Jawa', 'Kalender dan siklus Jawa', 'Metode belum terhubung'],
+            ].map(([title, description, status]) => (
+              <div key={title} className="group rounded-2xl border border-[#21425A] bg-[radial-gradient(circle_at_top_right,rgba(96,165,250,0.07),transparent_48%),linear-gradient(135deg,rgba(10,28,42,0.98),rgba(5,15,24,0.98))] p-5 transition-transform duration-200 hover:-translate-y-0.5">
+                <div className="flex items-start justify-between gap-3">
+                  <div className="text-sm font-semibold text-[#D8F3FF]">{title}</div>
+                  <div className="h-2 w-2 shrink-0 rounded-full bg-[#527D95] shadow-[0_0_12px_rgba(96,165,250,0.18)]" />
+                </div>
+                <p className="mt-2 text-xs leading-5 text-[#7896A8]">{description}</p>
+                <div className="mt-4 border-t border-[#18374A] pt-3 text-[9px] font-bold uppercase tracking-[0.12em] text-[#587388]">{status}</div>
+              </div>
+            ))}
+          </div>
+        </Section>
+
         <div className="rounded-[18px] border border-[#1A3448] bg-[linear-gradient(135deg,rgba(9,24,36,0.98),rgba(5,15,24,0.98))] px-5 py-4 text-xs leading-5 text-[#718FA2] shadow-[0_10px_35px_rgba(0,0,0,0.12)]">
           Struktur ini memisahkan <span className="font-semibold text-[#B9D2E2]">hasil kalender</span>, <span className="font-semibold text-[#B9D2E2]">petungan</span>, dan <span className="font-semibold text-[#B9D2E2]">tafsir</span>. Layer tafsir hanya akan diisi setelah sumber/metode masing-masing tervalidasi; engine Jawa existing tetap menjadi sumber perhitungan.
         </div>
