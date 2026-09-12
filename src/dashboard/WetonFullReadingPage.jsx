@@ -258,9 +258,9 @@ export default function WetonFullReadingPage() {
         <Section eyebrow="06 · Jawa Workspace" title="Fitur Jawa Lainnya" accent="blue">
           <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
             <WorkspaceCard title="Kecocokan Jodoh" eyebrow="Repok · Jodoh" description="Ruang untuk metode kecocokan pasangan berbasis sumber yang tervalidasi.">
-              <div className="text-sm font-semibold text-[#BFD8E7]">Pancaka 7</div>
-              <div className="mt-1 text-[11px] leading-5 text-[#7896A8]">Metode: gabungan nilai Naktu nama → ÷ 7 → sisa 1–7.</div>
-              <div className="mt-2 text-[9px] uppercase tracking-[0.12em] text-[#587388]">Input Naktu nama belum tersedia di engine Jawa</div>
+              <div className="text-sm font-semibold text-[#BFD8E7]">Menunggu formula sumber</div>
+              <div className="mt-1 text-[11px] leading-5 text-[#7896A8]">Metode kecocokan pasangan memiliki beberapa versi petungan; hasil tidak ditampilkan sebelum metode dan sumber dipastikan.</div>
+              <div className="mt-2 text-[9px] uppercase tracking-[0.12em] text-[#587388]">Formula belum tervalidasi</div>
             </WorkspaceCard>
             <WorkspaceCard title="Arah Rejeki" eyebrow="Kala · Arah" description="Arah rejeki harus mengikuti konteks Kala yang benar-benar tersedia, bukan dipaksakan sebagai sifat Weton.">
               <div className="text-sm font-semibold text-[#BFD8E7]">Konteks Kala</div>
