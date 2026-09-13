@@ -37,7 +37,7 @@ function PagePlaceholder({ title, description }) {
 }
 
 function UserDashboardContent({ user, onUserUpdated }) {
-  const path = window.location.pathname
+  const path = window.location.pathname.replace(/\/+$/, '') || '/'
 
   if (path === '/dashboard') {
     return <DashboardHome showFooter={true} user={user} />
