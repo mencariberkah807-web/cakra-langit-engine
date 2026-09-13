@@ -1,32 +1,89 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 
 const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://127.0.0.1:8000'
 const TOKEN_KEY = 'cakra-langit:access-token'
 
-const RESULT_TONES = {
-  Pegat: 'border-rose-300/40 bg-rose-300/[0.07] text-rose-200',
-  Ratu: 'border-amber-300/40 bg-amber-300/[0.07] text-amber-200',
-  Jodoh: 'border-emerald-300/40 bg-emerald-300/[0.07] text-emerald-200',
-  Topo: 'border-amber-300/40 bg-amber-300/[0.07] text-amber-200',
-  Tinari: 'border-emerald-300/40 bg-emerald-300/[0.07] text-emerald-200',
-  Padu: 'border-orange-300/40 bg-orange-300/[0.07] text-orange-200',
-  Sujanan: 'border-rose-300/40 bg-rose-300/[0.07] text-rose-200',
-  Pesthi: 'border-emerald-300/40 bg-emerald-300/[0.07] text-emerald-200',
+const WETON_REFERENCE = {
+  'Minggu Legi': { pancasuda: 'Sumur Sinaba', paarasan: 'Aras Pepet', rakam: 'Macan Ketawan' },
+  'Minggu Pahing': { pancasuda: 'Wasesa Segara', paarasan: 'Lakuning Rembulan', rakam: 'Nuju Padu' },
+  'Minggu Pon': { pancasuda: 'Bumi Kapetak', paarasan: 'Aras Kembang', rakam: 'Kala Tinantang' },
+  'Minggu Wage': { pancasuda: 'Satriya Wibawa', paarasan: 'Lakuning Angin', rakam: 'Kala Tinantang' },
+  'Minggu Kliwon': { pancasuda: 'Lebu Katiyup Angin', paarasan: 'Lakuning Lintang', rakam: 'Mantri Sinaroja' },
+  'Senen Legi': { pancasuda: 'Tunggak Semi', paarasan: 'Lakuning Geni', rakam: 'Nuju Pati' },
+  'Senen Pahing': { pancasuda: 'Bumi Kapetak', paarasan: 'Lakuning Lintang', rakam: 'Nuju Padu' },
+  'Senen Pon': { pancasuda: 'Sumur Sinaba', paarasan: 'Aras Tuding', rakam: 'Nuju Pati' },
+  'Senen Wage': { pancasuda: 'Wasesa Segara', paarasan: 'Lakuning Geni', rakam: 'Sanggar Waringin', padangon: 'Jagur', lambangAlam: 'Api', watak: 'Menarik simpati; penyabar dan jujur, namun dapat keras hati.' },
+  'Senen Kliwon': { pancasuda: 'Satriya Wirang', paarasan: 'Aras Kembang', rakam: 'Macan Ketawan' },
+  'Selasa Legi': { pancasuda: 'Wasesa Segara', paarasan: 'Lakuning Geni', rakam: 'Nuju Padu' },
+  'Selasa Pahing': { pancasuda: 'Satriya Wirang', paarasan: 'Aras Kembang', rakam: 'Kala Tinantang' },
+  'Selasa Pon': { pancasuda: 'Satriya Wibawa', paarasan: 'Aras Pepet', rakam: 'Sanggar Waringin' },
+  'Selasa Wage': { pancasuda: 'Lebu Katiyup Angin', paarasan: 'Lakuning Geni', rakam: 'Mantri Sinaroja' },
+  'Selasa Kliwon': { pancasuda: 'Sumur Sinaba', paarasan: 'Aras Tuding', rakam: 'Nuju Pati' },
+  'Rebo Legi': { pancasuda: 'Sumur Sinaba', paarasan: 'Aras Kembang', rakam: 'Kala Tinantang' },
+  'Rebo Pahing': { pancasuda: 'Wasesa Segara', paarasan: 'Lakuning Banyu', rakam: 'Sanggar Waringin', padangon: 'Wurung', lambangAlam: 'Api', watak: 'Murah hati, suka menolong, berhati-hati, berpandangan luas dan cenderung mengayomi.' },
+  'Rebo Pon': { pancasuda: 'Bumi Kapetak', paarasan: 'Lakuning Rembulan', rakam: 'Mantri Sinaroja' },
+  'Rebo Wage': { pancasuda: 'Satriya Wibawa', paarasan: 'Aras Tuding', rakam: 'Macan Ketawan' },
+  'Rebo Kliwon': { pancasuda: 'Lebu Katiyup Angin', paarasan: 'Lakuning Srengenge', rakam: 'Nuju Padu' },
+  'Kemis Legi': { pancasuda: 'Satriya Wibawa', paarasan: 'Lakuning Lintang', rakam: 'Sanggar Waringin' },
+  'Kemis Pahing': { pancasuda: 'Lebu Katiyup Angin', paarasan: 'Lakuning Bumi', rakam: 'Mantri Sinaroja' },
+  'Kemis Pon': { pancasuda: 'Satriya Wirang', paarasan: 'Lakuning Srengenge', rakam: 'Macan Ketawan' },
+  'Kemis Wage': { pancasuda: 'Tunggak Semi', paarasan: 'Aras Kembang', rakam: 'Nuju Pati' },
+  'Kemis Kliwon': { pancasuda: 'Bumi Kapetak', paarasan: 'Lakuning Banyu', rakam: 'Kala Tinantang' },
+  'Jumat Legi': { pancasuda: 'Satriya Wirang', paarasan: 'Aras Tuding', rakam: 'Sanggar Waringin' },
+  'Jumat Pahing': { pancasuda: 'Tunggak Semi', paarasan: 'Lakuning Srengenge', rakam: 'Mantri Sinaroja' },
+  'Jumat Pon': { pancasuda: 'Lebu Katiyup Angin', paarasan: 'Lakuning Lintang', rakam: 'Macan Ketawan' },
+  'Jumat Wage': { pancasuda: 'Sumur Sinaba', paarasan: 'Aras Pepet', rakam: 'Nuju Pati' },
+  'Jumat Kliwon': { pancasuda: 'Wasesa Segara', paarasan: 'Lakuning Rembulan', rakam: 'Mantri Sinaroja' },
+  'Sabtu Legi': { pancasuda: 'Bumi Kapetak', paarasan: 'Aras Pepet', rakam: 'Macan Ketawan' },
+  'Sabtu Pahing': { pancasuda: 'Satriya Wibawa', paarasan: 'Lakuning Geni', rakam: 'Macan Ketawan' },
+  'Sabtu Pon': { pancasuda: 'Wasesa Segara', paarasan: 'Lakuning Banyu', rakam: 'Nuju Pati' },
+  'Sabtu Wage': { pancasuda: 'Satriya Wirang', paarasan: 'Lakuning Lintang', rakam: 'Mantri Sinaroja' },
+  'Sabtu Kliwon': { pancasuda: 'Tunggak Semi', paarasan: 'Lakuning Bumi', rakam: 'Sanggar Waringin' },
 }
 
-const WATAK_BY_NEPTU = {
-  7: ['Pendito Kang Lakung', 'Senang bepergian dan lincah.'],
-  8: ['Lakuning Geni', 'Mudah marah dan emosional.'],
-  9: ['Lakuning Angin', 'Gampang terpengaruh dan dinamis.'],
-  10: ['Pendito Mbangun Teki', 'Suka menasihati dan bijak.'],
-  11: ['Lakuning Setan', 'Pemberani dan keras kepala.'],
-  12: ['Lakuning Kembang', 'Penyebar kedamaian dan disenangi.'],
-  13: ['Lakuning Lintang', 'Suka menyendiri dengan pesona kuat.'],
-  14: ['Lakuning Rembulan', 'Penenang dan pembimbing.'],
-  15: ['Lakuning Srengenge', 'Penerang dan berwibawa.'],
-  16: ['Lakuning Banyu', 'Penyejuk dan tenang.'],
-  17: ['Lakuning Bumi', 'Penyabar dan pengayom.'],
-  18: ['Lakuning Paripurna', 'Berkuasa dan disegani.'],
+const PITU = ['Wasesa Segara', 'Tunggak Semi', 'Satriya Wibawa', 'Sumur Sinaba', 'Satriya Wirang', 'Bumi Kapetak', 'Lebu Katiyup Angin']
+const PANCASUDA_MEANING = {
+  'Wasesa Segara': 'Pemaaf, lapang dada, suka menolong, dan berwibawa.',
+  'Tunggak Semi': 'Rezeki dikaitkan dengan kemampuan tumbuh dan datang kembali.',
+  'Satriya Wibawa': 'Dikaitkan dengan kemuliaan, keluhuran, dan kewibawaan.',
+  'Sumur Sinaba': 'Dikaitkan dengan menjadi tempat bertanya dan sumber pengetahuan.',
+  'Satriya Wirang': 'Dikaitkan dengan cobaan, rasa malu, dan kebutuhan menjaga keteguhan.',
+  'Bumi Kapetak': 'Dikaitkan dengan ketekunan bekerja dan daya tahan menghadapi kesulitan.',
+  'Lebu Katiyup Angin': 'Dikaitkan dengan ketidakpastian dan cita-cita yang mudah berubah.',
+}
+
+const PAARASAN_MEANING = {
+  'Lakuning Geni': 'Bersemangat, tegas, dan mudah tersulut ketika menghadapi tekanan.',
+  'Lakuning Banyu': 'Teduh, murah hati, mengalir dan mudah menyesuaikan diri.',
+  'Lakuning Lintang': 'Cenderung menyendiri, mandiri, dan memiliki daya tarik tersendiri.',
+  'Lakuning Rembulan': 'Menenteramkan dan cenderung menjadi pembimbing.',
+  'Lakuning Srengenge': 'Memberi penerangan dan dikaitkan dengan kewibawaan.',
+  'Lakuning Bumi': 'Penyabar dan menjadi tempat berpijak atau mengayomi.',
+  'Lakuning Angin': 'Dinamis, lincah, dan mudah bergerak mengikuti keadaan.',
+  'Aras Kembang': 'Lembut, menarik simpati, dan mudah disenangi.',
+  'Aras Tuding': 'Sering menjadi pihak yang ditunjuk atau dimintai tanggung jawab.',
+  'Aras Pepet': 'Cepat menangkap sesuatu tetapi perlu ketekunan agar hasilnya tercapai.',
+}
+
+const RAKAM_MEANING = {
+  'Pati': 'Simbol peringatan dan kehati-hatian.',
+  'Kala Tinantang': 'Pemberani dan dapat menghadapi banyak tantangan.',
+  'Demang Kandhuruwan': 'Dikaitkan dengan banyak perkara dan kegelisahan.',
+  'Sanggar Waringin': 'Teduh, suka memberi perlindungan, dan menjadi tempat berteduh.',
+  'Mantri Sinaroja': 'Dikaitkan dengan kecukupan dan kemudahan memperoleh hasil dari pekerjaan.',
+  'Macan Ketawan': 'Dikaitkan dengan keberanian, tetapi perlu menjaga konflik dan pertengkaran.',
+  'Nuju Pati': 'Peringatan untuk berhati-hati terhadap aral dan keadaan yang tidak menguntungkan.',
+}
+
+const WOLU_TONES = {
+  Pegat: 'border-rose-300/40 bg-rose-300/[0.06] text-rose-200',
+  Ratu: 'border-amber-300/40 bg-amber-300/[0.06] text-amber-200',
+  Jodoh: 'border-emerald-300/40 bg-emerald-300/[0.06] text-emerald-200',
+  Topo: 'border-amber-300/40 bg-amber-300/[0.06] text-amber-200',
+  Tinari: 'border-emerald-300/40 bg-emerald-300/[0.06] text-emerald-200',
+  Padu: 'border-orange-300/40 bg-orange-300/[0.06] text-orange-200',
+  Sujanan: 'border-rose-300/40 bg-rose-300/[0.06] text-rose-200',
+  Pesthi: 'border-emerald-300/40 bg-emerald-300/[0.06] text-emerald-200',
 }
 
 function Card({ title, children, className = '' }) {
@@ -48,12 +105,7 @@ function Field({ label, value, onChange, disabled = false }) {
 }
 
 function ProfileCheckbox({ checked, onChange }) {
-  return (
-    <label className="mt-3 flex items-center gap-2 text-xs text-[#91A7B7]">
-      <input type="checkbox" checked={checked} onChange={(event) => onChange(event.target.checked)} className="h-4 w-4 accent-amber-400" />
-      <span>Gunakan profil saya</span>
-    </label>
-  )
+  return <label className="mt-3 flex items-center gap-2 text-xs text-[#91A7B7]"><input type="checkbox" checked={checked} onChange={(event) => onChange(event.target.checked)} className="h-4 w-4 accent-amber-400" /><span>Gunakan profil saya</span></label>
 }
 
 function toIsoDate(value) {
@@ -91,23 +143,32 @@ async function getAlmanac(dateValue, profile = null) {
   const pasaran = detail.pasaran || {}
   const neptu = Number(detail.neptu_total)
   if (!Number.isFinite(neptu)) throw new Error('Neptu Weton belum tersedia dari engine Jawa.')
+  const weton = jawa?.sub || `${dino.name || '—'} ${pasaran.name || '—'}`
+  const ref = WETON_REFERENCE[weton] || {}
   const baliDetail = bali?.detail || {}
-  const watak = WATAK_BY_NEPTU[neptu] || null
+  const field = (name) => bali?.fields?.find((item) => item.k === name)?.v
+  const lintang = baliDetail.lintang || field('Lintang') || '—'
+  const padangon = ref.padangon || baliDetail.padangon || field('Padangon') || field('Sangawara') || '—'
 
   return {
     date: dateValue,
-    weton: jawa?.sub || '—',
+    weton,
     dino: dino.name || '—',
     dinoNeptu: dino.neptu ?? '—',
     pasaran: pasaran.name || '—',
     pasaranNeptu: pasaran.neptu ?? '—',
     neptu,
-    watakName: watak?.[0] || '—',
-    watakMeaning: watak?.[1] || 'Data watak belum tersedia untuk Neptu ini.',
-    rakam: baliDetail.rakam || bali?.fields?.find((field) => field.k === 'Rakam')?.v || '—',
-    pancaSudha: baliDetail.pancaSudha || bali?.fields?.find((field) => field.k === 'Panca Sudha')?.v || '—',
-    lintang: baliDetail.lintang || bali?.fields?.find((field) => field.k === 'Lintang')?.v || '—',
     wuku: detail.wuku?.name || baliDetail.wuku || '—',
+    lintang,
+    padangon,
+    lambangAlam: ref.lambangAlam || (padangon === 'Wurung' ? 'Api' : padangon === 'Jagur' ? 'Harimau' : '—'),
+    pancasuda: ref.pancasuda || '—',
+    pancaMeaning: PANCASUDA_MEANING[ref.pancasuda] || 'Data makna belum tersedia pada referensi yang dipakai.',
+    paarasan: ref.paarasan || '—',
+    paarasanMeaning: PAARASAN_MEANING[ref.paarasan] || 'Data makna belum tersedia pada referensi yang dipakai.',
+    rakam: ref.rakam || '—',
+    rakamMeaning: RAKAM_MEANING[ref.rakam] || 'Data makna belum tersedia pada referensi yang dipakai.',
+    watak: ref.watak || 'Pembacaan watak mengikuti kombinasi Weton dan referensi yang tersedia; tidak dibuat dari skor kecocokan.',
   }
 }
 
@@ -125,10 +186,7 @@ function JodohFormPage() {
       setProfile(nextProfile)
       if (nextProfile?.birth_date) setDateOne(nextProfile.birth_date.split('-').reverse().join('/'))
       else setUseProfileOne(false)
-    }).catch((err) => {
-      setUseProfileOne(false)
-      setError(err.message)
-    }).finally(() => setLoading(false))
+    }).catch((err) => { setUseProfileOne(false); setError(err.message) }).finally(() => setLoading(false))
   }, [])
 
   function submit(event) {
@@ -143,11 +201,7 @@ function JodohFormPage() {
 
   return (
     <section className="mx-auto max-w-[1180px] px-5 py-7 sm:px-7 lg:py-9">
-      <header className="mb-7 text-center">
-        <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-amber-300">Analisis Asmara</div>
-        <h1 className="mt-2 text-3xl font-semibold tracking-tight text-white sm:text-4xl">Kecocokan Jodoh</h1>
-        <p className="mt-2 text-sm text-[#8FA7B8]">Hitung kecocokan berdasarkan weton dan beberapa petungan tradisional yang terdokumentasi.</p>
-      </header>
+      <header className="mb-7 text-center"><div className="text-[10px] font-bold uppercase tracking-[0.2em] text-amber-300">Analisis Asmara</div><h1 className="mt-2 text-3xl font-semibold tracking-tight text-white sm:text-4xl">Kecocokan Jodoh</h1><p className="mt-2 text-sm text-[#8FA7B8]">Analisis weton pasangan berdasarkan petungan Jawa dan data pendukung yang tersedia.</p></header>
       <form onSubmit={submit} className="space-y-5">
         <div className="grid gap-4 lg:grid-cols-2">
           <Card title="Data Pria / Pihak Pertama"><Field label="Tanggal lahir" value={useProfileOne && profile?.birth_date ? profile.birth_date.split('-').reverse().join('/') : dateOne} onChange={setDateOne} disabled={useProfileOne} /><ProfileCheckbox checked={useProfileOne} onChange={setUseProfileOne} /></Card>
@@ -161,93 +215,79 @@ function JodohFormPage() {
 }
 
 function PersonSummary({ title, person, feminine = false }) {
-  return (
-    <Card title={title}>
-      <div className="flex flex-wrap items-center gap-2 text-base font-bold text-white"><span>{person?.weton || '—'}</span><span className={`rounded border px-2 py-1 text-[10px] ${feminine ? 'border-rose-300/30 text-rose-200' : 'border-emerald-300/30 text-emerald-200'}`}>Neptu {person?.neptu ?? '—'}</span></div>
-      <div className="mt-2 text-xs text-[#8298A8]">{formatDate(person?.date)}</div>
-      <div className="my-4 border-t border-white/[0.08]" />
-      <div className="space-y-2.5 text-xs leading-5 text-[#B7C8D4]"><div><strong className="text-white">Rakam:</strong> {person?.rakam || '—'}</div><div><strong className="text-white">Panca Sudha:</strong> {person?.pancaSudha || '—'}</div><div><strong className="text-white">Watak Neptu:</strong> {person?.watakName || '—'}</div></div>
-    </Card>
-  )
+  return <Card title={title}><div className="flex flex-wrap items-center gap-2 text-base font-bold text-white"><span>{person?.weton || '—'}</span><span className={`rounded border px-2 py-1 text-[10px] ${feminine ? 'border-rose-300/30 text-rose-200' : 'border-emerald-300/30 text-emerald-200'}`}>Neptu {person?.neptu ?? '—'}</span></div><div className="mt-2 text-xs text-[#8298A8]">{formatDate(person?.date)}</div><div className="my-4 border-t border-white/[0.08]" /><div className="grid gap-2 text-xs leading-5 text-[#B7C8D4] sm:grid-cols-2"><div><strong className="text-white">Rakam:</strong> {person?.rakam || '—'}</div><div><strong className="text-white">Pancasudha:</strong> {person?.pancasuda || '—'}</div><div><strong className="text-white">Paarasan:</strong> {person?.paarasan || '—'}</div><div><strong className="text-white">Wuku:</strong> {person?.wuku || '—'}</div></div></Card>
 }
 
 function SymbolCard({ title, person, feminine = false }) {
-  return (
-    <Card title={title}>
-      <div className={`text-center text-xl font-bold ${feminine ? 'text-rose-300' : 'text-emerald-300'}`}>{person?.lintang || '—'}</div>
-      <div className="mt-1 text-center text-xs text-[#8298A8]">Lintang · data Pawukon dari engine Bali</div>
-      <div className="mt-5 grid grid-cols-2 gap-2"><div className="rounded-lg bg-[#07111C] p-4 text-center"><div className="text-xl text-amber-200">◎</div><div className="mt-2 text-xs font-semibold text-white">Wuku</div><div className="mt-1 text-[10px] text-[#71899A]">{person?.wuku || '—'}</div></div><div className="rounded-lg bg-[#07111C] p-4 text-center"><div className="text-xl text-amber-200">♡</div><div className="mt-2 text-xs font-semibold text-white">Pasaran</div><div className="mt-1 text-[10px] text-[#71899A]">{person?.pasaran || '—'}</div></div></div>
-      <div className="mt-5 rounded-lg border border-white/[0.06] bg-[#07111C]/70 p-4"><div className="text-xs font-bold text-white">Watak</div><p className="mt-1 text-xs leading-5 text-[#91A7B7]"><strong className="text-[#B7C8D4]">{person?.watakName || '—'}</strong> — {person?.watakMeaning || '—'}</p></div>
-    </Card>
-  )
+  return <Card title={title}><div className={`text-center text-2xl font-bold ${feminine ? 'text-rose-300' : 'text-emerald-300'}`}>{person?.lintang || '—'}</div><div className="mt-1 text-center text-xs text-[#8298A8]">Lintang / lambang weton</div><div className="mt-5 grid grid-cols-2 gap-2"><div className="rounded-lg bg-[#07111C] p-4 text-center"><div className="text-xs font-bold uppercase tracking-[0.12em] text-[#6F8798]">Paarasan</div><div className="mt-2 text-sm font-bold text-white">{person?.paarasan || '—'}</div><div className="mt-1 text-[10px] text-[#71899A]">{person?.lambangAlam || '—'}</div></div><div className="rounded-lg bg-[#07111C] p-4 text-center"><div className="text-xs font-bold uppercase tracking-[0.12em] text-[#6F8798]">Padangon</div><div className="mt-2 text-sm font-bold text-white">{person?.padangon || '—'}</div><div className="mt-1 text-[10px] text-[#71899A]">Lambang alam: {person?.lambangAlam || '—'}</div></div></div><div className="mt-5 rounded-lg border border-white/[0.06] bg-[#07111C]/70 p-4"><div className="text-xs font-bold text-white">Watak</div><p className="mt-1 text-xs leading-5 text-[#91A7B7]">{person?.watak || '—'}</p></div></Card>
 }
 
 function IndividualAnalysis({ title, person }) {
-  return (
-    <Card title={title}><div className="grid gap-3 sm:grid-cols-2"><div className="rounded-lg bg-[#07111C] p-4"><div className="text-[9px] font-bold uppercase tracking-[0.12em] text-[#6F8798]">Rakam</div><div className="mt-2 text-base font-bold text-amber-200">{person?.rakam || '—'}</div><p className="mt-2 text-xs leading-5 text-[#91A7B7]">Klasifikasi yang tersedia dari engine Bali.</p></div><div className="rounded-lg bg-[#07111C] p-4"><div className="text-[9px] font-bold uppercase tracking-[0.12em] text-[#6F8798]">Panca Sudha</div><div className="mt-2 text-base font-bold text-cyan-200">{person?.pancaSudha || '—'}</div><p className="mt-2 text-xs leading-5 text-[#91A7B7]">Klasifikasi yang tersedia dari engine Bali.</p></div></div></Card>
-  )
+  return <Card title={title}><div className="grid gap-3 sm:grid-cols-3"><div className="rounded-lg bg-[#07111C] p-4"><div className="text-[9px] font-bold uppercase tracking-[0.12em] text-[#6F8798]">Pancasudha</div><div className="mt-2 text-base font-bold text-amber-200">{person?.pancasuda || '—'}</div><p className="mt-2 text-xs leading-5 text-[#91A7B7]">{person?.pancaMeaning || '—'}</p></div><div className="rounded-lg bg-[#07111C] p-4"><div className="text-[9px] font-bold uppercase tracking-[0.12em] text-[#6F8798]">Rakam</div><div className="mt-2 text-base font-bold text-cyan-200">{person?.rakam || '—'}</div><p className="mt-2 text-xs leading-5 text-[#91A7B7]">{person?.rakamMeaning || '—'}</p></div><div className="rounded-lg bg-[#07111C] p-4"><div className="text-[9px] font-bold uppercase tracking-[0.12em] text-[#6F8798]">Paarasan</div><div className="mt-2 text-base font-bold text-emerald-200">{person?.paarasan || '—'}</div><p className="mt-2 text-xs leading-5 text-[#91A7B7]">{person?.paarasanMeaning || '—'}</p></div></div></Card>
 }
 
 function PairPetungCard({ title, item, tone = 'amber' }) {
+  if (!item) return null
   const toneClass = tone === 'green' ? 'border-emerald-300/40 text-emerald-200' : tone === 'blue' ? 'border-cyan-300/30 text-cyan-200' : 'border-amber-300/40 text-amber-200'
-  return <div className={`rounded-lg border bg-[#07111C] p-4 ${toneClass}`}><div className="text-[9px] font-bold uppercase tracking-[0.12em] text-[#6F8798]">{title}</div><div className="mt-2 text-base font-bold">{item?.name || '—'}</div><p className="mt-2 text-xs leading-5 text-[#A6B8C5]">{item?.meaning || '—'}</p><div className="mt-3 text-[10px] text-[#72899A]">Sisa {item?.remainder ?? '—'} · modulo {item?.divisor ?? '—'}</div></div>
+  return <div className={`rounded-lg border bg-[#07111C] p-4 ${toneClass}`}><div className="text-[9px] font-bold uppercase tracking-[0.12em] text-[#6F8798]">{title}</div><div className="mt-2 text-base font-bold">{item.name}</div><p className="mt-2 text-xs leading-5 text-[#91A7B7]">{item.meaning}</p><div className="mt-3 text-[10px] text-[#6F8798]">Sisa {item.remainder} · modulo {item.divisor}</div></div>
+}
+
+function WarigaBali({ one, two, total }) {
+  const available = one?.pancasuda && two?.pancasuda
+  return <Card title="☀ Tradisi Wariga Bali"><div className="grid gap-6 lg:grid-cols-[0.8fr_1.2fr] lg:items-center"><div className="text-center"><div className="text-[9px] font-bold uppercase tracking-[0.18em] text-[#6F8798]">Patemon / Referensi Bali</div><div className="mt-3 text-2xl font-bold text-amber-300">{available ? `${one.pancasuda} · ${two.pancasuda}` : 'Data belum tersedia'}</div><p className="mt-2 text-xs text-[#91A7B7]">Data Bali ditampilkan sebagai lapisan pendukung, bukan pengganti petungan Jawa.</p></div><div className="space-y-2 text-xs leading-5 text-[#B7C8D4]"><div><strong className="text-white">Total Urip/Neptu pasangan:</strong> {total}</div><div><strong className="text-white">Panca Sudha pihak pertama:</strong> {one?.pancasuda || '—'}</div><div><strong className="text-white">Panca Sudha pihak kedua:</strong> {two?.pancasuda || '—'}</div><div><strong className="text-white">Rakam pihak pertama:</strong> {one?.rakam || '—'}</div><div><strong className="text-white">Rakam pihak kedua:</strong> {two?.rakam || '—'}</div><div><strong className="text-white">Tri Pramana:</strong> Belum tersedia pada engine Cakra Langit; tidak diisi dengan tebakan.</div></div></div></Card>
 }
 
 function JodohResultPage() {
-  const [people, setPeople] = useState({ one: null, two: null })
+  const params = new URLSearchParams(typeof window !== 'undefined' ? window.location.search : '')
+  const dateOne = params.get('date_one') || ''
+  const dateTwo = params.get('date_two') || ''
   const [result, setResult] = useState(null)
+  const [one, setOne] = useState(null)
+  const [two, setTwo] = useState(null)
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    const params = new URLSearchParams(window.location.search)
-    const dateOne = params.get('date_one')
-    const dateTwo = params.get('date_two')
-    if (!dateOne || !dateTwo) { setError('Tanggal kedua pihak belum dipilih.'); setLoading(false); return }
-    getProfile().catch(() => null).then(async (profile) => {
-      const [one, two] = await Promise.all([getAlmanac(dateOne, profile), getAlmanac(dateTwo, profile)])
-      const response = await fetch(`${API_BASE}/api/weton/jodoh?neptu_one=${one.neptu}&neptu_two=${two.neptu}`)
-      if (!response.ok) throw new Error('Perhitungan jodoh tidak dapat diproses.')
-      const jodoh = await response.json()
-      setPeople({ one, two }); setResult(jodoh)
-    }).catch((err) => setError(err?.message || 'Perhitungan jodoh gagal diproses.')).finally(() => setLoading(false))
-  }, [])
+    if (!dateOne || !dateTwo) { setError('Tanggal pasangan tidak lengkap.'); setLoading(false); return }
+    Promise.all([getAlmanac(dateOne), getAlmanac(dateTwo), fetch(`${API_BASE}/api/weton/jodoh?neptu_one=0&neptu_two=0`)]).catch(() => null)
+    Promise.all([getAlmanac(dateOne), getAlmanac(dateTwo)]).then(async ([first, second]) => {
+      const response = await fetch(`${API_BASE}/api/weton/jodoh?neptu_one=${encodeURIComponent(first.neptu)}&neptu_two=${encodeURIComponent(second.neptu)}`)
+      if (!response.ok) throw new Error('Perhitungan jodoh tidak dapat diambil.')
+      const payload = await response.json()
+      setOne(first); setTwo(second); setResult(payload)
+    }).catch((err) => setError(err.message)).finally(() => setLoading(false))
+  }, [dateOne, dateTwo])
 
-  if (loading) return <section className="mx-auto max-w-[1180px] px-5 py-16 text-center text-sm text-[#8298A8]">Memuat hasil perhitungan…</section>
-  if (error) return <section className="mx-auto max-w-[1180px] px-5 py-16"><Card><div className="text-sm text-rose-200">{error}</div></Card></section>
+  const petungan = result?.petungan || {}
+  const woluTone = WOLU_TONES[result?.name] || 'border-amber-300/40 bg-amber-300/[0.06] text-amber-200'
+  const total = result?.total_neptu ?? (one?.neptu || 0) + (two?.neptu || 0)
+  const formula = useMemo(() => `${one?.neptu ?? '—'} + ${two?.neptu ?? '—'} = ${total}`, [one, two, total])
 
-  const pitu = result?.petungan?.pitu
-  const papat = result?.petungan?.papat
-  const lima = result?.petungan?.lima
-  const wolu = result?.petungan?.wolu
-  const tone = RESULT_TONES[wolu?.name || result?.name] || RESULT_TONES.Jodoh
-  const total = result?.total_neptu || 0
-  const pituProgress = Math.max(14, Math.round((Number(pitu?.remainder || 0) / 7) * 100))
+  if (loading) return <section className="mx-auto max-w-[1180px] px-5 py-12 text-center text-sm text-[#91A7B7]">Memuat pembacaan weton pasangan…</section>
+  if (error) return <section className="mx-auto max-w-[1180px] px-5 py-12"><div className="rounded-xl border border-rose-300/20 bg-rose-300/[0.05] p-5 text-sm text-rose-200">{error}</div></section>
 
-  return (
-    <section className="mx-auto max-w-[1180px] px-5 py-7 sm:px-7 lg:py-9">
-      <header className="mb-7 text-center"><div className="text-[10px] font-bold uppercase tracking-[0.22em] text-amber-300">Analisis Asmara · Hasil Weton Jawa</div><h1 className="mt-2 text-3xl font-semibold tracking-tight text-white sm:text-4xl">Hasil Perhitungan Jodoh</h1><p className="mt-2 text-sm text-[#8FA7B8]">Pembacaan kecocokan berdasarkan petungan tradisional dengan hasil utama mengikuti Petungan Luwiyan.</p></header>
+  return <section className="mx-auto max-w-[1180px] px-5 py-7 sm:px-7 lg:py-9">
+    <header className="mb-7 text-center"><div className="text-[10px] font-bold uppercase tracking-[0.2em] text-amber-300">Analisis Asmara · Hasil Weton Jawa</div><h1 className="mt-2 text-3xl font-semibold tracking-tight text-white sm:text-4xl">Hasil Perhitungan Jodoh</h1><p className="mt-2 text-sm text-[#8FA7B8]">Pembacaan berdasarkan beberapa petungan tradisional; hasil utama mengikuti Petungan Pitu.</p></header>
 
-      <div className="rounded-xl border border-white/[0.08] bg-[#0A1723] p-5 text-center shadow-[0_12px_40px_rgba(0,0,0,0.14)] sm:p-7"><div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full border border-amber-300/30 text-xl text-amber-300">✦</div><div className="mt-4 text-[10px] font-bold uppercase tracking-[0.18em] text-[#72899A]">Hasil Utama · Petungan Luwiyan (Modulo 7)</div><div className="mx-auto mt-3 inline-flex rounded-lg border border-amber-300/40 bg-amber-300/[0.07] px-5 py-2 text-2xl font-bold text-amber-200">{pitu?.name || '—'}</div><p className="mx-auto mt-3 max-w-2xl text-sm text-[#A7BAC7]">{pitu?.meaning || '—'}</p><div className="mx-auto mt-5 max-w-[760px] rounded-full bg-[#162633] p-[1px]"><div className="h-2.5 rounded-full bg-gradient-to-r from-cyan-300/70 via-amber-300/80 to-amber-200/40" style={{ width: `${pituProgress}%` }} /></div><div className="mt-2 text-[10px] font-semibold uppercase tracking-[0.14em] text-[#8EA5B5]">Posisi sisa {pitu?.remainder ?? '—'} dari 7 · bukan skor probabilitas</div><div className="mt-4 border-t border-white/[0.08] pt-4 text-left text-xs text-[#8FA7B8]"><span className="font-mono text-cyan-200">{people.one.neptu} + {people.two.neptu} = {total}</span><span className="float-right uppercase tracking-[0.12em] text-[9px]">Total Neptu Pasangan</span></div></div>
+    <Card className="text-center"><div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full border border-amber-300/30 text-amber-300">✦</div><div className="mt-4 text-[9px] font-bold uppercase tracking-[0.2em] text-[#6F8798]">Hasil Utama · Petungan Luwiyan (Modulo 7)</div><div className="mx-auto mt-3 inline-flex rounded-lg border border-amber-300/35 bg-amber-300/[0.05] px-4 py-2 text-2xl font-bold text-amber-200">{petungan.pitu?.name || '—'}</div><p className="mx-auto mt-3 max-w-xl text-sm text-[#A6B8C5]">{petungan.pitu?.meaning || '—'}</p><div className="mx-auto mt-6 h-2 max-w-[650px] overflow-hidden rounded-full bg-[#142838]"><div className="h-full rounded-full bg-gradient-to-r from-cyan-300 via-emerald-300 to-amber-300" style={{ width: `${((petungan.pitu?.remainder || 1) / 7) * 100}%` }} /></div><div className="mt-2 text-[10px] font-bold uppercase tracking-[0.14em] text-[#8EA4B4]">Sisa {petungan.pitu?.remainder || '—'} dari 7 · bukan skor probabilitas</div><div className="mt-5 border-t border-white/[0.08] pt-4 text-left text-xs text-cyan-200"><span>{formula}</span><span className="float-right text-[9px] uppercase tracking-[0.12em] text-[#6F8798]">Total Neptu Pasangan</span></div></Card>
 
-      <Card title="PETUNGAN PELENGKAP — PERNIKAHAN (WOLU, MOD 8)" className="mt-5"><div className="grid gap-4 md:grid-cols-[0.65fr_1.35fr] md:items-center"><div className="text-center"><div className="text-[9px] font-bold uppercase tracking-[0.12em] text-[#6F8798]">Hasil Wolu</div><div className={`mt-3 inline-flex rounded-lg border px-4 py-2 text-2xl font-bold ${tone}`}>{wolu?.name || '—'}</div></div><div><p className="text-sm leading-6 text-[#B7C8D4]">{wolu?.meaning || '—'}</p><p className="mt-2 text-xs leading-5 text-[#8298A8]">Metode: total Neptu pasangan dibagi 8; sisa 0 dibaca sebagai sisa 8.</p></div></div></Card>
+    <div className="mt-4"><Card title="PETUNGAN PELENGKAP — PERNIKAHAN (WOLU, MOD 8)"><div className="grid gap-5 md:grid-cols-[0.55fr_1.45fr] md:items-center"><div className="text-center"><div className="text-[9px] font-bold uppercase tracking-[0.18em] text-[#6F8798]">Hasil Wolu</div><div className={`mx-auto mt-3 inline-flex rounded-lg border px-4 py-2 text-xl font-bold ${woluTone}`}>{petungan.wolu?.name || result?.name || '—'}</div></div><div><p className="text-sm text-[#B7C8D4]">{petungan.wolu?.meaning || result?.meaning || '—'}</p><p className="mt-2 text-xs text-[#71899A]">Metode: total Neptu pasangan dibagi 8; sisa 0 dibaca sebagai sisa 8.</p></div></div></Card></div>
 
-      <div className="mt-5 grid gap-4 lg:grid-cols-2"><PersonSummary title="Weton Pria" person={people.one} /><PersonSummary title="Weton Wanita" person={people.two} feminine /></div>
-      <div className="mt-4 grid gap-4 lg:grid-cols-2"><SymbolCard title="Lambang — Pria" person={people.one} /><SymbolCard title="Lambang — Wanita" person={people.two} feminine /></div>
-      <div className="mt-4 grid gap-4 lg:grid-cols-2"><IndividualAnalysis title="Analisis Petungan — Pria" person={people.one} /><IndividualAnalysis title="Analisis Petungan — Wanita" person={people.two} /></div>
+    <div className="mt-4 grid gap-4 lg:grid-cols-2"><PersonSummary title="Weton Pihak Pertama" person={one} /><PersonSummary title="Weton Pihak Kedua" person={two} feminine /></div>
+    <div className="mt-4 grid gap-4 lg:grid-cols-2"><SymbolCard title="Lambang — Pihak Pertama" person={one} /><SymbolCard title="Lambang — Pihak Kedua" person={two} feminine /></div>
+    <div className="mt-4 grid gap-4 lg:grid-cols-2"><IndividualAnalysis title="Analisis Petungan — Pihak Pertama" person={one} /><IndividualAnalysis title="Analisis Petungan — Pihak Kedua" person={two} /></div>
 
-      <Card title="☀ Analisis Petungan Pasangan" className="mt-4"><p className="text-xs text-[#A6B8C5]">Total Neptu pasangan: <strong className="text-white">{total}</strong> ({people.one.neptu} + {people.two.neptu})</p><div className="mt-4 grid gap-3 md:grid-cols-2 xl:grid-cols-4"><PairPetungCard title="Petungan Pitu · Mod 7" item={pitu} /><PairPetungCard title="Petungan Papat · Mod 4" item={papat} tone="blue" /><PairPetungCard title="Petungan Wolu · Mod 8" item={wolu} tone="green" /><PairPetungCard title="Petungan Panca · Mod 5" item={lima} tone="blue" /></div></Card>
+    <div className="mt-4"><Card title="☀ Analisis Petungan Pasangan"><p className="text-xs text-[#A9BBC7]">Perhitungan dari total neptu gabungan: <strong className="text-white">{total}</strong> ({one?.neptu} + {two?.neptu}).</p><p className="mt-2 text-[11px] text-[#71899A]">Tiga petungan utama ditampilkan bersama agar hasil pasangan tidak tercampur dengan kartu individual.</p><div className="mt-4 grid gap-3 lg:grid-cols-3"><PairPetungCard title="Petungan Pitu · Mod 7" item={petungan.pitu} tone="amber" /><PairPetungCard title="Petungan Papat · Mod 4" item={petungan.papat} tone="blue" /><PairPetungCard title="Petungan Wolu · Mod 8" item={petungan.wolu} tone="green" /></div><div className="mt-3 grid gap-3 lg:grid-cols-2"><PairPetungCard title="Petungan Lima · Mod 5" item={petungan.lima} tone="blue" /><div className="rounded-lg border border-white/[0.08] bg-[#07111C] p-4"><div className="text-[9px] font-bold uppercase tracking-[0.12em] text-[#6F8798]">Rujukan</div><p className="mt-2 text-xs leading-5 text-[#91A7B7]">Petungan 4, 5, 7, dan 8 digunakan sebagai lapisan pembacaan tradisional. Variasi primbon dapat menghasilkan pemetaan berbeda; hasil ditampilkan sebagai referensi budaya, bukan kepastian hubungan.</p></div></div></Card></div>
 
-      <Card title="☀ Tradisi Wariga Bali" className="mt-4"><div className="grid gap-5 md:grid-cols-[0.8fr_1.2fr] md:items-center"><div className="text-center"><div className="text-[9px] font-bold uppercase tracking-[0.12em] text-[#6F8798]">Data Pawukon</div><div className="mt-3 text-xl font-bold text-amber-300">{people.one.wuku || '—'}</div><div className="mt-2 text-xs text-[#91A7B7]">Panca Sudha, Rakam, Lintang, dan Wuku ditampilkan sebagai data Wariga Bali dari engine Cakra Langit.</div></div><div className="space-y-2 text-xs leading-5 text-[#A6B8C5]"><div><strong className="text-white">Lintang pria:</strong> {people.one.lintang}</div><div><strong className="text-white">Lintang wanita:</strong> {people.two.lintang}</div><div><strong className="text-white">Panca Sudha pria:</strong> {people.one.pancaSudha}</div><div><strong className="text-white">Panca Sudha wanita:</strong> {people.two.pancaSudha}</div><div><strong className="text-white">Rakam pria:</strong> {people.one.rakam}</div><div><strong className="text-white">Rakam wanita:</strong> {people.two.rakam}</div><div><strong className="text-white">Tri Pramana:</strong> Belum tersedia pada engine Cakra Langit — tidak diisi dengan tebakan.</div></div></div></Card>
+    <div className="mt-4"><WarigaBali one={one} two={two} total={total} /></div>
 
-      <Card title="● Nasihat Primbon" className="mt-4"><p className="text-xs leading-6 text-[#A6B8C5]"><strong className="text-white">Petungan utama:</strong> {pitu?.meaning || '—'}</p><p className="mt-2 text-xs leading-6 text-[#A6B8C5]"><strong className="text-white">Petungan pernikahan:</strong> {wolu?.meaning || '—'}</p><p className="mt-2 text-xs leading-6 text-[#A6B8C5]"><strong className="text-white">Watak pria:</strong> {people.one.watakName} — {people.one.watakMeaning}</p><p className="mt-2 text-xs leading-6 text-[#A6B8C5]"><strong className="text-white">Watak wanita:</strong> {people.two.watakName} — {people.two.watakMeaning}</p><p className="mt-2 text-xs italic leading-6 text-[#8FA7B8]">Hasil ini merupakan referensi petungan tradisional, bukan penentu mutlak hubungan. Sumber dan metode primbon dapat menghasilkan pembacaan yang berbeda.</p></Card>
+    <div className="mt-4"><Card title="● Nasihat Primbon"><div className="space-y-3 text-xs leading-6 text-[#B7C8D4]"><p><strong className="text-white">Petungan utama:</strong> {petungan.pitu?.name || '—'} — {petungan.pitu?.meaning || '—'}</p><p><strong className="text-white">Petungan pernikahan:</strong> {petungan.wolu?.name || result?.name || '—'} — {petungan.wolu?.meaning || result?.meaning || '—'}</p><p className="italic text-[#8298A8]">Hasil ini merupakan referensi petungan tradisional, bukan penentu mutlak hubungan. Variasi metode dan sumber primbon dapat menghasilkan pembacaan yang berbeda.</p></div></Card></div>
 
-      <details className="mt-4 rounded-xl border border-white/[0.08] bg-[#0A1723]"><summary className="cursor-pointer list-none px-5 py-4 text-sm font-semibold text-white">▦ Detail Cara Perhitungan <span className="float-right">⌄</span></summary><div className="border-t border-white/[0.08] px-5 py-4 text-xs leading-6 text-[#91A7B7]"><div>Neptu pria: <strong className="text-white">{people.one.neptu}</strong></div><div>Neptu wanita: <strong className="text-white">{people.two.neptu}</strong></div><div>Total: <strong className="text-white">{total}</strong></div><div className="mt-2"><strong className="text-white">Pitu:</strong> {total} modulo 7 = {pitu?.remainder}</div><div><strong className="text-white">Papat:</strong> {total} modulo 4 = {papat?.remainder}</div><div><strong className="text-white">Panca:</strong> {total} modulo 5 = {lima?.remainder}</div><div><strong className="text-white">Wolu:</strong> {total} modulo 8 = {wolu?.remainder}</div><div className="mt-2">Sumber petungan Jawa: open-source `dimasim/Kalkulator-Weton-App` dan cross-reference `arekgresikid/primbon-jawa`.</div></div></details>
+    <details className="mt-4 rounded-xl border border-white/[0.08] bg-[#0A1723]"><summary className="cursor-pointer px-5 py-4 text-sm font-semibold text-white">▦ Detail Cara Perhitungan</summary><div className="border-t border-white/[0.08] p-5 text-xs leading-6 text-[#B7C8D4]"><div>Neptu pihak pertama: <strong className="text-white">{one?.neptu}</strong></div><div>Neptu pihak kedua: <strong className="text-white">{two?.neptu}</strong></div><div>Total: <strong className="text-white">{total}</strong></div><div className="mt-2">Modulo 7: sisa {petungan.pitu?.remainder}</div><div>Modulo 4: sisa {petungan.papat?.remainder}</div><div>Modulo 5: sisa {petungan.lima?.remainder}</div><div>Modulo 8: sisa {petungan.wolu?.remainder}</div></div></details>
 
-      <div className="mt-5 text-center"><button type="button" onClick={() => window.location.assign('/dashboard/weton/jodoh')} className="rounded-lg bg-[#D4AF37] px-6 py-3 text-sm font-bold text-[#10251F] hover:bg-[#E5C24A]">← &nbsp; Cek Pasangan Lainnya</button></div>
-      <div className="mt-12"><div className="text-[10px] font-bold uppercase tracking-[0.2em] text-amber-300">Jelajahi</div><h2 className="mt-2 text-2xl font-semibold text-white">Fitur Lainnya</h2></div>
-    </section>
-  )
+    <div className="mt-5 text-center"><button type="button" onClick={() => window.location.assign('/dashboard/weton/jodoh')} className="rounded-lg bg-[#D4AF37] px-6 py-3 text-sm font-bold text-[#10251F] hover:bg-[#E5C24A]">← Cek Pasangan Lainnya</button></div>
+    <div className="mt-12 pb-10"><div className="text-[10px] font-bold uppercase tracking-[0.2em] text-amber-300">Jelajahi</div><h2 className="mt-2 text-2xl font-semibold text-white">Fitur Lainnya</h2><p className="mt-2 text-sm text-[#71899A]">Weton lengkap, Palintangan, Palelintangan, dan sistem almanak lain tetap tersedia dari workspace Cakra Langit.</p></div>
+  </section>
 }
 
 export default function WetonJodohPage() {
