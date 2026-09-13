@@ -122,6 +122,18 @@ LINTANG = [
     "Begoong",
 ]
 
+PADANGON = [
+    "Dangu",
+    "Jagur",
+    "Gigis",
+    "Kerangan",
+    "Nohan",
+    "Wogan",
+    "Tulus",
+    "Wurung",
+    "Dadi",
+]
+
 
 def mod(value, divisor):
     return ((value % divisor) + divisor) % divisor
@@ -155,6 +167,7 @@ def get_bali_calendar(target_date):
     saptawara_index = mod(pawukon_day, 7)
     pancawara_index = mod(pawukon_day, 5)
     lintang_index = mod(pawukon_day, 35)
+    padangon_index = 0 if pawukon_day <= 3 else mod(pawukon_day - 3, 9)
     panca_sudha_index = mod(
         SAPTAWARA_KERTA_AJI[saptawara_index] + PANCAWARA_URIP[pancawara_index],
         7,
@@ -172,6 +185,8 @@ def get_bali_calendar(target_date):
         "pawukonDay": pawukon_day,
         "lintang": LINTANG[lintang_index],
         "lintangIndex": lintang_index,
+        "padangon": PADANGON[padangon_index],
+        "padangonIndex": padangon_index,
         "pancaSudha": PANCA_SUDHA[panca_sudha_index],
         "pancaSudhaIndex": panca_sudha_index,
         "rakam": RAKAM[rakam_index],
@@ -192,6 +207,8 @@ def get_bali_calendar(target_date):
             "lintangIndex": lintang_index,
             "lintangCycle": 35,
             "lintangMethod": "Pawukon day modulo 35",
+            "padangonIndex": padangon_index,
+            "padangonMethod": "Sangawara 9-day Pawukon sequence; Dangu repeats on cycle days 0-3",
             "pancaSudhaIndex": panca_sudha_index,
             "pancaSudhaMethod": "(SaptaWara Kerta Aji + PancaWara Urip) modulo 7",
             "rakamIndex": rakam_index,
