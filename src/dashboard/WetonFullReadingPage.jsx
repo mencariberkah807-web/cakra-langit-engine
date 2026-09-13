@@ -84,23 +84,6 @@ function formatBirthDate(value) {
   return new Intl.DateTimeFormat('id-ID', { day: 'numeric', month: 'long', year: 'numeric' }).format(date)
 }
 
-function formatJodohDateInput(value) {
-  const digits = value.replace(/\D/g, '').slice(0, 8)
-  if (digits.length <= 2) return digits
-  if (digits.length <= 4) return `${digits.slice(0, 2)}/${digits.slice(2)}`
-  return `${digits.slice(0, 2)}/${digits.slice(2, 4)}/${digits.slice(4)}`
-}
-
-function parseJodohDateInput(value) {
-  const match = value.match(/^(\d{2})\/(\d{2})\/(\d{4})$/)
-  if (!match) return null
-  const [, day, month, year] = match
-  const candidate = new Date(`${year}-${month}-${day}T12:00:00`)
-  if (Number.isNaN(candidate.getTime())) return null
-  if (candidate.getFullYear() !== Number(year) || candidate.getMonth() + 1 !== Number(month) || candidate.getDate() !== Number(day)) return null
-  return `${year}-${month}-${day}`
-}
-
 function WorkspaceCard({ title, eyebrow, description, children, accent = 'blue' }) {
   return (
     <div className="rounded-2xl border border-[#21425A] bg-[radial-gradient(circle_at_top_right,rgba(96,165,250,0.07),transparent_48%),linear-gradient(135deg,rgba(10,28,42,0.98),rgba(5,15,24,0.98))] p-5">
@@ -115,10 +98,6 @@ function WorkspaceCard({ title, eyebrow, description, children, accent = 'blue' 
 export default function WetonFullReadingPage() {
   const { apiData, setSelectedDate, setSelectedTime, setLocationById } = useTodayContext()
   const [profile, setProfile] = useState(null)
-  const [jodohBirthDate, setJodohBirthDate] = useState('')
-  const [jodohData, setJodohData] = useState(null)
-  const [jodohLoading, setJodohLoading] = useState(false)
-  const [jodohError, setJodohError] = useState('')
 
   useEffect(() => {
     const token = typeof window !== 'undefined' ? window.localStorage.getItem(TOKEN_KEY) : null
@@ -167,53 +146,6 @@ export default function WetonFullReadingPage() {
   const birthLocationLabel = birthLocation ? [birthLocation.city, birthLocation.province, birthLocation.country].filter(Boolean).join(', ') : '—'
   const birthTimeLabel = profile?.birth_time_unknown ? 'Waktu tidak diketahui' : (profile?.birth_time?.slice(0, 5) || '—')
   const formula = dino.neptu != null && pasaran.neptu != null && detail.neptu_total != null ? `${dino.name} ${dino.neptu} + ${pasaran.name} ${pasaran.neptu} = ${detail.neptu_total}` : null
-
-  async function handleJodohCalculate(event) {
-    event.preventDefault()
-    setJodohError('')
-    setJodohData(null)
-
-    const partnerDate = parseJodohDateInput(jodohBirthDate)
-    if (!partnerDate) {
-      setJodohError('Masukkan tanggal lahir pasangan dengan format DD/MM/YYYY.')
-      return
-    }
-    if (!Number.isFinite(total) || total <= 0) {
-      setJodohError('Neptu profil utama belum tersedia dari engine Jawa.')
-      return
-    }
-
-    setJodohLoading(true)
-    try {
-      const locationQuery = profile?.birth_location_id
-        ? `location_id=${encodeURIComponent(profile.birth_location_id)}`
-        : `city=${encodeURIComponent(birthLocation?.city || 'Bandung')}`
-      const almanacResponse = await fetch(`${API_BASE}/api/almanac?${locationQuery}&date_value=${encodeURIComponent(partnerDate)}`)
-      if (!almanacResponse.ok) throw new Error('Data kalender pasangan tidak dapat diambil.')
-      const almanac = await almanacResponse.json()
-      const partnerJawa = almanac?.calendars?.find((calendar) => calendar.id === 'jawa') || null
-      const partnerDetail = partnerJawa?.detail || {}
-      const partnerTotal = Number(partnerDetail.neptu_total)
-      if (!Number.isFinite(partnerTotal) || partnerTotal <= 0) throw new Error('Neptu pasangan belum tersedia dari engine Jawa.')
-
-      const jodohResponse = await fetch(`${API_BASE}/api/weton/jodoh?neptu_one=${encodeURIComponent(total)}&neptu_two=${encodeURIComponent(partnerTotal)}`)
-      if (!jodohResponse.ok) {
-        const errorPayload = await jodohResponse.json().catch(() => null)
-        throw new Error(errorPayload?.detail || 'Perhitungan jodoh tidak dapat diproses.')
-      }
-      const result = await jodohResponse.json()
-      setJodohData({
-        ...result,
-        partner_weton: partnerJawa?.sub || `${partnerDetail?.dino?.name || ''} ${partnerDetail?.pasaran?.name || ''}`.trim(),
-        partner_dino: partnerDetail?.dino?.name,
-        partner_pasaran: partnerDetail?.pasaran?.name,
-      })
-    } catch (error) {
-      setJodohError(error?.message || 'Perhitungan jodoh gagal diproses.')
-    } finally {
-      setJodohLoading(false)
-    }
-  }
 
   return (
     <section className="mx-auto max-w-[1500px] px-5 py-7 sm:px-7 lg:px-8 lg:py-9">
@@ -325,57 +257,14 @@ export default function WetonFullReadingPage() {
 
         <Section eyebrow="06 · Jawa Workspace" title="Fitur Jawa Lainnya" accent="blue">
           <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-            <WorkspaceCard title="Kecocokan Jodoh" eyebrow="Repok · Jodoh" description="Bandingkan Weton profil dengan tanggal lahir pasangan menggunakan metode petungan yang terhubung ke engine.">
-              <form onSubmit={handleJodohCalculate} className="space-y-3">
-                <div>
-                  <label htmlFor="jodoh-birth-date" className="text-[9px] font-semibold uppercase tracking-[0.14em] text-[#5E8195]">Tanggal lahir pasangan</label>
-                  <input
-                    id="jodoh-birth-date"
-                    type="text"
-                    inputMode="numeric"
-                    autoComplete="bday"
-                    placeholder="DD/MM/YYYY"
-                    maxLength={10}
-                    value={jodohBirthDate}
-                    onChange={(event) => setJodohBirthDate(formatJodohDateInput(event.target.value))}
-                    className="mt-2 w-full rounded-xl border border-[#28506A] bg-[#071925] px-3 py-2.5 text-sm text-[#D8F3FF] placeholder:text-[#527184] outline-none transition focus:border-[#4D8FB0]"
-                  />
-                  <div className="mt-1 text-[9px] text-[#587388]">Masukkan tanggal dalam format hari/bulan/tahun.</div>
-                </div>
-                <div className="grid gap-2 sm:grid-cols-2">
-                  <div className="rounded-xl border border-[#173044] bg-[#071925] p-3">
-                    <div className="text-[8px] uppercase tracking-[0.12em] text-[#527184]">Profil</div>
-                    <div className="mt-1 text-xs font-semibold text-[#BFD8E7]">{jawa?.sub || '—'}</div>
-                    <div className="mt-1 text-[10px] text-[#7896A8]">Neptu {Number.isFinite(total) ? total : '—'}</div>
-                  </div>
-                  <div className="rounded-xl border border-[#173044] bg-[#071925] p-3">
-                    <div className="text-[8px] uppercase tracking-[0.12em] text-[#527184]">Pasangan</div>
-                    <div className="mt-1 text-xs font-semibold text-[#BFD8E7]">{jodohBirthDate || 'Pilih tanggal lahir'}</div>
-                    <div className="mt-1 text-[10px] text-[#7896A8]">Neptu {jodohData?.neptu_two ?? '—'}</div>
-                  </div>
-                </div>
-                <button type="submit" disabled={jodohLoading} className="w-full rounded-xl border border-[#2E78A0] bg-[#0C4665] px-4 py-2.5 text-xs font-bold text-[#E5F8FF] transition hover:bg-[#105575] disabled:cursor-not-allowed disabled:opacity-60">
-                  {jodohLoading ? 'Menghitung…' : 'Hitung Kecocokan Jodoh'}
-                </button>
-                {jodohError ? <div className="rounded-xl border border-[#603B3D] bg-[#24151A] px-3 py-2 text-[11px] leading-5 text-[#DFA7AA]">{jodohError}</div> : null}
-              </form>
-
-              {jodohData ? (
-                <div className="mt-4 rounded-2xl border border-[#5A4A24] bg-[radial-gradient(circle_at_top_right,rgba(212,183,94,0.12),transparent_48%),linear-gradient(135deg,rgba(28,28,20,0.98),rgba(9,17,22,0.98))] p-4">
-                  <div className="flex items-start justify-between gap-3">
-                    <div>
-                      <div className="text-[8px] font-bold uppercase tracking-[0.16em] text-[#A99362]">Hasil Petungan</div>
-                      <div className="mt-2 text-2xl font-semibold text-[#E6D58B]">{jodohData.name}</div>
-                    </div>
-                    <div className="rounded-full border border-[#5A4A24] bg-[#1C1B14] px-2.5 py-1 text-[9px] font-bold text-[#D4B75E]">Sisa {jodohData.remainder}</div>
-                  </div>
-                  <p className="mt-2 text-xs leading-5 text-[#B7A87A]">{jodohData.meaning}</p>
-                  <div className="mt-3 h-px bg-[#4A4026]" />
-                  <div className="mt-3 font-mono text-[10px] text-[#8D805B]">{jodohData.neptu_one} + {jodohData.neptu_two} = {jodohData.total_neptu} · modulo 8</div>
-                  <div className="mt-2 text-[9px] leading-4 text-[#766D51]">{jodohData.method}</div>
-                  <div className="mt-3 rounded-lg border border-[#463C25] bg-[#15160F] px-3 py-2 text-[9px] leading-4 text-[#827A5E]">Referensi tradisional, bukan penentu mutlak hubungan. Metode jodoh memiliki variasi sumber.</div>
-                </div>
-              ) : null}
+            <WorkspaceCard title="Kecocokan Jodoh" eyebrow="Repok · Jodoh" description="Hitung kecocokan dua orang menggunakan tanggal lahir dan Weton pada halaman Jodoh khusus.">
+              <button
+                type="button"
+                onClick={() => { window.location.href = '/dashboard/weton/jodoh' }}
+                className="w-full rounded-xl border border-[#2E78A0] bg-[#0C4665] px-4 py-2.5 text-xs font-bold text-[#E5F8FF] transition hover:bg-[#105575]"
+              >
+                Buka Hitung Kecocokan Jodoh
+              </button>
             </WorkspaceCard>
             <WorkspaceCard title="Arah Rejeki" eyebrow="Kala · Arah" description="Arah rejeki harus mengikuti konteks Kala yang benar-benar tersedia, bukan dipaksakan sebagai sifat Weton.">
               <div className="text-sm font-semibold text-[#BFD8E7]">Konteks Kala</div>
