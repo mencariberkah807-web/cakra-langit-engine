@@ -14,6 +14,7 @@ from engines.calendar_engine import get_calendar_data
 from engines.eclipse_engine import get_eclipse_data
 from engines.earth_engine import get_earth_data
 from engines.hijri_engine import get_hijri_data
+from engines.jodoh_engine import get_jodoh
 from engines.location_engine import (
     find_location,
     find_location_by_id,
@@ -167,6 +168,14 @@ def almanac(city: str = "Bandung", location_id: str = "", date_value: str = "", 
     schedule = [{"time": solar.get("dawn"), "title": "Fajar — Dawn Window", "cat": "SKY", "sub": "Sky"}, {"time": solar.get("sunrise"), "title": "Sunrise — Surya Terbit", "cat": "SOLAR", "sub": "Sun"}, {"time": solar.get("noon"), "title": "Solar Noon — Kulminasi", "cat": "SOLAR", "sub": "Sun"}, {"time": solar.get("golden_hour"), "title": "Golden Hour", "cat": "SOLAR", "sub": "Sun"}, {"time": solar.get("sunset"), "title": "Sunset — Surya Surup", "cat": "SOLAR", "sub": "Sun"}, {"time": solar.get("dusk"), "title": "Dusk — Stargazing Window", "cat": "SKY", "sub": "Night sky"}]
     schedule = [item for item in schedule if item["time"]]
     return {"location": {**location, "name": location["city"], "region": location["province"], "tz": location["timezone"], "tz_label": {"Asia/Jakarta": "WIB", "Asia/Makassar": "WITA", "Asia/Jayapura": "WIT"}.get(location["timezone"], location["timezone"]), "utc": "UTC" + datetime.now(ZoneInfo(location["timezone"])).strftime("%z")[:3]}, "date_info": {"iso": target_date.isoformat(), "day_name": target_date.strftime("%A"), "date_long": target_date.strftime("%d %B %Y"), "month_label": target_date.strftime("%B %Y"), "day_of_year": earth["day_of_year"], "annual_pct": earth["annual_pct"]}, "natural": {"sun": solar, "moon": moon, "eclipse": eclipse, "sky": sky, "earth": earth, "tide": tide}, "calendars": calendars, "schedule": schedule, "quick_jumps": quick_jumps, "ticker": ticker}
+
+
+@app.get("/api/weton/jodoh")
+def weton_jodoh(neptu_one: int, neptu_two: int):
+    try:
+        return get_jodoh(neptu_one, neptu_two)
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc))
 
 
 @app.get("/api/bazi")
