@@ -18,7 +18,7 @@ function Card({ children, className = '' }) {
   return <div className={`rounded-2xl border border-[#21425A] bg-[linear-gradient(135deg,rgba(10,28,42,0.98),rgba(5,15,24,0.98))] p-5 ${className}`}>{children}</div>
 }
 
-function Field({ label, value, onChange, placeholder = 'DD/MM/YYYY' }) {
+function Field({ label, value, onChange, placeholder = 'DD/MM/YYYY', disabled = false }) {
   return (
     <div>
       <label className="text-[9px] font-bold uppercase tracking-[0.16em] text-[#5E8195]">{label}</label>
@@ -29,10 +29,25 @@ function Field({ label, value, onChange, placeholder = 'DD/MM/YYYY' }) {
         value={value}
         onChange={(event) => onChange(event.target.value.replace(/[^0-9/]/g, '').slice(0, 10))}
         placeholder={placeholder}
-        className="mt-2 w-full rounded-xl border border-[#28506A] bg-[#071925] px-4 py-3 text-sm text-[#D8F3FF] outline-none transition placeholder:text-[#496579] focus:border-[#4D8FB0]"
+        disabled={disabled}
+        className="mt-2 w-full rounded-xl border border-[#28506A] bg-[#071925] px-4 py-3 text-sm text-[#D8F3FF] outline-none transition placeholder:text-[#496579] focus:border-[#4D8FB0] disabled:cursor-not-allowed disabled:opacity-60"
       />
       <div className="mt-1 text-[9px] text-[#587388]">Masukkan tanggal hari/bulan/tahun.</div>
     </div>
+  )
+}
+
+function ProfileCheckbox({ checked, onChange }) {
+  return (
+    <label className="mt-3 flex cursor-pointer items-center gap-2 text-xs text-[#9CB8C8]">
+      <input
+        type="checkbox"
+        checked={checked}
+        onChange={(event) => onChange(event.target.checked)}
+        className="h-4 w-4 rounded border-[#28506A] bg-[#071925] accent-[#D4B75E]"
+      />
+      <span>Gunakan profil saya</span>
+    </label>
   )
 }
 
@@ -60,21 +75,22 @@ async function getProfile() {
   return payload?.profile || null
 }
 
-async function getPartnerData(dateValue, profile) {
+async function getJawaData(dateValue, profile = null) {
   const locationQuery = profile?.birth_location_id
     ? `location_id=${encodeURIComponent(profile.birth_location_id)}`
     : `city=${encodeURIComponent(profile?.birth_location?.city || 'Bandung')}`
   const response = await fetch(`${API_BASE}/api/almanac?${locationQuery}&date_value=${encodeURIComponent(dateValue)}`)
   if (!response.ok) {
     const payload = await response.json().catch(() => null)
-    throw new Error(payload?.detail || 'Data kalender pasangan tidak dapat diambil.')
+    throw new Error(payload?.detail || 'Data kalender Jawa tidak dapat diambil.')
   }
   const almanac = await response.json()
   const jawa = almanac?.calendars?.find((calendar) => calendar.id === 'jawa') || null
   const detail = jawa?.detail || {}
   const neptu = Number(detail.neptu_total)
-  if (!Number.isFinite(neptu) || neptu <= 0) throw new Error('Neptu pasangan belum tersedia dari engine Jawa.')
+  if (!Number.isFinite(neptu) || neptu <= 0) throw new Error('Neptu Weton belum tersedia dari engine Jawa.')
   return {
+    date: dateValue,
     weton: jawa?.sub || `${detail?.dino?.name || ''} ${detail?.pasaran?.name || ''}`.trim(),
     dino: detail?.dino?.name || '—',
     pasaran: detail?.pasaran?.name || '—',
@@ -84,45 +100,81 @@ async function getPartnerData(dateValue, profile) {
 
 function JodohFormPage() {
   const [profile, setProfile] = useState(null)
-  const [partnerDate, setPartnerDate] = useState('')
+  const [dateOne, setDateOne] = useState('')
+  const [dateTwo, setDateTwo] = useState('')
+  const [useProfileOne, setUseProfileOne] = useState(true)
+  const [useProfileTwo, setUseProfileTwo] = useState(false)
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    getProfile().then(setProfile).catch((err) => setError(err.message)).finally(() => setLoading(false))
+    getProfile()
+      .then((nextProfile) => {
+        setProfile(nextProfile)
+        if (nextProfile?.birth_date) setDateOne(nextProfile.birth_date.split('-').reverse().join('/'))
+        else setUseProfileOne(false)
+      })
+      .catch((err) => {
+        setUseProfileOne(false)
+        setError(err.message)
+      })
+      .finally(() => setLoading(false))
   }, [])
 
-  const profileDate = profile?.birth_date
   const submit = (event) => {
     event.preventDefault()
-    const iso = toIsoDate(partnerDate)
-    if (!iso) {
-      setError('Tanggal pasangan harus valid dengan format DD/MM/YYYY.')
+    setError('')
+    const resolvedOne = useProfileOne ? profile?.birth_date : toIsoDate(dateOne)
+    const resolvedTwo = useProfileTwo ? profile?.birth_date : toIsoDate(dateTwo)
+
+    if (!resolvedOne) {
+      setError('Tanggal orang pertama harus valid dengan format DD/MM/YYYY.')
       return
     }
-    window.location.assign(`/dashboard/weton/jodoh/hitung?date=${encodeURIComponent(iso)}`)
+    if (!resolvedTwo) {
+      setError('Tanggal orang kedua harus valid dengan format DD/MM/YYYY.')
+      return
+    }
+
+    const params = new URLSearchParams({ date_one: resolvedOne, date_two: resolvedTwo })
+    window.location.assign(`/dashboard/weton/jodoh/hitung?${params.toString()}`)
   }
+
+  const profileLabel = profile?.display_name || 'Profil Saya'
 
   return (
     <section className="mx-auto max-w-[1180px] px-5 py-7 sm:px-7 lg:py-9">
       <header className="mb-7 text-center">
         <div className="text-[9px] font-bold uppercase tracking-[0.22em] text-[#D4B75E]">Analisis Asmara · Weton Jawa</div>
         <h1 className="mt-2 text-3xl font-semibold tracking-tight text-[#D8F3FF] sm:text-4xl">Kecocokan Jodoh</h1>
-        <p className="mx-auto mt-2 max-w-2xl text-sm leading-6 text-[#8FAEC1]">Hitung kecocokan berdasarkan Weton profil dan tanggal lahir pasangan.</p>
+        <p className="mx-auto mt-2 max-w-2xl text-sm leading-6 text-[#8FAEC1]">Hitung kecocokan siapa saja berdasarkan tanggal lahir dan Weton kedua pihak.</p>
       </header>
 
       <form onSubmit={submit} className="space-y-5">
         <div className="grid gap-5 lg:grid-cols-2">
           <Card>
-            <div className="text-[9px] font-bold uppercase tracking-[0.18em] text-[#78A9C7]">Weton Profil</div>
-            <div className="mt-3 text-xl font-semibold text-[#EDF9FF]">{profile?.display_name || 'Profil Saya'}</div>
-            <div className="mt-3 grid grid-cols-2 gap-2">
-              <div className="rounded-xl border border-[#173044] bg-[#071925] p-3"><div className="text-[8px] uppercase tracking-[0.12em] text-[#527184]">Tanggal lahir</div><div className="mt-1 text-xs font-semibold text-[#BFD8E7]">{formatDate(profileDate)}</div></div>
-              <div className="rounded-xl border border-[#173044] bg-[#071925] p-3"><div className="text-[8px] uppercase tracking-[0.12em] text-[#527184]">Lokasi</div><div className="mt-1 text-xs font-semibold text-[#BFD8E7]">{profile?.birth_location?.city || '—'}</div></div>
+            <div className="text-[9px] font-bold uppercase tracking-[0.18em] text-[#78A9C7]">Orang Pertama</div>
+            <div className="mt-3 text-xl font-semibold text-[#EDF9FF]">{useProfileOne ? profileLabel : 'Data Kelahiran'}</div>
+            <div className="mt-3">
+              <Field
+                label="Tanggal lahir"
+                value={useProfileOne && profile?.birth_date ? profile.birth_date.split('-').reverse().join('/') : dateOne}
+                onChange={setDateOne}
+                disabled={useProfileOne}
+              />
+              <ProfileCheckbox checked={useProfileOne} onChange={setUseProfileOne} />
             </div>
+            {useProfileOne ? <div className="mt-2 text-[9px] text-[#587388]">Menggunakan tanggal lahir dari profil.</div> : null}
           </Card>
+
           <Card>
-            <Field label="Tanggal lahir pasangan" value={partnerDate} onChange={setPartnerDate} />
+            <div className="text-[9px] font-bold uppercase tracking-[0.18em] text-[#78A9C7]">Orang Kedua</div>
+            <div className="mt-3 text-xl font-semibold text-[#EDF9FF]">{useProfileTwo ? profileLabel : 'Data Kelahiran'}</div>
+            <div className="mt-3">
+              <Field label="Tanggal lahir" value={dateTwo} onChange={setDateTwo} disabled={useProfileTwo} />
+              <ProfileCheckbox checked={useProfileTwo} onChange={setUseProfileTwo} />
+            </div>
+            {useProfileTwo ? <div className="mt-2 text-[9px] text-[#587388]">Menggunakan tanggal lahir dari profil.</div> : null}
           </Card>
         </div>
 
@@ -134,32 +186,31 @@ function JodohFormPage() {
 }
 
 function JodohResultPage() {
-  const [profile, setProfile] = useState(null)
-  const [partner, setPartner] = useState(null)
+  const [people, setPeople] = useState({ one: null, two: null })
   const [result, setResult] = useState(null)
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    const dateValue = new URLSearchParams(window.location.search).get('date')
-    if (!dateValue) {
-      setError('Tanggal pasangan belum dipilih.')
+    const params = new URLSearchParams(window.location.search)
+    const dateOne = params.get('date_one')
+    const dateTwo = params.get('date_two')
+
+    if (!dateOne || !dateTwo) {
+      setError('Tanggal kedua pihak belum dipilih.')
       setLoading(false)
       return
     }
-    Promise.all([getProfile(), Promise.resolve(dateValue)])
-      .then(async ([nextProfile, date]) => {
-        setProfile(nextProfile)
-        const jawa = await getPartnerData(date, nextProfile)
-        setPartner(jawa)
-        const mainTotal = Number(nextProfile?.weton_neptu_total)
-        const profileResponse = await fetch(`${API_BASE}/api/almanac?${nextProfile?.birth_location_id ? `location_id=${encodeURIComponent(nextProfile.birth_location_id)}` : `city=${encodeURIComponent(nextProfile?.birth_location?.city || 'Bandung')}`}&date_value=${encodeURIComponent(nextProfile?.birth_date || '')}`)
-        if (!profileResponse.ok) throw new Error('Weton profil tidak dapat dihitung ulang.')
-        const profileAlmanac = await profileResponse.json()
-        const profileJawa = profileAlmanac?.calendars?.find((calendar) => calendar.id === 'jawa') || null
-        const profileTotal = Number(profileJawa?.detail?.neptu_total ?? mainTotal)
-        if (!Number.isFinite(profileTotal) || profileTotal <= 0) throw new Error('Neptu profil belum tersedia dari engine Jawa.')
-        const response = await fetch(`${API_BASE}/api/weton/jodoh?neptu_one=${encodeURIComponent(profileTotal)}&neptu_two=${encodeURIComponent(jawa.neptu)}`)
+
+    getProfile()
+      .catch(() => null)
+      .then(async (profile) => {
+        const [one, two] = await Promise.all([
+          getJawaData(dateOne, profile),
+          getJawaData(dateTwo, profile),
+        ])
+        setPeople({ one, two })
+        const response = await fetch(`${API_BASE}/api/weton/jodoh?neptu_one=${encodeURIComponent(one.neptu)}&neptu_two=${encodeURIComponent(two.neptu)}`)
         if (!response.ok) {
           const payload = await response.json().catch(() => null)
           throw new Error(payload?.detail || 'Perhitungan jodoh tidak dapat diproses.')
@@ -174,7 +225,6 @@ function JodohResultPage() {
   if (error) return <section className="mx-auto max-w-[900px] px-5 py-16"><div className="rounded-2xl border border-[#603B3D] bg-[#24151A] p-6 text-sm text-[#DFA7AA]">{error}</div></section>
 
   const tone = RESULT_TONES[result?.name] || RESULT_TONES.Topo
-  const profileWeton = profile?.weton || 'Weton profil'
 
   return (
     <section className="mx-auto max-w-[1180px] px-5 py-7 sm:px-7 lg:py-9">
@@ -186,14 +236,14 @@ function JodohResultPage() {
 
       <div className="grid gap-5 lg:grid-cols-2">
         <Card>
-          <div className="text-[9px] font-bold uppercase tracking-[0.18em] text-[#78A9C7]">Weton Profil</div>
-          <div className="mt-3 text-xl font-semibold text-[#EDF9FF]">{profileWeton}</div>
-          <div className="mt-1 text-xs text-[#7896A8]">Neptu {result?.neptu_one}</div>
+          <div className="text-[9px] font-bold uppercase tracking-[0.18em] text-[#78A9C7]">Orang Pertama</div>
+          <div className="mt-3 text-xl font-semibold text-[#EDF9FF]">{people.one?.weton}</div>
+          <div className="mt-1 text-xs text-[#7896A8]">{formatDate(people.one?.date)} · Neptu {result?.neptu_one}</div>
         </Card>
         <Card>
-          <div className="text-[9px] font-bold uppercase tracking-[0.18em] text-[#78A9C7]">Weton Pasangan</div>
-          <div className="mt-3 text-xl font-semibold text-[#EDF9FF]">{partner?.weton}</div>
-          <div className="mt-1 text-xs text-[#7896A8]">{partner?.dino} · {partner?.pasaran} · Neptu {result?.neptu_two}</div>
+          <div className="text-[9px] font-bold uppercase tracking-[0.18em] text-[#78A9C7]">Orang Kedua</div>
+          <div className="mt-3 text-xl font-semibold text-[#EDF9FF]">{people.two?.weton}</div>
+          <div className="mt-1 text-xs text-[#7896A8]">{formatDate(people.two?.date)} · Neptu {result?.neptu_two}</div>
         </Card>
       </div>
 
