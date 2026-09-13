@@ -12,7 +12,7 @@ const WETON_REFERENCE = {
   'Senen Legi': { pancasuda: 'Tunggak Semi', paarasan: 'Lakuning Geni', rakam: 'Nuju Pati' },
   'Senen Pahing': { pancasuda: 'Bumi Kapetak', paarasan: 'Lakuning Lintang', rakam: 'Nuju Padu' },
   'Senen Pon': { pancasuda: 'Sumur Sinaba', paarasan: 'Aras Tuding', rakam: 'Nuju Pati' },
-  'Senen Wage': { pancasuda: 'Wasesa Segara', paarasan: 'Lakuning Geni', rakam: 'Sanggar Waringin', padangon: 'Jagur', lambangAlam: 'Api', watak: 'Menarik simpati; penyabar dan jujur, namun dapat keras hati.' },
+  'Senen Wage': { pancasuda: 'Tunggak Semi', paarasan: 'Lakuning Geni', rakam: 'Sanggar Waringin', padangon: 'Jagur', lambangAlam: 'Api', watak: 'Menarik simpati; penyabar dan jujur, namun dapat keras hati.' },
   'Senen Kliwon': { pancasuda: 'Satriya Wirang', paarasan: 'Aras Kembang', rakam: 'Macan Ketawan' },
   'Selasa Legi': { pancasuda: 'Wasesa Segara', paarasan: 'Lakuning Geni', rakam: 'Nuju Padu' },
   'Selasa Pahing': { pancasuda: 'Satriya Wirang', paarasan: 'Aras Kembang', rakam: 'Kala Tinantang' },
@@ -144,7 +144,8 @@ async function getAlmanac(dateValue, profile = null) {
   const neptu = Number(detail.neptu_total)
   if (!Number.isFinite(neptu)) throw new Error('Neptu Weton belum tersedia dari engine Jawa.')
   const weton = jawa?.sub || `${dino.name || '—'} ${pasaran.name || '—'}`
-  const ref = WETON_REFERENCE[weton] || {}
+  const normalizedWeton = weton.replace(/^Setu /, 'Sabtu ').replace(/^Saptu /, 'Sabtu ')
+  const ref = WETON_REFERENCE[weton] || WETON_REFERENCE[normalizedWeton] || {}
   const baliDetail = bali?.detail || {}
   const field = (name) => bali?.fields?.find((item) => item.k === name)?.v
   const lintang = baliDetail.lintang || field('Lintang') || '—'
@@ -152,7 +153,7 @@ async function getAlmanac(dateValue, profile = null) {
 
   return {
     date: dateValue,
-    weton,
+    weton: normalizedWeton,
     dino: dino.name || '—',
     dinoNeptu: dino.neptu ?? '—',
     pasaran: pasaran.name || '—',
@@ -249,7 +250,6 @@ function JodohResultPage() {
 
   useEffect(() => {
     if (!dateOne || !dateTwo) { setError('Tanggal pasangan tidak lengkap.'); setLoading(false); return }
-    Promise.all([getAlmanac(dateOne), getAlmanac(dateTwo), fetch(`${API_BASE}/api/weton/jodoh?neptu_one=0&neptu_two=0`)]).catch(() => null)
     Promise.all([getAlmanac(dateOne), getAlmanac(dateTwo)]).then(async ([first, second]) => {
       const response = await fetch(`${API_BASE}/api/weton/jodoh?neptu_one=${encodeURIComponent(first.neptu)}&neptu_two=${encodeURIComponent(second.neptu)}`)
       if (!response.ok) throw new Error('Perhitungan jodoh tidak dapat diambil.')
