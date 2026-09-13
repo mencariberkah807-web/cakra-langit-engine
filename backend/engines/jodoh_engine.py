@@ -1,43 +1,65 @@
 # Javanese partner/weton calculations.
 #
 # The existing Wolu (mod 8) calculation is preserved for backward compatibility.
-# Additional petungan are sourced from public/open implementations and references:
-# - dimasim/Kalkulator-Weton-App (Petung dibagi 4/7/8)
-# - naufalist/weton (Wolu sequence)
-# These are exposed as supplementary results; the existing `name` field remains
-# the Wolu result so existing API consumers are not broken.
+# Supplementary petungan are sourced from public/open implementations:
+# - dimasim/Kalkulator-Weton-App (Petung dibagi 4/5/7/8)
+# - arekgresikid/primbon-jawa (cross-reference for the same petungan family)
+#
+# Sources:
+# https://github.com/dimasim/Kalkulator-Weton-App
+# https://github.com/arekgresikid/primbon-jawa
 
 PETUNGAN_PITU = {
-    1: {"name": "Wasesa Segara", "meaning": "Dikaitkan dengan sifat sabar, pemaaf, berbudi luhur, dan berwibawa."},
-    2: {"name": "Tunggak Semi", "meaning": "Dikaitkan dengan rezeki yang mudah dan terus mengalir."},
-    3: {"name": "Satriya Wibawa", "meaning": "Dikaitkan dengan kemuliaan, keluhuran, dan kewibawaan."},
-    4: {"name": "Sumur Sinaba", "meaning": "Dikaitkan dengan menjadi tempat orang datang mencari ilmu atau teladan."},
-    5: {"name": "Satria Wirang", "meaning": "Dikaitkan dengan cobaan, dukacita, dan kewirangan."},
-    6: {"name": "Bumi Kepetak", "meaning": "Dikaitkan dengan ketabahan menghadapi kesulitan dan sifat pekerja keras."},
-    7: {"name": "Lebu Katiup Angin", "meaning": "Dikaitkan dengan cita-cita yang tidak mudah tercapai dan kehidupan yang tidak menentu."},
+    1: {"name": "Wasesa Segara", "meaning": "Pasangan ini bersifat pemaaf, rendah hati, penuh wibawa, dan memiliki visi pernikahan yang luas."},
+    2: {"name": "Tunggak Semi", "meaning": "Memiliki kemampuan mendulang rezeki, namun berisiko mengalami masalah kesehatan."},
+    3: {"name": "Satriya Wibawa", "meaning": "Akan dianugerahi rezeki yang melimpah dan menciptakan kehidupan yang sejahtera."},
+    4: {"name": "Sumur Sinaba", "meaning": "Menjadi teladan bagi banyak pasangan dan rumah tangganya penuh ilmu."},
+    5: {"name": "Satria Wirang", "meaning": "Mungkin menghadapi cobaan dan kekurangan finansial dalam pernikahan."},
+    6: {"name": "Bumi Kepetak", "meaning": "Orang yang tertutup tetapi gigih bekerja dan solid dalam menghadapi kesulitan."},
+    7: {"name": "Lebu Ketiyup Angin", "meaning": "Cita-cita sulit terkabul dan ketidakpastian mengitari kehidupan mereka."},
 }
 
 PETUNGAN_PAPAT = {
-    1: {"name": "Ganthi", "meaning": "Dikaitkan dengan kesulitan mendapatkan keturunan."},
-    2: {"name": "Gembili", "meaning": "Dikaitkan dengan banyak keturunan."},
-    3: {"name": "Sri", "meaning": "Dikaitkan dengan rezeki yang melimpah."},
-    4: {"name": "Punggel", "meaning": "Dalam referensi petungan ini dikaitkan dengan salah satu pihak meninggal lebih dahulu."},
+    1: {"name": "Ganthi", "meaning": "Akan sulit memiliki keturunan."},
+    2: {"name": "Gembili", "meaning": "Akan dikaruniai banyak keturunan."},
+    3: {"name": "Sri", "meaning": "Akan memiliki rejeki yang melimpah."},
+    4: {"name": "Punggel", "meaning": "Salah satu akan meninggal dunia."},
+}
+
+PETUNGAN_LIMA = {
+    1: {"name": "Sri", "meaning": "Memiliki rejeki yang melimpah."},
+    2: {"name": "Dhana", "meaning": "Akan menjadi kaya raya."},
+    3: {"name": "Lara", "meaning": "Akan mengalami banyak penyakit."},
+    4: {"name": "Pati", "meaning": "Salah satu akan meninggal dunia."},
+    5: {"name": "Lungguh", "meaning": "Akan memiliki jabatan atau pangkat."},
 }
 
 JODOH_RESULTS = {
-    1: {"name": "Pegat", "meaning": "Perlu perhatian pada potensi konflik dan ketahanan hubungan."},
-    2: {"name": "Ratu", "meaning": "Serasi dan dihormati; hubungan cenderung harmonis."},
-    3: {"name": "Jodoh", "meaning": "Dipandang selaras dan mudah saling menerima."},
-    4: {"name": "Topo", "meaning": "Membutuhkan kesabaran; kesulitan awal dapat menjadi proses pendewasaan."},
-    5: {"name": "Tinari", "meaning": "Dikaitkan dengan kemudahan rezeki dan pertolongan."},
-    6: {"name": "Padu", "meaning": "Perlu perhatian pada perbedaan pendapat dan komunikasi."},
-    7: {"name": "Sujanan", "meaning": "Perlu perhatian pada kepercayaan, kecemburuan, dan komitmen."},
-    8: {"name": "Pesthi", "meaning": "Dikaitkan dengan ketenteraman dan keharmonisan rumah tangga."},
+    1: {"name": "Pegat", "meaning": "Pasangan yang masuk kategori Pegat akan banyak menemui masalah, seperti kesulitan ekonomi, komunikasi yang kurang baik, atau perselingkuhan, sehingga rawan terjadi perceraian."},
+    2: {"name": "Ratu", "meaning": "Pasangan yang masuk kategori Ratu akan disegani banyak orang dan dikenal karena keharmonisannya."},
+    3: {"name": "Jodoh", "meaning": "Pasangan yang masuk kategori Jodoh cenderung harmonis, saling menerima kelebihan dan kekurangan, dan langgeng sampai tua."},
+    4: {"name": "Topo", "meaning": "Pada awal kehidupan rumah tangga dapat banyak mengalami kesulitan, terutama ekonomi, namun seiring waktu kehidupan dapat membaik."},
+    5: {"name": "Tinari", "meaning": "Kehidupan rumah tangga banyak menemui kesenangan, keberuntungan, dan kemudahan mencari rezeki."},
+    6: {"name": "Padu", "meaning": "Kehidupan rumah tangga dapat sering mengalami konflik, pertengkaran, atau beda pendapat, tetapi tidak sampai terjadi perceraian."},
+    7: {"name": "Sujanan", "meaning": "Kehidupan rumah tangga dapat sering bertengkar, tidak harmonis, dan rawan perselingkuhan."},
+    8: {"name": "Pesthi", "meaning": "Kehidupan rumah tangga dikaitkan dengan kedamaian, kerukunan, dan ketenteraman."},
 }
 
 
 def _remainder(total, divisor):
     return total % divisor or divisor
+
+
+def _petungan(total, divisor, table):
+    remainder = _remainder(total, divisor)
+    result = table[remainder]
+    return {
+        "divisor": divisor,
+        "remainder": remainder,
+        "name": result["name"],
+        "meaning": result["meaning"],
+        "method": f"Total Neptu pasangan modulo {divisor}; sisa 0 dibaca sebagai sisa {divisor}.",
+    }
 
 
 def get_jodoh(neptu_one, neptu_two):
@@ -47,49 +69,28 @@ def get_jodoh(neptu_one, neptu_two):
         raise ValueError("Neptu pasangan harus lebih besar dari nol.")
 
     total = neptu_one + neptu_two
-
-    pitu_remainder = _remainder(total, 7)
-    papat_remainder = _remainder(total, 4)
-    wolu_remainder = _remainder(total, 8)
-
-    pitu = PETUNGAN_PITU[pitu_remainder]
-    papat = PETUNGAN_PAPAT[papat_remainder]
-    wolu = JODOH_RESULTS[wolu_remainder]
+    pitu = _petungan(total, 7, PETUNGAN_PITU)
+    papat = _petungan(total, 4, PETUNGAN_PAPAT)
+    lima = _petungan(total, 5, PETUNGAN_LIMA)
+    wolu = _petungan(total, 8, JODOH_RESULTS)
 
     return {
         "neptu_one": neptu_one,
         "neptu_two": neptu_two,
         "total_neptu": total,
-        "remainder": wolu_remainder,
+        "remainder": wolu["remainder"],
         "name": wolu["name"],
         "meaning": wolu["meaning"],
-        "method": "Total Neptu pasangan modulo 8; sisa 0 dibaca sebagai sisa 8.",
+        "method": wolu["method"],
         "status": "TRADITIONAL_REFERENCE",
         "petungan": {
-            "pitu": {
-                "divisor": 7,
-                "remainder": pitu_remainder,
-                "name": pitu["name"],
-                "meaning": pitu["meaning"],
-                "method": "Total Neptu pasangan modulo 7; sisa 0 dibaca sebagai sisa 7.",
-            },
-            "papat": {
-                "divisor": 4,
-                "remainder": papat_remainder,
-                "name": papat["name"],
-                "meaning": papat["meaning"],
-                "method": "Total Neptu pasangan modulo 4; sisa 0 dibaca sebagai sisa 4.",
-            },
-            "wolu": {
-                "divisor": 8,
-                "remainder": wolu_remainder,
-                "name": wolu["name"],
-                "meaning": wolu["meaning"],
-                "method": "Total Neptu pasangan modulo 8; sisa 0 dibaca sebagai sisa 8.",
-            },
+            "pitu": pitu,
+            "papat": papat,
+            "lima": lima,
+            "wolu": wolu,
         },
         "sources": [
             "https://github.com/dimasim/Kalkulator-Weton-App",
-            "https://github.com/naufalist/weton",
+            "https://github.com/arekgresikid/primbon-jawa",
         ],
     }
