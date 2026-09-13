@@ -11,6 +11,8 @@ const authenticatedPaths = new Set([
   '/dashboard/natural',
   '/dashboard/birth-converter',
   '/dashboard/weton',
+  '/dashboard/weton/jodoh',
+  '/dashboard/weton/jodoh/hitung',
   '/dashboard/bazi',
   '/dashboard/paririmbon',
   '/dashboard/almanac',
