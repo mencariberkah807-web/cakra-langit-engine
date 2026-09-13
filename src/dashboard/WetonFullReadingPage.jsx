@@ -84,6 +84,23 @@ function formatBirthDate(value) {
   return new Intl.DateTimeFormat('id-ID', { day: 'numeric', month: 'long', year: 'numeric' }).format(date)
 }
 
+function formatJodohDateInput(value) {
+  const digits = value.replace(/\D/g, '').slice(0, 8)
+  if (digits.length <= 2) return digits
+  if (digits.length <= 4) return `${digits.slice(0, 2)}/${digits.slice(2)}`
+  return `${digits.slice(0, 2)}/${digits.slice(2, 4)}/${digits.slice(4)}`
+}
+
+function parseJodohDateInput(value) {
+  const match = value.match(/^(\d{2})\/(\d{2})\/(\d{4})$/)
+  if (!match) return null
+  const [, day, month, year] = match
+  const candidate = new Date(`${year}-${month}-${day}T12:00:00`)
+  if (Number.isNaN(candidate.getTime())) return null
+  if (candidate.getFullYear() !== Number(year) || candidate.getMonth() + 1 !== Number(month) || candidate.getDate() !== Number(day)) return null
+  return `${year}-${month}-${day}`
+}
+
 function WorkspaceCard({ title, eyebrow, description, children, accent = 'blue' }) {
   return (
     <div className="rounded-2xl border border-[#21425A] bg-[radial-gradient(circle_at_top_right,rgba(96,165,250,0.07),transparent_48%),linear-gradient(135deg,rgba(10,28,42,0.98),rgba(5,15,24,0.98))] p-5">
@@ -156,8 +173,9 @@ export default function WetonFullReadingPage() {
     setJodohError('')
     setJodohData(null)
 
-    if (!jodohBirthDate) {
-      setJodohError('Tanggal lahir pasangan harus diisi.')
+    const partnerDate = parseJodohDateInput(jodohBirthDate)
+    if (!partnerDate) {
+      setJodohError('Masukkan tanggal lahir pasangan dengan format DD/MM/YYYY.')
       return
     }
     if (!Number.isFinite(total) || total <= 0) {
@@ -167,8 +185,10 @@ export default function WetonFullReadingPage() {
 
     setJodohLoading(true)
     try {
-      const city = birthLocation?.city || 'Bandung'
-      const almanacResponse = await fetch(`${API_BASE}/api/almanac?city=${encodeURIComponent(city)}&date_value=${encodeURIComponent(jodohBirthDate)}`)
+      const locationQuery = profile?.birth_location_id
+        ? `location_id=${encodeURIComponent(profile.birth_location_id)}`
+        : `city=${encodeURIComponent(birthLocation?.city || 'Bandung')}`
+      const almanacResponse = await fetch(`${API_BASE}/api/almanac?${locationQuery}&date_value=${encodeURIComponent(partnerDate)}`)
       if (!almanacResponse.ok) throw new Error('Data kalender pasangan tidak dapat diambil.')
       const almanac = await almanacResponse.json()
       const partnerJawa = almanac?.calendars?.find((calendar) => calendar.id === 'jawa') || null
@@ -311,11 +331,16 @@ export default function WetonFullReadingPage() {
                   <label htmlFor="jodoh-birth-date" className="text-[9px] font-semibold uppercase tracking-[0.14em] text-[#5E8195]">Tanggal lahir pasangan</label>
                   <input
                     id="jodoh-birth-date"
-                    type="date"
+                    type="text"
+                    inputMode="numeric"
+                    autoComplete="bday"
+                    placeholder="DD/MM/YYYY"
+                    maxLength={10}
                     value={jodohBirthDate}
-                    onChange={(event) => setJodohBirthDate(event.target.value)}
-                    className="mt-2 w-full rounded-xl border border-[#28506A] bg-[#071925] px-3 py-2.5 text-sm text-[#D8F3FF] outline-none transition focus:border-[#4D8FB0]"
+                    onChange={(event) => setJodohBirthDate(formatJodohDateInput(event.target.value))}
+                    className="mt-2 w-full rounded-xl border border-[#28506A] bg-[#071925] px-3 py-2.5 text-sm text-[#D8F3FF] placeholder:text-[#527184] outline-none transition focus:border-[#4D8FB0]"
                   />
+                  <div className="mt-1 text-[9px] text-[#587388]">Masukkan tanggal dalam format hari/bulan/tahun.</div>
                 </div>
                 <div className="grid gap-2 sm:grid-cols-2">
                   <div className="rounded-xl border border-[#173044] bg-[#071925] p-3">
@@ -325,7 +350,7 @@ export default function WetonFullReadingPage() {
                   </div>
                   <div className="rounded-xl border border-[#173044] bg-[#071925] p-3">
                     <div className="text-[8px] uppercase tracking-[0.12em] text-[#527184]">Pasangan</div>
-                    <div className="mt-1 text-xs font-semibold text-[#BFD8E7]">{jodohData?.partner_weton || 'Pilih tanggal lahir'}</div>
+                    <div className="mt-1 text-xs font-semibold text-[#BFD8E7]">{jodohBirthDate || 'Pilih tanggal lahir'}</div>
                     <div className="mt-1 text-[10px] text-[#7896A8]">Neptu {jodohData?.neptu_two ?? '—'}</div>
                   </div>
                 </div>
