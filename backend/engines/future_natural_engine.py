@@ -434,6 +434,13 @@ def _fetch_seismic(latitude, longitude, timezone, target_date):
     )
 
 
+def get_ocean_data(location):
+    latitude = float(location["latitude"])
+    longitude = float(location["longitude"])
+    timezone = location.get("timezone") or "UTC"
+    return _fetch_ocean(latitude, longitude, timezone)
+
+
 def _fetch_ocean(latitude, longitude, timezone):
     data = _get_json(
         MARINE_URL,
@@ -467,11 +474,11 @@ def _fetch_ocean(latitude, longitude, timezone):
         current.get("ocean_current_direction"),
     ]
     if not current or all(value is None for value in marine_values):
-        return _available(
+        return _unavailable(
             "ocean",
             "Ocean",
-            "No marine data",
-            "Location is inland or outside marine coverage",
+            "Open-Meteo Marine API",
+            "No marine observation for this location; location is inland or outside marine coverage.",
             [
                 {"label": "Status", "value": "Open-Meteo returned no marine observation for this coordinate"},
                 {"label": "Location", "value": f"{latitude:.4f}, {longitude:.4f}"},
@@ -505,7 +512,7 @@ def get_future_natural_data(location, target_date: date):
         "radiation": lambda: _fetch_radiation(latitude, longitude),
         "volcanic": lambda: _fetch_volcanic(latitude, longitude),
         "seismic": lambda: _fetch_seismic(latitude, longitude, timezone, target_date),
-        "ocean": lambda: _fetch_ocean(latitude, longitude, timezone),
+        "ocean": lambda: get_ocean_data(location),
     }
 
     results = {}
