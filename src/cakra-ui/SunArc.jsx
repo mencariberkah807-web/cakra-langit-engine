@@ -161,15 +161,14 @@ export default function SunArc({ sun, moon, time, loading, embedded = false }) {
           {sunPaths.map((d, index) => <path key={`sun-${index}`} d={d} fill="none" stroke="url(#sunStroke)" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" opacity="0.9" filter="url(#celestialGlow)" />)}
           {moonPaths.map((d, index) => <path key={`moon-${index}`} d={d} fill="none" stroke="url(#moonStroke)" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round" strokeDasharray="9 8" opacity="0.86" />)}
 
-          <motion.line animate={{ x1: activePosition.x, y1: activePosition.y, x2: CENTER.x, y2: CENTER.y }} transition={{ type: "spring", stiffness: 180, damping: 24 }} stroke={activeIsSun ? "#FBBF24" : "#C4B5FD"} strokeWidth="1.5" strokeDasharray="6 7" opacity="0.7" />
+          <line x1={activePosition.x} y1={activePosition.y} x2={CENTER.x} y2={CENTER.y}
+            stroke={activeIsSun ? "#FBBF24" : "#C4B5FD"} strokeWidth="1.5" strokeDasharray="6 7" opacity="0.7" />
           {activeIsSun ? (
-            <motion.circle cx={activePosition.x} cy={activePosition.y} r={22} fill="none" stroke="#FBBF24" strokeWidth="1.5"
-              animate={{ r: playing ? [22, 31, 22] : 22, opacity: playing ? [0.35, 0.05, 0.35] : 0.18 }}
-              transition={{ duration: 1.5, repeat: playing ? Infinity : 0, ease: "easeInOut" }} />
+            <circle cx={activePosition.x} cy={activePosition.y} r={playing ? 28 : 22}
+              fill="none" stroke="#FBBF24" strokeWidth="1.5" opacity={playing ? 0.16 : 0.18} />
           ) : null}
-          <motion.circle data-testid={activeIsSun ? "sun-arc-marker" : "moon-path-marker"}
-            animate={{ cx: activePosition.x, cy: activePosition.y }}
-            transition={{ type: "spring", stiffness: 180, damping: 24, mass: 0.55 }}
+          <circle data-testid={activeIsSun ? "sun-arc-marker" : "moon-path-marker"}
+            cx={activePosition.x} cy={activePosition.y}
             r={activeIsSun ? 17 : 14} fill={activeIsSun ? "#FBBF24" : "#C4B5FD"}
             stroke="#FFFFFF" strokeWidth="2" filter="url(#celestialGlow)" />
 
