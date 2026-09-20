@@ -161,8 +161,19 @@ def almanac(city: str = "Bandung", location_id: str = "", date_value: str = "", 
     eclipse = get_eclipse_data(target_date)
     sky = get_sky_data(moon)
     earth = get_earth_data(target_date)
-    tide = get_tide_data(location, target_date, location["timezone"])
-    tide["ocean"] = get_ocean_data(location)
+    ocean = get_ocean_data(location)
+    marine_coastal = ocean.get("coastal_candidate") is True
+    tide = get_tide_data(
+        location,
+        target_date,
+        location["timezone"],
+        marine_coastal=marine_coastal,
+    )
+    tide["ocean"] = ocean
+    location = {
+        **location,
+        "coastal": location.get("coastal") is True or marine_coastal,
+    }
     quick_jumps = {"today": target_date.isoformat(), "next_full_moon": moon.get("next_full_moon"), "next_eclipse": eclipse["next"]["date"] if eclipse.get("next") else None}
     jawa_calendar = next((calendar for calendar in calendars if calendar.get("id") == "jawa"), None)
     ticker = [f"{location['city']} · {target_date.strftime('%d %B %Y')}", f"Sunrise {solar.get('sunrise')} · Sunset {solar.get('sunset')}", f"Moon {moon.get('phase')} · {moon.get('illumination')}%", f"Jawa {jawa_calendar['headline']}" if jawa_calendar else None]
