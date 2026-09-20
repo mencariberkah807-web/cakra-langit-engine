@@ -12,7 +12,7 @@ from database.models import User
 from engines.bazi_engine import get_bazi_data
 from engines.calendar_engine import get_calendar_data
 from engines.eclipse_engine import get_eclipse_data
-from engines.future_natural_engine import get_future_natural_data
+from engines.future_natural_engine import get_future_natural_data, get_ocean_data
 from engines.earth_engine import get_earth_data
 from engines.hijri_engine import get_hijri_data
 from engines.jodoh_engine import get_jodoh
@@ -162,6 +162,7 @@ def almanac(city: str = "Bandung", location_id: str = "", date_value: str = "", 
     sky = get_sky_data(moon)
     earth = get_earth_data(target_date)
     tide = get_tide_data(location, target_date, location["timezone"])
+    tide["ocean"] = get_ocean_data(location)
     quick_jumps = {"today": target_date.isoformat(), "next_full_moon": moon.get("next_full_moon"), "next_eclipse": eclipse["next"]["date"] if eclipse.get("next") else None}
     jawa_calendar = next((calendar for calendar in calendars if calendar.get("id") == "jawa"), None)
     ticker = [f"{location['city']} · {target_date.strftime('%d %B %Y')}", f"Sunrise {solar.get('sunrise')} · Sunset {solar.get('sunset')}", f"Moon {moon.get('phase')} · {moon.get('illumination')}%", f"Jawa {jawa_calendar['headline']}" if jawa_calendar else None]
