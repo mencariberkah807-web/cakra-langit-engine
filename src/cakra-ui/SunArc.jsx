@@ -140,8 +140,6 @@ export default function SunArc({ sun, moon, time, loading, embedded = false }) {
             return <circle key={`star-${index}`} cx={x} cy={y} r={r} fill="#DDF7FF" opacity={0.25 + (index % 5) * 0.1} />;
           })}
 
-          <path d="M70 555 L930 555" stroke="#164A67" strokeWidth="1" opacity="0.65" />
-          <path d="M95 575 L905 575" stroke="#0D3149" strokeWidth="1" opacity="0.55" />
 
           <circle cx={CENTER.x} cy={CENTER.y} r={RADIUS + 3} fill="rgba(4,18,31,.3)" stroke="#6DD9FF" strokeWidth="2" opacity="0.88" />
           {[30, 60].map((altitude) => (
@@ -153,7 +151,7 @@ export default function SunArc({ sun, moon, time, loading, embedded = false }) {
           <line x1={CENTER.x - RADIUS} y1={CENTER.y} x2={CENTER.x + RADIUS} y2={CENTER.y} stroke="#5B9BB9" strokeWidth="1" opacity="0.55" />
 
           <text x="500" y="92" textAnchor="middle" fontSize="17" fontWeight="700" fill="#C9F7FF">N</text>
-          <text x="500" y="575" textAnchor="middle" fontSize="17" fontWeight="700" fill="#C9F7FF">S</text>
+          <text x="500" y="560" textAnchor="middle" fontSize="17" fontWeight="700" fill="#C9F7FF">S</text>
           <text x="245" y="337" textAnchor="middle" fontSize="16" fontWeight="700" fill="#A7D4E6">W</text>
           <text x="755" y="337" textAnchor="middle" fontSize="16" fontWeight="700" fill="#A7D4E6">E</text>
           <text x="515" y="276" fontSize="13" fill="#77AFC8">30°</text>
@@ -184,12 +182,12 @@ export default function SunArc({ sun, moon, time, loading, embedded = false }) {
             <text x="176" y="22" fontSize="13" fontWeight="700" fill="#BBD8F5">MOON PATH</text>
           </g>
 
-          <g transform="translate(50 540)">
-            <rect x="0" y="0" width="900" height="54" rx="14" fill="#061522" fillOpacity="0.88" stroke="#164A67" />
+          <g transform="translate(50 568)">
+            <rect x="0" y="0" width="900" height="48" rx="14" fill="#061522" fillOpacity="0.88" stroke="#164A67" />
             <text x="20" y="22" fontSize="11" fontWeight="700" fill="#79B5D0">ALTITUDE</text>
-            <text x="20" y="41" fontSize="13" fill="#B5D8E8">90° zenith · 60° high · 30° low · 0° horizon</text>
-            <text x="675" y="22" fontSize="11" fontWeight="700" fill="#79B5D0">OBSERVATION</text>
-            <text x="675" y="41" fontSize="13" fontWeight="700" fill="#F0FAFF">{displayTime}</text>
+            <text x="20" y="36" fontSize="13" fill="#B5D8E8">90° zenith · 60° high · 30° low · 0° horizon</text>
+            <text x="675" y="19" fontSize="11" fontWeight="700" fill="#79B5D0">OBSERVATION</text>
+            <text x="675" y="36" fontSize="13" fontWeight="700" fill="#F0FAFF">{displayTime}</text>
           </g>
           <foreignObject x="760" y="462" width="185" height="42">
             <button type="button" xmlns="http://www.w3.org/1999/xhtml"
