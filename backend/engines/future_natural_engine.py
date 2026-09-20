@@ -454,6 +454,7 @@ def _fetch_ocean(latitude, longitude, timezone):
                     "wave_period",
                     "swell_wave_height",
                     "sea_surface_temperature",
+                    "sea_level_height_msl",
                     "ocean_current_velocity",
                     "ocean_current_direction",
                 ]
@@ -470,6 +471,7 @@ def _fetch_ocean(latitude, longitude, timezone):
         current.get("wave_period"),
         current.get("swell_wave_height"),
         current.get("sea_surface_temperature"),
+        current.get("sea_level_height_msl"),
         current.get("ocean_current_velocity"),
         current.get("ocean_current_direction"),
     ]
