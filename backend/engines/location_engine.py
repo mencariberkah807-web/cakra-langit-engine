@@ -24,6 +24,29 @@ def indonesia_timezone_label(timezone):
     }.get(timezone)
 
 
+# City-level coastal overrides for Indonesian locations whose source record does not
+# carry a reliable coastal flag. Keep this list conservative and limited to cities
+# whose administrative area directly borders the sea.
+COASTAL_CITY_NAMES = {
+    "ambon", "balikpapan", "banda aceh", "bandar lampung", "batam",
+    "bengkulu", "bitung", "bontang", "cilegon", "cirebon", "denpasar",
+    "dumai", "gorontalo", "jakarta utara", "jayapura", "kendari",
+    "kupang", "makassar", "manado", "mataram", "medan", "padang",
+    "palopo", "palu", "pangkal pinang", "parepare", "pariaman",
+    "pasuruan", "pekalongan", "pontianak", "probolinggo", "sabang",
+    "samarinda", "semarang", "singkawang", "sorong", "surabaya",
+    "tanjung balai", "tanjung pinang", "tarakan", "ternate", "tidore",
+    "tual",
+}
+
+
+def is_coastal_indonesia_record(record):
+    if record.get("coastal") is True:
+        return True
+    name = str(record.get("name") or "").strip().lower()
+    return name in COASTAL_CITY_NAMES
+
+
 INDONESIA_BY_ID = {
     str(record.get("id")): record
     for record in INDONESIA_DATA
@@ -69,7 +92,7 @@ def normalize_indonesia_location(record):
         "population": int(record.get("population") or 0),
         "level": record.get("level"),
         "parentId": record.get("parentId"),
-        "coastal": record.get("coastal") is True,
+        "coastal": is_coastal_indonesia_record(record),
     }
 
 
