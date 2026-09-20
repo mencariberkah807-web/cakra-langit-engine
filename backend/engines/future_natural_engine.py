@@ -457,8 +457,27 @@ def _fetch_ocean(latitude, longitude, timezone):
     )
     current = data.get("current") or {}
     units = data.get("current_units") or {}
-    if not current:
-        raise RuntimeError("Marine data unavailable for this location")
+    marine_values = [
+        current.get("wave_height"),
+        current.get("wave_direction"),
+        current.get("wave_period"),
+        current.get("swell_wave_height"),
+        current.get("sea_surface_temperature"),
+        current.get("ocean_current_velocity"),
+        current.get("ocean_current_direction"),
+    ]
+    if not current or all(value is None for value in marine_values):
+        return _available(
+            "ocean",
+            "Ocean",
+            "No marine data",
+            "Location is inland or outside marine coverage",
+            [
+                {"label": "Status", "value": "Open-Meteo returned no marine observation for this coordinate"},
+                {"label": "Location", "value": f"{latitude:.4f}, {longitude:.4f}"},
+            ],
+            "Open-Meteo Marine API",
+        )
 
     return _available(
         "ocean",
