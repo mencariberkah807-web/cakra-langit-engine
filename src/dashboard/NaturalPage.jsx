@@ -1,7 +1,10 @@
-import { MapPin, CalendarDays, Clock3, Waves, Sun, Moon, CloudSun, Orbit, Eye } from "lucide-react";
+import { useEffect, useState } from "react";
+import { MapPin, CalendarDays, Clock3, Waves, Sun, Moon, CloudSun, Orbit, Eye, Search } from "lucide-react";
 import { useTodayContext } from "../core/TodayContext";
 import NaturalLayer from "../cakra-ui/NaturalLayer";
 import NaturalFutureEngines from "../cakra-ui/NaturalFutureEngines";
+import { getIndonesiaProvinces, searchLocations } from "../services/locationService";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 
 function isoLocal(date, timezone) {
   if (!date) return "";
@@ -22,6 +25,159 @@ function formatDate(date, timezone) {
     month: "long",
     year: "numeric",
   }).format(date);
+}
+
+
+function LocationPicker({ context, location }) {
+  const [open, setOpen] = useState(false);
+  const [cityQuery, setCityQuery] = useState("");
+  const [provinceQuery, setProvinceQuery] = useState("");
+  const [provinces, setProvinces] = useState([]);
+  const [provinceOpen, setProvinceOpen] = useState(false);
+  const [results, setResults] = useState([]);
+  const [searching, setSearching] = useState(false);
+  const [searchError, setSearchError] = useState(false);
+
+  useEffect(() => {
+    if (!open || provinces.length) return undefined;
+    let cancelled = false;
+    getIndonesiaProvinces()
+      .then((items) => { if (!cancelled) setProvinces(items); })
+      .catch(() => { if (!cancelled) setProvinces([]); });
+    return () => { cancelled = true; };
+  }, [open, provinces.length]);
+
+  useEffect(() => {
+    const city = cityQuery.trim();
+    const province = provinceQuery.trim();
+    if (!city) {
+      setResults([]);
+      setSearching(false);
+      setSearchError(false);
+      return undefined;
+    }
+    let cancelled = false;
+    const timer = setTimeout(() => {
+      setSearching(true);
+      setSearchError(false);
+      searchLocations(city, province, 20)
+        .then((items) => { if (!cancelled) setResults(items); })
+        .catch(() => { if (!cancelled) { setResults([]); setSearchError(true); } })
+        .finally(() => { if (!cancelled) setSearching(false); });
+    }, 300);
+    return () => { cancelled = true; clearTimeout(timer); };
+  }, [cityQuery, provinceQuery]);
+
+  function openPicker() {
+    setCityQuery("");
+    setProvinceQuery("");
+    setProvinceOpen(false);
+    setResults([]);
+    setSearchError(false);
+    setOpen(true);
+  }
+
+  async function selectLocation(nextLocation) {
+    try {
+      await context.setLocationById(nextLocation);
+      setOpen(false);
+      setCityQuery("");
+      setProvinceQuery("");
+      setProvinceOpen(false);
+      setResults([]);
+    } catch {
+      setSearchError(true);
+    }
+  }
+
+  return (
+    <>
+      <button
+        type="button"
+        onClick={openPicker}
+        className="flex min-w-[190px] items-center gap-2 rounded-xl border border-[#24506A] bg-[#0A1B29] px-3 py-2.5 text-left transition hover:border-cyan-300/30 hover:bg-[#0D2434] focus:outline-none focus:ring-2 focus:ring-cyan-400/20"
+        data-testid="natural-location-field"
+      >
+        <MapPin className="h-4 w-4 shrink-0 text-[#22D3EE]" strokeWidth={1.8} />
+        <span className="min-w-0">
+          <span className="block text-[9px] font-bold uppercase tracking-[0.12em] text-[#6F8EA4]">Location</span>
+          <span className="mt-0.5 block truncate text-xs font-semibold text-[#D8EAF3]">{location?.city || location?.name || "Select location"}</span>
+        </span>
+      </button>
+
+      <Dialog open={open} onOpenChange={setOpen}>
+        <DialogContent className="w-[calc(100vw-2rem)] max-w-xl border-white/[0.10] bg-[#0B1825] text-white">
+          <DialogHeader>
+            <DialogTitle className="text-white">Change Location</DialogTitle>
+            <DialogDescription className="text-[#8FA4B8]">Select a city and province in Indonesia.</DialogDescription>
+          </DialogHeader>
+
+          <div className="grid gap-3 sm:grid-cols-2">
+            <div className="relative">
+              <label htmlFor="natural-location-city" className="mb-1.5 block text-xs font-semibold text-[#AFC0CF]">City</label>
+              <Search className="absolute left-3 top-[2.35rem] h-4 w-4 -translate-y-1/2 text-[#71869A]" />
+              <input
+                autoFocus
+                id="natural-location-city"
+                value={cityQuery}
+                onChange={(event) => setCityQuery(event.target.value)}
+                placeholder="Bandung"
+                className="h-11 w-full rounded-xl border border-white/[0.10] bg-white/[0.04] pl-10 pr-3 text-sm text-white placeholder:text-[#536A7D] outline-none focus:border-[#22D3EE]/40 focus:ring-2 focus:ring-[#22D3EE]/10"
+                data-testid="natural-location-city-input"
+              />
+            </div>
+
+            <div className="relative">
+              <label htmlFor="natural-location-province" className="mb-1.5 block text-xs font-semibold text-[#AFC0CF]">Province</label>
+              <input
+                id="natural-location-province"
+                value={provinceQuery}
+                onFocus={() => setProvinceOpen(true)}
+                onChange={(event) => { setProvinceQuery(event.target.value); setProvinceOpen(true); }}
+                placeholder="Jawa Barat"
+                className="h-11 w-full rounded-xl border border-white/[0.10] bg-white/[0.04] px-3 text-sm text-white placeholder:text-[#536A7D] outline-none focus:border-[#22D3EE]/40 focus:ring-2 focus:ring-[#22D3EE]/10"
+                data-testid="natural-location-province-input"
+              />
+              {provinceOpen && provinces.length > 0 ? (
+                <div className="absolute left-0 right-0 top-full z-50 mt-1 max-h-56 overflow-y-auto rounded-xl border border-white/[0.10] bg-[#0B1825] py-1 shadow-2xl">
+                  {provinces
+                    .filter((province) => province.city.toLowerCase().includes(provinceQuery.trim().toLowerCase()))
+                    .map((province) => (
+                      <button key={province.id} type="button" onClick={() => { setProvinceQuery(province.city); setProvinceOpen(false); }} className="w-full px-3 py-2 text-left text-sm text-[#D8E3EC] hover:bg-white/[0.06]">
+                        {province.city}
+                      </button>
+                    ))}
+                </div>
+              ) : null}
+            </div>
+          </div>
+
+          <div className="max-h-[420px] overflow-y-auto rounded-xl border border-white/[0.10]">
+            {!cityQuery.trim() ? (
+              <div className="px-4 py-8 text-center text-sm text-[#71869A]">Type a city name to search locations.</div>
+            ) : searching ? (
+              <div className="px-4 py-8 text-center text-sm text-[#71869A]">Searching...</div>
+            ) : searchError ? (
+              <div className="px-4 py-8 text-center text-sm text-[#71869A]">Unable to search locations.</div>
+            ) : results.length === 0 ? (
+              <div className="px-4 py-8 text-center text-sm text-[#71869A]">No locations found.</div>
+            ) : (
+              results.map((item) => (
+                <button key={item.id} type="button" onClick={() => selectLocation(item)} className="flex w-full items-start gap-3 border-b border-white/[0.06] px-4 py-3 text-left last:border-b-0 hover:bg-white/[0.05]" data-testid={`natural-location-result-${item.id}`}>
+                  <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-[#22D3EE]" strokeWidth={1.8} />
+                  <span className="min-w-0">
+                    <span className="block truncate text-sm font-semibold text-[#D8E3EC]">{item.city}</span>
+                    <span className="mt-0.5 block truncate text-xs text-[#8FA4B8]">{[item.province, item.country].filter(Boolean).join(" — ")}</span>
+                    <span className="mt-0.5 block text-[11px] text-[#536A7D]">{item.timezone}</span>
+                  </span>
+                </button>
+              ))
+            )}
+          </div>
+        </DialogContent>
+      </Dialog>
+    </>
+  );
 }
 
 function DetailCard({ icon: Icon, title, primary, secondary, rows = [], tone = "blue" }) {
@@ -80,7 +236,7 @@ export default function NaturalPage() {
             <div className="grid grid-cols-1 gap-2 text-[9px] sm:grid-cols-2">
               <div className="flex items-center gap-2 rounded-xl border border-[#1B3A50] bg-[#0A1B29] px-3 py-2.5">
                 <MapPin className="h-3.5 w-3.5 text-[#78A9C4]" />
-                <span className="text-[#9AB3C3]">{location.city || location.name || "—"}</span>
+                <LocationPicker context={context} location={location} />
               </div>
               <div className="flex items-center gap-2 rounded-xl border border-[#1B3A50] bg-[#0A1B29] px-3 py-2.5">
                 <CalendarDays className="h-3.5 w-3.5 text-[#78A9C4]" />
