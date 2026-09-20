@@ -495,11 +495,6 @@ def _fetch_ocean(latitude, longitude, timezone):
             "Ocean",
             "Open-Meteo Marine API",
             "No marine observation for this location; location is inland or outside marine coverage.",
-            [
-                {"label": "Status", "value": "Open-Meteo returned no marine observation for this coordinate"},
-                {"label": "Location", "value": f"{latitude:.4f}, {longitude:.4f}"},
-            ],
-            "Open-Meteo Marine API",
         )
 
     grid_latitude = data.get("latitude")
