@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import {
   Activity,
   Cloud,
-  Droplets,
   Magnet,
   Mountain,
   Radiation,
@@ -20,7 +19,6 @@ const futureEngines = [
   ["air-quality", Wind, "Air Quality"],
   ["volcanic", Mountain, "Volcanic"],
   ["seismic", Activity, "Seismic"],
-  ["ocean", Droplets, "Ocean"],
 ];
 
 function EngineCard({ id, Icon, label, result, loading }) {

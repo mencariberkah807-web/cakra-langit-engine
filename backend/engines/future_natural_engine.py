@@ -434,6 +434,13 @@ def _fetch_seismic(latitude, longitude, timezone, target_date):
     )
 
 
+def get_ocean_data(location):
+    latitude = float(location["latitude"])
+    longitude = float(location["longitude"])
+    timezone = location.get("timezone") or "UTC"
+    return _fetch_ocean(latitude, longitude, timezone)
+
+
 def _fetch_ocean(latitude, longitude, timezone):
     data = _get_json(
         MARINE_URL,
@@ -447,6 +454,7 @@ def _fetch_ocean(latitude, longitude, timezone):
                     "wave_period",
                     "swell_wave_height",
                     "sea_surface_temperature",
+                    "sea_level_height_msl",
                     "ocean_current_velocity",
                     "ocean_current_direction",
                 ]
@@ -457,8 +465,28 @@ def _fetch_ocean(latitude, longitude, timezone):
     )
     current = data.get("current") or {}
     units = data.get("current_units") or {}
-    if not current:
-        raise RuntimeError("Marine data unavailable for this location")
+    marine_values = [
+        current.get("wave_height"),
+        current.get("wave_direction"),
+        current.get("wave_period"),
+        current.get("swell_wave_height"),
+        current.get("sea_surface_temperature"),
+        current.get("sea_level_height_msl"),
+        current.get("ocean_current_velocity"),
+        current.get("ocean_current_direction"),
+    ]
+    if not current or all(value is None for value in marine_values):
+        return _unavailable(
+            "ocean",
+            "Ocean",
+            "Open-Meteo Marine API",
+            "No marine observation for this location; location is inland or outside marine coverage.",
+            [
+                {"label": "Status", "value": "Open-Meteo returned no marine observation for this coordinate"},
+                {"label": "Location", "value": f"{latitude:.4f}, {longitude:.4f}"},
+            ],
+            "Open-Meteo Marine API",
+        )
 
     return _available(
         "ocean",
@@ -486,7 +514,7 @@ def get_future_natural_data(location, target_date: date):
         "radiation": lambda: _fetch_radiation(latitude, longitude),
         "volcanic": lambda: _fetch_volcanic(latitude, longitude),
         "seismic": lambda: _fetch_seismic(latitude, longitude, timezone, target_date),
-        "ocean": lambda: _fetch_ocean(latitude, longitude, timezone),
+        "ocean": lambda: get_ocean_data(location),
     }
 
     results = {}
