@@ -45,7 +45,7 @@ function UserDashboardContent({ user, onUserUpdated }) {
   }
 
   if (path === '/dashboard/natural') {
-    return <NaturalPage />
+    return <NaturalPage user={user} />
   }
 
   if (path === '/dashboard/weton') {
