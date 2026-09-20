@@ -22,6 +22,21 @@ Rules:
 - Validate every applied change.
 - Keep unrelated files and behavior untouched.
 
+## 2. ACTIVE WORK-SCOPE POLICY
+
+The active engineering task is determined by the current user request and explicit project/task scope, **not by the Git branch name**.
+
+For Nature Layer work, the active scope is:
+
+```text
+Nature Layer · Future Engines
+Extended natural environment data
+```
+
+The current branch may be named `feature/weton-full-jawa` for historical/Git reasons. **The branch name must never be interpreted as the active work topic.** Do not redirect, reframe, or expand a Nature Layer task into Weton/Jawa work merely because the branch contains `weton-full-jawa`.
+
+When a task is explicitly scoped to Nature Layer Future Engines, keep implementation, validation, discussion, and repository changes within that scope unless the user explicitly changes the scope.
+
 ## 2. PROJECT IDENTITY
 
 Cakra Langit is a Personal Almanac application combining calendar systems, traditional knowledge, astronomical computation, and natural phenomena.

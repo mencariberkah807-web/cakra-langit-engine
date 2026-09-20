@@ -8,12 +8,16 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import date, datetime, timedelta
 from math import asin, cos, radians, sin, sqrt
 import json
+import ssl
 from urllib.parse import urlencode
 from urllib.request import Request, urlopen
+
+import certifi
 
 
 TIMEOUT_SECONDS = 5
 USER_AGENT = "CakraLangit/1.0 (+https://github.com/mencariberkah807-web/cakra-langit-engine)"
+SSL_CONTEXT = ssl.create_default_context(cafile=certifi.where())
 
 WEATHER_URL = "https://api.open-meteo.com/v1/forecast"
 AIR_QUALITY_URL = "https://air-quality-api.open-meteo.com/v1/air-quality"
@@ -66,7 +70,7 @@ def _get_json(url, params=None):
             "User-Agent": USER_AGENT,
         },
     )
-    with urlopen(request, timeout=TIMEOUT_SECONDS) as response:
+    with urlopen(request, timeout=TIMEOUT_SECONDS, context=SSL_CONTEXT) as response:
         return json.loads(response.read().decode("utf-8"))
 
 
