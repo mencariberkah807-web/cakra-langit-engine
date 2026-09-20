@@ -1,3 +1,4 @@
+import { useEffect, useMemo, useState } from "react";
 import { motion } from "framer-motion";
 import { Moon as MoonIcon, Sun as SunIcon } from "lucide-react";
 
@@ -56,9 +57,47 @@ export default function SunArc({ sun, moon, time, loading, embedded = false }) {
   const moonVisible = moonAltitude != null && moonAltitude >= 0;
   const activeBody = sunVisible ? sun : moonVisible ? moon : sunAltitude != null ? sun : moon;
   const activeIsSun = activeBody === sun;
-  const activePosition = markerPosition(activeBody);
   const sunPaths = buildPath(sun?.path);
   const moonPaths = buildPath(moon?.path);
+  const visibleSunPoints = useMemo(() => (sun?.path || []).filter((point) => point?.visible && Number.isFinite(Number(point.altitude)) && Number.isFinite(Number(point.azimuth))), [sun?.path]);
+  const currentIndex = useMemo(() => {
+    const target = toMin(time);
+    if (target == null || !visibleSunPoints.length) return 0;
+    let best = 0;
+    let distance = Infinity;
+    visibleSunPoints.forEach((point, index) => {
+      const d = Math.abs((toMin(point.time) ?? 0) - target);
+      if (d < distance) { distance = d; best = index; }
+    });
+    return best;
+  }, [time, visibleSunPoints]);
+  const [playing, setPlaying] = useState(false);
+  const [simulationIndex, setSimulationIndex] = useState(currentIndex);
+
+  useEffect(() => {
+    if (!playing) setSimulationIndex(currentIndex);
+  }, [currentIndex, playing]);
+
+  useEffect(() => {
+    if (!playing || !visibleSunPoints.length) return undefined;
+    const timer = window.setInterval(() => {
+      setSimulationIndex((index) => {
+        if (index >= visibleSunPoints.length - 1) {
+          setPlaying(false);
+          return index;
+        }
+        return index + 1;
+      });
+    }, 180);
+    return () => window.clearInterval(timer);
+  }, [playing, visibleSunPoints.length]);
+
+  const simulatedSun = visibleSunPoints[simulationIndex] || null;
+  const activeDisplayBody = playing && simulatedSun ? simulatedSun : activeBody;
+  const activePosition = markerPosition(activeDisplayBody);
+  const displayTime = activeDisplayBody?.time || time || "—";
+  const displayAltitude = activeDisplayBody?.altitude;
+  const displayAzimuth = activeDisplayBody?.azimuth;
 
   return (
     <motion.div
@@ -125,9 +164,18 @@ export default function SunArc({ sun, moon, time, loading, embedded = false }) {
           {moonPaths.map((d, index) => <path key={`moon-${index}`} d={d} fill="none" stroke="url(#moonStroke)" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round" strokeDasharray="9 8" opacity="0.86" />)}
 
           <motion.line animate={{ x1: activePosition.x, y1: activePosition.y, x2: CENTER.x, y2: CENTER.y }} transition={{ type: "spring", stiffness: 180, damping: 24 }} stroke={activeIsSun ? "#FBBF24" : "#C4B5FD"} strokeWidth="1.5" strokeDasharray="6 7" opacity="0.7" />
-          <motion.circle data-testid={activeIsSun ? "sun-arc-marker" : "moon-path-marker"} animate={{ cx: activePosition.x, cy: activePosition.y }} transition={{ type: "spring", stiffness: 180, damping: 24, mass: 0.55 }} r={activeIsSun ? 17 : 14} fill={activeIsSun ? "#FBBF24" : "#C4B5FD"} stroke="#FFFFFF" strokeWidth="2" filter="url(#celestialGlow)" />
+          {activeIsSun ? (
+            <motion.circle cx={activePosition.x} cy={activePosition.y} r={22} fill="none" stroke="#FBBF24" strokeWidth="1.5"
+              animate={{ r: playing ? [22, 31, 22] : 22, opacity: playing ? [0.35, 0.05, 0.35] : 0.18 }}
+              transition={{ duration: 1.5, repeat: playing ? Infinity : 0, ease: "easeInOut" }} />
+          ) : null}
+          <motion.circle data-testid={activeIsSun ? "sun-arc-marker" : "moon-path-marker"}
+            animate={{ cx: activePosition.x, cy: activePosition.y }}
+            transition={{ type: "spring", stiffness: 180, damping: 24, mass: 0.55 }}
+            r={activeIsSun ? 17 : 14} fill={activeIsSun ? "#FBBF24" : "#C4B5FD"}
+            stroke="#FFFFFF" strokeWidth="2" filter="url(#celestialGlow)" />
 
-          <g transform="translate(52 492)">
+          <g transform="translate(52 462)">
             <rect x="0" y="0" width="128" height="34" rx="17" fill="#071A2A" fillOpacity="0.9" stroke="#765E1C" />
             <circle cx="22" cy="17" r="7" fill="#FBBF24" />
             <text x="38" y="22" fontSize="13" fontWeight="700" fill="#F9D66D">SUN PATH</text>
@@ -136,7 +184,20 @@ export default function SunArc({ sun, moon, time, loading, embedded = false }) {
             <text x="176" y="22" fontSize="13" fontWeight="700" fill="#BBD8F5">MOON PATH</text>
           </g>
 
-          <text x="500" y="518" textAnchor="middle" fontSize="14" fill="#8FC1D8">ALTITUDE RINGS  0° / 30° / 60° / 90°</text>
+          <g transform="translate(50 540)">
+            <rect x="0" y="0" width="900" height="54" rx="14" fill="#061522" fillOpacity="0.88" stroke="#164A67" />
+            <text x="20" y="22" fontSize="11" fontWeight="700" fill="#79B5D0">ALTITUDE</text>
+            <text x="20" y="41" fontSize="13" fill="#B5D8E8">90° zenith · 60° high · 30° low · 0° horizon</text>
+            <text x="675" y="22" fontSize="11" fontWeight="700" fill="#79B5D0">OBSERVATION</text>
+            <text x="675" y="41" fontSize="13" fontWeight="700" fill="#F0FAFF">{displayTime}</text>
+          </g>
+          <foreignObject x="760" y="462" width="185" height="42">
+            <button type="button" xmlns="http://www.w3.org/1999/xhtml"
+              onClick={() => { setPlaying((value) => !value); if (!playing && simulationIndex >= visibleSunPoints.length - 1) setSimulationIndex(0); }}
+              style={{ width: "100%", height: "38px", borderRadius: "19px", border: "1px solid #355C82", background: "#071A2A", color: "#D8F3FF", fontSize: "12px", fontWeight: 700, cursor: "pointer" }}>
+              {playing ? "PAUSE" : "▶ PLAY DAY"}
+            </button>
+          </foreignObject>
 
 
 
