@@ -8,6 +8,7 @@ import ProfilePage from '../dashboard/ProfilePage'
 import ProfileOverviewPage from '../dashboard/ProfileOverviewPage'
 import BaZiPage from '../dashboard/BaZiPage'
 import ParirimbonPage from '../dashboard/ParirimbonPage'
+import NaturalPage from '../dashboard/NaturalPage'
 import PalelintanganPage from '../dashboard/PalelintanganPage'
 import { useAuth } from './AuthContext'
 
@@ -41,6 +42,10 @@ function UserDashboardContent({ user, onUserUpdated }) {
 
   if (path === '/dashboard') {
     return <DashboardHome showFooter={true} user={user} />
+  }
+
+  if (path === '/dashboard/natural') {
+    return <NaturalPage />
   }
 
   if (path === '/dashboard/weton') {
