@@ -24,21 +24,21 @@ function formatDate(date, timezone) {
   }).format(date);
 }
 
-function DetailCard({ icon: Icon, title, primary, secondary, rows = [] }) {
+function DetailCard({ icon: Icon, title, primary, secondary, rows = [], tone = "blue" }) {
   return (
-    <article className="rounded-[18px] border border-[#213D52] bg-[#081827]/90 p-4 shadow-[0_12px_38px_rgba(0,0,0,.18)]">
-      <div className="flex items-center gap-2 border-b border-[#193247] pb-3">
-        <Icon className="h-4 w-4 text-[#79A9C5]" strokeWidth={1.8} />
-        <h3 className="text-[10px] font-bold uppercase tracking-[0.13em] text-[#A8C4D5]">{title}</h3>
+    <article className={`rounded-[18px] border p-5 shadow-[0_12px_38px_rgba(0,0,0,.18)] ${tone === "gold" ? "border-[#80641E] bg-[linear-gradient(145deg,rgba(82,61,15,.24),rgba(8,24,39,.96))]" : tone === "green" ? "border-[#27685E] bg-[linear-gradient(145deg,rgba(10,72,64,.22),rgba(8,24,39,.96))]" : tone === "violet" ? "border-[#554B86] bg-[linear-gradient(145deg,rgba(63,50,112,.22),rgba(8,24,39,.96))]" : "border-[#275775] bg-[linear-gradient(145deg,rgba(10,48,69,.28),rgba(8,24,39,.96))]"}`}>
+      <div className="flex items-center gap-2 border-b border-[#24465C] pb-3">
+        <Icon className={`h-5 w-5 ${tone === "gold" ? "text-[#F4C84A]" : tone === "green" ? "text-[#4FD1B5]" : tone === "violet" ? "text-[#B8A8FF]" : "text-[#58C7E8]"}`} strokeWidth={1.8} />
+        <h3 className="text-[11px] font-bold uppercase tracking-[0.13em] text-[#B8D5E5]">{title}</h3>
       </div>
-      <p className="mt-3 text-base font-semibold text-[#E8F5FF]">{primary || "—"}</p>
-      {secondary ? <p className="mt-1 text-[10px] text-[#6F8EA4]">{secondary}</p> : null}
+      <p className="mt-4 text-xl font-semibold leading-tight text-[#F0FAFF]">{primary || "—"}</p>
+      {secondary ? <p className="mt-1.5 text-xs text-[#7FA1B8]">{secondary}</p> : null}
       {rows.length ? (
-        <div className="mt-3 grid gap-2 border-t border-[#193247] pt-3">
+        <div className="mt-4 grid gap-2.5 border-t border-[#24465C] pt-4">
           {rows.map(([label, value]) => (
-            <div key={label} className="flex min-w-0 justify-between gap-4 text-[9px]">
-              <span className="text-[#4F7184]">{label}</span>
-              <span className="text-right font-mono text-[#9AB3C3]">{String(value ?? "—")}</span>
+            <div key={label} className="flex min-w-0 justify-between gap-4 text-[11px]">
+              <span className="text-[#66899E]">{label}</span>
+              <span className="text-right font-mono font-medium text-[#B4CEDB]">{String(value ?? "—")}</span>
             </div>
           ))}
         </div>
@@ -93,27 +93,27 @@ export default function NaturalPage() {
 
       <section className="px-4 py-6 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-[1500px]">
-          <NaturalLayer data={data} loading={!context.apiData} />
+          <NaturalLayer data={data} loading={!context.apiData} expanded />
 
-          <section className="mt-6">
-            <div className="mb-3 flex items-end justify-between gap-4">
+          <section className="mt-8">
+            <div className="mb-4 flex items-end justify-between gap-4">
               <div>
-                <p className="text-[9px] font-bold uppercase tracking-[0.2em] text-[#527D95]">Natural data</p>
-                <h2 className="mt-1 text-lg font-semibold text-[#D8F3FF]">Complete observation details</h2>
+                <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#62A5C7]">Natural data</p>
+                <h2 className="mt-1 text-xl font-semibold text-[#E4F7FF]">Complete observation details</h2>
               </div>
-              <div className="hidden items-center gap-2 text-[9px] uppercase tracking-[0.12em] text-[#4F7184] sm:flex">
+              <div className="hidden items-center gap-2 text-[10px] uppercase tracking-[0.12em] text-[#66899E] sm:flex">
                 <Clock3 className="h-3.5 w-3.5" />
                 {timezone}
               </div>
             </div>
 
             <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
-              <DetailCard icon={Sun} title="Sun" primary={sun.status || (String(sun.altitude ?? "—") + "° altitude")} secondary={"Azimuth " + (sun.azimuth ?? "—") + "°"} rows={[["Dawn", sun.dawn], ["Sunrise", sun.sunrise], ["Noon", sun.noon], ["Sunset", sun.sunset], ["Dusk", sun.dusk], ["Golden hour", sun.golden_hour]]} />
-              <DetailCard icon={Moon} title="Moon" primary={moon.phase} secondary={(moon.illumination ?? "—") + "% illumination"} rows={[["Age", moon.age], ["Azimuth", moon.azimuth], ["Altitude", moon.altitude], ["Moonrise", moon.rise], ["Moonset", moon.set], ["Next full moon", moon.next_full_moon]]} />
-              <DetailCard icon={CloudSun} title="Sky" primary={sky.context} secondary={sky.bortle} rows={Object.entries(sky).filter(([key]) => !["context", "bortle", "primary", "secondary", "title"].includes(key)).slice(0, 6)} />
-              <DetailCard icon={Orbit} title="Earth Space" primary={earth.primary || earth.context || "Natural context"} secondary={earth.secondary} rows={Object.entries(earth).filter(([key]) => !["primary", "secondary", "title"].includes(key)).slice(0, 6)} />
-              <DetailCard icon={Waves} title="Tide · Ocean" primary={tide.available === false ? "Tide model unavailable" : tide.status || tide.location || "—"} secondary={tide.reason || (ocean.available === false ? "No marine data" : ocean.secondary)} rows={[["High tide", Array.isArray(tide.high) && tide.high.length ? tide.high.join(", ") : "—"], ["Low tide", Array.isArray(tide.low) && tide.low.length ? tide.low.join(", ") : "—"], ["Marine", ocean.available === false ? "No marine data" : ocean.primary], ["Marine source", ocean.source]]} />
-              <DetailCard icon={Eye} title="Eclipse" primary={eclipse.today?.name || "No eclipse today"} secondary={eclipse.today?.type || eclipse.next?.name || "No active eclipse event"} rows={[["Visibility", eclipse.today?.visibilityRegion], ["Next", eclipse.next?.date || eclipse.next?.name]]} />
+              <DetailCard tone="gold" icon={Sun} title="Sun" primary={sun.status || (String(sun.altitude ?? "—") + "° altitude")} secondary={"Azimuth " + (sun.azimuth ?? "—") + "°"} rows={[["Dawn", sun.dawn], ["Sunrise", sun.sunrise], ["Noon", sun.noon], ["Sunset", sun.sunset], ["Dusk", sun.dusk], ["Golden hour", sun.golden_hour]]} />
+              <DetailCard tone="blue" icon={Moon} title="Moon" primary={moon.phase} secondary={(moon.illumination ?? "—") + "% illumination"} rows={[["Age", moon.age], ["Azimuth", moon.azimuth], ["Altitude", moon.altitude], ["Moonrise", moon.rise], ["Moonset", moon.set], ["Next full moon", moon.next_full_moon]]} />
+              <DetailCard tone="blue" icon={CloudSun} title="Sky" primary={sky.context} secondary={sky.bortle} rows={Object.entries(sky).filter(([key]) => !["context", "bortle", "primary", "secondary", "title"].includes(key)).slice(0, 6)} />
+              <DetailCard tone="green" icon={Orbit} title="Earth Space" primary={earth.primary || earth.context || "Natural context"} secondary={earth.secondary} rows={Object.entries(earth).filter(([key]) => !["primary", "secondary", "title"].includes(key)).slice(0, 6)} />
+              <DetailCard tone="blue" icon={Waves} title="Tide · Ocean" primary={tide.available === false ? "Tide model unavailable" : tide.status || tide.location || "—"} secondary={tide.reason || (ocean.available === false ? "No marine data" : ocean.secondary)} rows={[["High tide", Array.isArray(tide.high) && tide.high.length ? tide.high.join(", ") : "—"], ["Low tide", Array.isArray(tide.low) && tide.low.length ? tide.low.join(", ") : "—"], ["Marine", ocean.available === false ? "No marine data" : ocean.primary], ["Marine source", ocean.source]]} />
+              <DetailCard tone="violet" icon={Eye} title="Eclipse" primary={eclipse.today?.name || "No eclipse today"} secondary={eclipse.today?.type || eclipse.next?.name || "No active eclipse event"} rows={[["Visibility", eclipse.today?.visibilityRegion], ["Next", eclipse.next?.date || eclipse.next?.name]]} />
             </div>
           </section>
 
@@ -139,7 +139,7 @@ export default function NaturalPage() {
             </div>
           </section>
 
-          <NaturalFutureEngines data={data} dateISO={dateISO} />
+          <NaturalFutureEngines data={data} dateISO={dateISO} expanded />
         </div>
       </section>
     </main>
