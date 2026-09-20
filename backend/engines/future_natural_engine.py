@@ -27,6 +27,10 @@ VOLCANO_URL = "https://webservices.volcano.si.edu/geoserver/GVP-VOTW/ows"
 EARTHQUAKE_URL = "https://earthquake.usgs.gov/fdsnws/event/1/query"
 MARINE_URL = "https://marine-api.open-meteo.com/v1/marine"
 
+# The marine model is ~8 km resolution. A nearby sea-grid cell is used only as
+# a secondary coastal signal when the administrative location metadata is false.
+MARINE_COASTAL_RADIUS_KM = 30.0
+
 
 WMO_CODES = {
     0: "Clear sky",
@@ -441,6 +445,16 @@ def get_ocean_data(location):
     return _fetch_ocean(latitude, longitude, timezone)
 
 
+def _haversine_km(lat1, lon1, lat2, lon2):
+    earth_radius_km = 6371.0
+    phi1 = radians(lat1)
+    phi2 = radians(lat2)
+    d_phi = radians(lat2 - lat1)
+    d_lambda = radians(lon2 - lon1)
+    a = sin(d_phi / 2) ** 2 + cos(phi1) * cos(phi2) * sin(d_lambda / 2) ** 2
+    return 2 * earth_radius_km * asin(sqrt(a))
+
+
 def _fetch_ocean(latitude, longitude, timezone):
     data = _get_json(
         MARINE_URL,
@@ -488,7 +502,21 @@ def _fetch_ocean(latitude, longitude, timezone):
             "Open-Meteo Marine API",
         )
 
-    return _available(
+    grid_latitude = data.get("latitude")
+    grid_longitude = data.get("longitude")
+    coverage_distance_km = None
+    if grid_latitude is not None and grid_longitude is not None:
+        coverage_distance_km = round(
+            _haversine_km(
+                latitude,
+                longitude,
+                float(grid_latitude),
+                float(grid_longitude),
+            ),
+            1,
+        )
+
+    result = _available(
         "ocean",
         "Ocean",
         f"Wave {current.get('wave_height', '—')} {units.get('wave_height', 'm')}",
@@ -500,6 +528,12 @@ def _fetch_ocean(latitude, longitude, timezone):
         ],
         "Open-Meteo Marine API",
     )
+    result["coverage_distance_km"] = coverage_distance_km
+    result["coastal_candidate"] = (
+        coverage_distance_km is not None
+        and coverage_distance_km <= MARINE_COASTAL_RADIUS_KM
+    )
+    return result
 
 
 def get_future_natural_data(location, target_date: date):

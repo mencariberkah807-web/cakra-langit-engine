@@ -33,8 +33,8 @@ def _estimate_height(hours_from_high, latitude, longitude):
     return mean_level + amplitude * sin(phase)
 
 
-def get_tide_data(location, target_date: date, timezone_name: str):
-    coastal = location.get("coastal")
+def get_tide_data(location, target_date: date, timezone_name: str, marine_coastal: bool = False):
+    coastal = location.get("coastal") is True or marine_coastal is True
 
     city = (
         location.get("city")
