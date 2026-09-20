@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { Eclipse, Moon, Sun } from "lucide-react";
+import { Eclipse, Moon, Sun, Waves } from "lucide-react";
 import MoonPhaseCanvas from "./MoonPhaseCanvas";
 
 const item = {
@@ -109,11 +109,51 @@ export default function LiveObservation({ data, onOpenEclipse }) {
         </button>
       ) : null}
 
-      <ContextCard
-        label="Tide"
-        result={tide}
-        accent="border-[#4E5564] bg-[#0A1420]/90"
-      />
+      <motion.article
+        variants={item}
+        className="rounded-[18px] border border-[#4E5564] bg-[#0A1420]/90 p-4 shadow-[0_12px_38px_rgba(0,0,0,.2)]"
+      >
+        <div className="flex items-center gap-2">
+          <Waves className="h-4 w-4 text-[#8FB7CC]" strokeWidth={1.8} />
+          <span className="text-[10px] font-bold uppercase tracking-[0.12em] text-[#A9C3D2]">
+            Tide · Ocean
+          </span>
+        </div>
+        <p className="mt-2 text-sm font-semibold text-[#E8F5FF]">
+          {tide?.available === false
+            ? "Tide model unavailable"
+            : tide?.status || tide?.location || "—"}
+        </p>
+        {tide?.reason ? (
+          <p className="mt-1 text-[10px] text-[#6F8EA4]">{tide.reason}</p>
+        ) : null}
+
+        {tide?.ocean ? (
+          <div className="mt-3 border-t border-[#263746] pt-3">
+            <p className="text-[9px] font-bold uppercase tracking-[0.12em] text-[#6F8EA4]">
+              Marine observation
+            </p>
+            <p className="mt-1 text-xs font-semibold text-[#E8F5FF]">
+              {tide.ocean.available === false
+                ? "No marine data"
+                : tide.ocean.primary || "—"}
+            </p>
+            <p className="mt-1 text-[10px] text-[#6F8EA4]">
+              {tide.ocean.secondary || "Open-Meteo Marine API"}
+            </p>
+            <div className="mt-2 grid gap-1">
+              {(tide.ocean.details || []).slice(0, 2).map((detail) => (
+                <div key={detail.label} className="flex min-w-0 justify-between gap-2 text-[8px]">
+                  <span className="truncate text-[#4F7184]">{detail.label}</span>
+                  <span className="truncate text-right text-[#7895A8]">
+                    {String(detail.value ?? "—")}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </div>
+        ) : null}
+      </motion.article>
     </div>
   );
 }
