@@ -1,8 +1,10 @@
 import { Clock3, Waves, Sun, Moon, CloudSun, Orbit, Eye } from "lucide-react";
+import { useMemo } from "react";
 import { useTodayContext } from "../core/TodayContext";
 import NaturalLayer from "../cakra-ui/NaturalLayer";
 import NaturalFutureEngines from "../cakra-ui/NaturalFutureEngines";
 import Header from "../cakra-ui/Header";
+import { adaptSun } from "../adapters/sun.adapter.js";
 
 function isoLocal(date, timezone) {
   if (!date) return "";
@@ -67,7 +69,25 @@ export default function NaturalPage({ user }) {
   };
   const date = context.selectedDate || new Date();
   const dateISO = isoLocal(date, timezone);
-  const sun = natural.sun || {};
+  const selectedSun = useMemo(
+    () => adaptSun({ ...context, sunTime: context.selectedTime, time: { ...context.time, instant: context.selectedDate } }),
+    [context, context.selectedTime, context.selectedDate]
+  );
+  const sunData = selectedSun?.data || selectedSun?.value || selectedSun || {};
+  const sun = {
+    ...sunData,
+    ...(natural.sun || {}),
+    sunrise: sunData.sunrise ?? natural.sun?.sunrise ?? null,
+    sunset: sunData.sunset ?? natural.sun?.sunset ?? null,
+    dawn: sunData.dawn ?? natural.sun?.dawn ?? null,
+    noon: sunData.noon ?? natural.sun?.noon ?? null,
+    dusk: sunData.dusk ?? natural.sun?.dusk ?? null,
+    golden_hour: sunData.golden_hour ?? natural.sun?.golden_hour ?? null,
+    altitude: sunData.altitude ?? natural.sun?.altitude ?? null,
+    azimuth: sunData.azimuth ?? natural.sun?.azimuth ?? null,
+    path: sunData.path?.length ? sunData.path : natural.sun?.path || [],
+    selectedTime: sunData.selectedTime ?? context.selectedTime,
+  };
   const moon = natural.moon || {};
   const sky = natural.sky || {};
   const earth = natural.earth || {};
