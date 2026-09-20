@@ -193,7 +193,7 @@ export default function SunArc({ sun, moon, time, loading, embedded = false }) {
             <button type="button" xmlns="http://www.w3.org/1999/xhtml"
               onClick={() => { setPlaying((value) => !value); if (!playing && simulationIndex >= visibleSunPoints.length - 1) setSimulationIndex(0); }}
               style={{ width: "100%", height: "38px", borderRadius: "19px", border: "1px solid #355C82", background: "#071A2A", color: "#D8F3FF", fontSize: "12px", fontWeight: 700, cursor: "pointer" }}>
-              {playing ? "PAUSE" : "▶ PLAY DAY"}
+              {playing ? "PAUSE" : "▶ ANIMATE SUN PATH"}
             </button>
           </foreignObject>
 
