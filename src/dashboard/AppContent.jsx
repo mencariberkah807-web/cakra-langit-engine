@@ -20,7 +20,7 @@ export default function AppContent({
         <section className="flex min-w-0 flex-col gap-6 xl:col-span-8" aria-label="Almanac workspace">
           <CalendarSystems data={data} />
           <NaturalLayer data={data} loading={false} onOpenEclipse={onOpenEclipse} />
-          <NaturalFutureEngines />
+          <NaturalFutureEngines data={data} dateISO={dateISO} />
         </section>
 
         <aside className="flex min-w-0 flex-col gap-6 xl:sticky xl:top-6 xl:col-span-4 xl:self-start" aria-label="Almanac context">
