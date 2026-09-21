@@ -180,6 +180,32 @@ PARINGKELAN = [
 ]
 
 
+MANGSA = [
+    ("Kasa", 6, 22),
+    ("Karo", 8, 2),
+    ("Katilu", 8, 25),
+    ("Kaopat", 9, 18),
+    ("Kalima", 10, 13),
+    ("Kagenep", 11, 8),
+    ("Kapitu", 12, 22),
+    ("Kawolu", 2, 3),
+    ("Kasasanga", 3, 1),
+    ("Kasapuluh", 3, 26),
+    ("Kasabelas", 4, 19),
+    ("Kasaduabelas", 5, 12),
+]
+
+
+def _get_mangsa(target_date: date):
+    month_day = (target_date.month, target_date.day)
+    starts = [(m, d, name) for name, m, d in MANGSA]
+    candidates = [(m, d, name) for m, d, name in starts if (m, d) <= month_day]
+    if candidates:
+        _, _, name = max(candidates)
+        return name
+    return "Kasaduabelas"
+
+
 PANCAKA_4 = {
     1: {"name": "Sri", "meaning": "bagus", "context": "rizki"},
     2: {"name": "Kala", "meaning": "jelek", "context": "segala pekerjaan akan apes"},
@@ -227,6 +253,8 @@ def calculate_palintangan(target_date: date, timezone_name: str = "Asia/Jakarta"
     )
     month_group_name, month_rule = _find_month_group(month_name)
 
+    mangsa = _get_mangsa(target_date)
+
     pernaasan_dates = PERNAASAN.get(month_group_name or month_name, [])
     is_pernaasan = hijri_day in pernaasan_dates
 
@@ -254,6 +282,7 @@ def calculate_palintangan(target_date: date, timezone_name: str = "Asia/Jakarta"
                 "cycle": 6,
                 "source": _source_meta("naskah cycle 7 × 5 × 6 × 30"),
             },
+            "mangsa": mangsa,
             "saka_sunda": {
                 "day": saka_sunda["meta"].get("day", saka_sunda["fields"][0]["v"]),
                 "month": saka_sunda["meta"].get("monthName", saka_sunda["headline"]),
