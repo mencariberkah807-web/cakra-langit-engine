@@ -17,6 +17,7 @@ from engines.earth_engine import get_earth_data
 from engines.hijri_engine import get_hijri_data
 from engines.jodoh_engine import get_jodoh
 from engines.palintangan_sunda_engine import calculate_palintangan
+from engines.jodoh_sunda_engine import calculate_repak_jodoh
 from engines.pertanian_sunda_engine import calculate_pertanian
 from engines.location_engine import (
     find_location,
@@ -237,6 +238,14 @@ def palintangan_pertanian(date_value: str = "", city: str = "Bandung", activity:
         raise HTTPException(status_code=400, detail=f"Invalid date_value: {exc}")
 
     return calculate_pertanian(target_date, activity)
+
+
+@app.get("/api/palintangan/jodoh")
+def palintangan_jodoh(naktu_nama_one: int, naktu_nama_two: int):
+    try:
+        return calculate_repak_jodoh(naktu_nama_one, naktu_nama_two)
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc))
 
 
 @app.get("/api/weton/jodoh")
