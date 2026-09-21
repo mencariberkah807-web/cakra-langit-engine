@@ -170,6 +170,16 @@ PERNAASAN = {
     "Zulhijah": [2, 6, 20],
 }
 
+PARINGKELAN = [
+    "Tungle",
+    "Aryang",
+    "Warukung",
+    "Paningron",
+    "Umwas",
+    "Mawulu",
+]
+
+
 PANCAKA_4 = {
     1: {"name": "Sri", "meaning": "bagus", "context": "rizki"},
     2: {"name": "Kala", "meaning": "jelek", "context": "segala pekerjaan akan apes"},
@@ -223,6 +233,10 @@ def calculate_palintangan(target_date: date, timezone_name: str = "Asia/Jakarta"
     watek = WATEK_HARI.get(day_name, [])
     gagalang = GAGALANG_MANIS_PAHING.get(pasaran)
 
+    pawukon_day = jawa["detail"]["wuku"]["pawukon_day"]
+    paringkelan_index = (pawukon_day - 1) % 6
+    paringkelan = PARINGKELAN[paringkelan_index]
+
     gregorian_remainder = target_date.day % 4
     pancaka4 = PANCAKA_4[gregorian_remainder]
 
@@ -233,6 +247,13 @@ def calculate_palintangan(target_date: date, timezone_name: str = "Asia/Jakarta"
             "pasaran": pasaran,
             "wuku": jawa["detail"]["wuku"]["name"],
             "wuku_day": jawa["detail"]["wuku"]["day_in_wuku"],
+            "pawukon_day": pawukon_day,
+            "paringkelan": {
+                "name": paringkelan,
+                "index": paringkelan_index + 1,
+                "cycle": 6,
+                "source": _source_meta("naskah cycle 7 × 5 × 6 × 30"),
+            },
             "saka_sunda": {
                 "day": saka_sunda["meta"].get("day", saka_sunda["fields"][0]["v"]),
                 "month": saka_sunda["meta"].get("monthName", saka_sunda["headline"]),
