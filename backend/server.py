@@ -21,6 +21,7 @@ from engines.jodoh_sunda_engine import calculate_repak_jodoh
 from engines.nama_sunda_engine import calculate_naktu_nama
 from engines.kelahiran_sunda_engine import calculate_kelahiran
 from engines.arah_sunda_engine import calculate_arah
+from engines.waktu_sunda_engine import calculate_waktu
 from engines.pertanian_sunda_engine import calculate_pertanian
 from engines.location_engine import (
     find_location,
@@ -241,6 +242,13 @@ def palintangan_pertanian(date_value: str = "", city: str = "Bandung", activity:
         raise HTTPException(status_code=400, detail=f"Invalid date_value: {exc}")
 
     return calculate_pertanian(target_date, activity)
+
+
+@app.get("/api/palintangan/waktu")
+def palintangan_waktu(day_name: str = "", time_value: str = ""):
+    if not day_name or not time_value:
+        raise HTTPException(status_code=400, detail="day_name dan time_value diperlukan")
+    return calculate_waktu(day_name, time_value)
 
 
 @app.get("/api/palintangan/arah")
