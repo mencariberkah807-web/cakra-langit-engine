@@ -206,14 +206,6 @@ def _get_mangsa(target_date: date):
     return "Kasaduabelas"
 
 
-PANCAKA_4 = {
-    1: {"name": "Sri", "meaning": "bagus", "context": "rizki"},
-    2: {"name": "Kala", "meaning": "jelek", "context": "segala pekerjaan akan apes"},
-    3: {"name": "Naga", "meaning": "bagus", "context": "mulai menuai / dapat menyimpan rizki"},
-    0: {"name": "Numpi", "meaning": "bagus", "context": "menyimpan padi / diam, tidak banyak pengeluaran"},
-}
-
-
 def _source_meta(location: str):
     return {
         "source_id": SOURCE_ID,
@@ -264,9 +256,6 @@ def calculate_palintangan(target_date: date, timezone_name: str = "Asia/Jakarta"
     pawukon_day = jawa["detail"]["wuku"]["pawukon_day"]
     paringkelan_index = (pawukon_day - 1) % 6
     paringkelan = PARINGKELAN[paringkelan_index]
-
-    gregorian_remainder = target_date.day % 4
-    pancaka4 = PANCAKA_4[gregorian_remainder]
 
     return {
         "date": target_date.isoformat(),
@@ -331,14 +320,6 @@ def calculate_palintangan(target_date: date, timezone_name: str = "Asia/Jakarta"
             "hijri_day": hijri_day,
             "is_pernaasan": is_pernaasan,
             "source": _source_meta("naskah p.21 / p.67"),
-        },
-        "pancaka_4": {
-            "input_day_of_month": target_date.day,
-            "remainder": gregorian_remainder,
-            "result": pancaka4["name"],
-            "meaning": pancaka4["meaning"],
-            "context": pancaka4["context"],
-            "source": _source_meta("naskah p.80"),
         },
         "meta": {
             "status": "PARTIAL_ENGINE",
