@@ -23,6 +23,7 @@ from engines.kelahiran_sunda_engine import calculate_kelahiran
 from engines.arah_sunda_engine import calculate_arah
 from engines.waktu_sunda_engine import calculate_waktu
 from engines.pertanian_sunda_engine import calculate_pertanian
+from engines.pancaka12_sunda_engine import calculate_pancaka_12
 from engines.location_engine import (
     find_location,
     find_location_by_id,
@@ -280,6 +281,13 @@ def palintangan_nama(name: str = ""):
     except ValueError as exc:
         raise HTTPException(status_code=400, detail=str(exc))
 
+
+@app.get("/api/palintangan/pancaka12")
+def palintangan_pancaka12(name: str = ""):
+    try:
+        return calculate_pancaka_12(name)
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc))
 
 @app.get("/api/palintangan/jodoh")
 def palintangan_jodoh(naktu_nama_one: int, naktu_nama_two: int):
