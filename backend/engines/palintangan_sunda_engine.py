@@ -85,8 +85,8 @@ WATEK_HARI = {
     "Ngahad": ["Macan Katawang", "Nuju Pati"],
     "Ahad": ["Macan Katawang", "Nuju Pati"],
     "Senen": ["Nuju Padu"],
-    "Selasa": ["Mantri Sinarreja"],
-    "Rebo": ["Demang Kanduruwan", "Putri Tinurung"],
+    "Selasa": ["Mantri Sinareja"],
+    "Rebo": ["Demang Kanduruan", "Putri Tinuting"],
     "Kemis": ["Demang Palasah", "Alas Kobar"],
 }
 
