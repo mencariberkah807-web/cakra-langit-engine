@@ -26,7 +26,7 @@ function ListValue({ items }) {
   return <span>{items.join(' · ')}</span>
 }
 
-export default function PalintanganPage() {
+function DailyGlobalPage({ onBack }) {
   const { apiData, selectedDate, setSelectedDate } = useTodayContext()
   const [result, setResult] = useState(null)
   const [loading, setLoading] = useState(false)
@@ -251,6 +251,138 @@ export default function PalintanganPage() {
           tidak dipaksa menjadi satu label baik/buruk, karena source menjelaskan
           bahwa penggunaan hasil perhitungan bergantung pada konteks niat atau pekerjaan.
         </p>
+      </div>
+    </section>
+  )
+}
+
+const CATEGORIES = [
+  {
+    key: 'daily',
+    eyebrow: 'Global',
+    title: 'Daily Global',
+    description: 'Kondisi kalender dan rule global untuk tanggal yang dipilih.',
+  },
+  {
+    key: 'nama',
+    eyebrow: 'Personal',
+    title: 'Hitung Nama',
+    description: 'Naktu nama dan rule yang menggunakan nama sebagai input.',
+  },
+  {
+    key: 'kelahiran',
+    eyebrow: 'Personal',
+    title: 'Kelahiran',
+    description: 'Perhitungan yang khusus menggunakan konteks kelahiran.',
+  },
+  {
+    key: 'jodoh',
+    eyebrow: 'Task',
+    title: 'Repok / Jodoh',
+    description: 'Perhitungan pasangan nama dan rule Repok/Jodoh.',
+  },
+  {
+    key: 'tanam',
+    eyebrow: 'Task',
+    title: 'Tanam / Panen',
+    description: 'Rule pertanian berdasarkan tanggal dan kegiatan.',
+  },
+  {
+    key: 'arah',
+    eyebrow: 'Task',
+    title: 'Perjalanan / Arah',
+    description: 'Rule arah dan Kala untuk kebutuhan perjalanan.',
+  },
+  {
+    key: 'waktu',
+    eyebrow: 'Task',
+    title: 'Waktu / Jam',
+    description: 'Rule intraday seperti Watek Jam jika datanya tersedia.',
+  },
+]
+
+function CategoryCard({ category, onSelect }) {
+  return (
+    <button
+      type="button"
+      onClick={() => onSelect(category.key)}
+      className="group rounded-2xl border border-white/[0.07] bg-[#0A1723] p-5 text-left transition hover:border-cyan-300/20 hover:bg-[#0D1C2A]"
+    >
+      <div className="text-[10px] font-bold uppercase tracking-[0.14em] text-[#22D3EE]">
+        {category.eyebrow}
+      </div>
+      <h2 className="mt-2 text-base font-semibold text-white">{category.title}</h2>
+      <p className="mt-2 text-sm leading-6 text-[#71869A]">{category.description}</p>
+      <div className="mt-4 text-xs font-semibold text-[#6EB9D2] group-hover:text-cyan-200">
+        Buka →
+      </div>
+    </button>
+  )
+}
+
+function CategoryPlaceholder({ category, onBack }) {
+  return (
+    <section className="mx-auto max-w-[1180px] px-5 py-7 sm:px-7 lg:py-9">
+      <button
+        type="button"
+        onClick={onBack}
+        className="mb-5 rounded-xl border border-white/[0.08] bg-[#07111C] px-4 py-2.5 text-xs font-semibold text-[#A9BDCF] hover:border-cyan-300/20"
+      >
+        ← Palintangan
+      </button>
+
+      <Panel eyebrow={category.eyebrow} title={category.title}>
+        <div className="mt-5 rounded-xl border border-dashed border-white/[0.10] bg-[#07111C] p-5">
+          <div className="text-sm font-semibold text-white">{category.title}</div>
+          <p className="mt-2 text-sm leading-6 text-[#71869A]">
+            {category.description}
+          </p>
+          <div className="mt-4 text-xs text-[#536A7D]">
+            Category sudah dikunci. Rule calculation akan dihubungkan ke engine
+            khusus category ini, tanpa mengambil logic dari category lain.
+          </div>
+        </div>
+      </Panel>
+    </section>
+  )
+}
+
+export default function PalintanganPage() {
+  const [category, setCategory] = useState(null)
+
+  if (category === 'daily') {
+    return <DailyGlobalPage onBack={() => setCategory(null)} />
+  }
+
+  if (category) {
+    const selected = CATEGORIES.find((item) => item.key === category)
+    return <CategoryPlaceholder category={selected} onBack={() => setCategory(null)} />
+  }
+
+  return (
+    <section className="mx-auto max-w-[1180px] px-5 py-7 sm:px-7 lg:py-9">
+      <header className="mb-7">
+        <div className="text-[10px] font-bold uppercase tracking-[0.16em] text-[#22D3EE]">
+          Cakra Langit · Sunda
+        </div>
+        <h1 className="mt-2 text-3xl font-semibold tracking-tight text-white">
+          Palintangan Sunda
+        </h1>
+        <p className="mt-2 max-w-4xl text-sm leading-6 text-[#8FA4B8]">
+          Pilih kebutuhan perhitungan. Daily Global tetap menjadi layer kalender
+          bersama, sedangkan rule Personal dan Task dihitung hanya pada category
+          yang sesuai.
+        </p>
+      </header>
+
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        {CATEGORIES.map((categoryItem) => (
+          <CategoryCard
+            key={categoryItem.key}
+            category={categoryItem}
+            onSelect={setCategory}
+          />
+        ))}
       </div>
     </section>
   )
