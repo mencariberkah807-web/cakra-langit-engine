@@ -16,6 +16,7 @@ from engines.future_natural_engine import get_future_natural_data, get_ocean_dat
 from engines.earth_engine import get_earth_data
 from engines.hijri_engine import get_hijri_data
 from engines.jodoh_engine import get_jodoh
+from engines.palintangan_sunda_engine import calculate_palintangan
 from engines.location_engine import (
     find_location,
     find_location_by_id,
@@ -203,6 +204,22 @@ def natural_future(
         raise HTTPException(status_code=400, detail=f"Invalid date_value: {exc}")
 
     return get_future_natural_data(location, target_date)
+
+
+@app.get("/api/palintangan")
+def palintangan(date_value: str = "", city: str = "Bandung"):
+    location = find_location(city, "ID")
+    timezone_name = location["timezone"] if location else "Asia/Jakarta"
+    try:
+        target_date = (
+            date.fromisoformat(date_value)
+            if date_value
+            else datetime.now(ZoneInfo(timezone_name)).date()
+        )
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=f"Invalid date_value: {exc}")
+
+    return calculate_palintangan(target_date, timezone_name)
 
 
 @app.get("/api/weton/jodoh")
