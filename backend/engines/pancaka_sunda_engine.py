@@ -11,7 +11,7 @@ PANCAKA_7_RESULTS = {
     7: "Padaringan Kebek",
 }
 
-PANCAKA_12_RESULTS = {i: f"Nabi {i}" for i in range(1, 13)}
+PANCAKA_12_RESULTS = {i: None for i in range(1, 13)}
 
 
 def pancaka_7_from_naktu(total_naktu: int):
@@ -41,6 +41,8 @@ def pancaka_12_from_naktu(total_naktu: int):
         "remainder": remainder,
         "result_index": result_index,
         "result": PANCAKA_12_RESULTS[result_index],
+        "result_index_only": True,
+        "note": "Sumber yang tersedia memverifikasi pembagian menjadi 12 kategori Nabi, tetapi nama Nabi per indeks belum tersedia dalam matrix.",
         "context": "Watak nama",
         "source": {"source_id": SOURCE_ID, "source_title": SOURCE_TITLE},
     }
