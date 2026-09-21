@@ -3,6 +3,7 @@ import { useTodayContext } from "../core/TodayContext";
 import NaturalLayer from "../cakra-ui/NaturalLayer";
 import NaturalFutureEngines from "../cakra-ui/NaturalFutureEngines";
 import Header from "../cakra-ui/Header";
+import { buildDashboardData } from "./dashboardData.js";
 
 function isoLocal(date, timezone) {
   if (!date) return "";
