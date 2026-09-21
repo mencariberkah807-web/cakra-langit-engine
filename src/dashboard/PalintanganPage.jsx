@@ -1,45 +1,12 @@
-import { useMemo } from 'react'
+import { useEffect, useState } from 'react'
 import { useTodayContext } from '../core/TodayContext'
-
-const PASARAN_NAKTU = {
-  Kliwon: 8,
-  Kaliwon: 8,
-  Legi: 5,
-  Manis: 5,
-  Pahing: 9,
-  Pon: 7,
-  Wage: 4,
-}
-
-const GAGALANG_MANIS_PAHING = [
-  { range: 'Kaliwon → Manis', direction: 'Timur' },
-  { range: 'Manis → Pahing', direction: 'Selatan' },
-  { range: 'Pahing → Pon', direction: 'Barat' },
-  { range: 'Pon → Wage', direction: 'Utara' },
-  { range: 'Wage → Keliwon', direction: 'Tengah-tengah' },
-]
-
-const WATEK_PATOKAN = [
-  ['Muharram', 'Jum’at', 'Wani'],
-  ['Sapar', 'Jum’at', 'Karang Piwulang'],
-  ['Rabiulawal', 'Sabtu', 'Sumur Pinungkeb'],
-  ['Rabiulakhir', 'Sabtu', 'Karang Tinangtang'],
-  ['Jumadilawal', 'Minggu', 'Macan Katawang'],
-  ['Jumadilakhir', 'Minggu', 'Nuju Pati'],
-  ['Rajab', 'Senin', 'Nuju Padu'],
-  ['Rewah', 'Selasa', 'Mantri Sinareja'],
-  ['Puasa', 'Rabu', 'Demang Kanduruan'],
-  ['Sawal', 'Rabu', 'Putri Tinuting'],
-  ['Dulkaidah', 'Kamis', 'Demang Palasah'],
-  ['Rayagung', 'Kamis', 'Alas Kobar'],
-]
 
 function Metric({ label, value, note }) {
   return (
     <div className="rounded-xl border border-white/[0.07] bg-[#07111C] p-4">
       <div className="text-[10px] font-bold uppercase tracking-[0.12em] text-[#5E7A8F]">{label}</div>
       <div className="mt-2 text-lg font-semibold text-white">{value ?? '—'}</div>
-      {note ? <div className="mt-1 text-[11px] text-[#71869A]">{note}</div> : null}
+      {note ? <div className="mt-1 text-[11px] leading-5 text-[#71869A]">{note}</div> : null}
     </div>
   )
 }
@@ -54,30 +21,56 @@ function Panel({ eyebrow, title, children }) {
   )
 }
 
+function ListValue({ items }) {
+  if (!items?.length) return <span className="text-[#71869A]">—</span>
+  return <span>{items.join(' · ')}</span>
+}
+
 export default function PalintanganPage() {
   const { apiData, selectedDate, setSelectedDate } = useTodayContext()
-
-  const jawa = useMemo(
-    () => apiData?.calendars?.find((item) => item.id === 'jawa') || null,
-    [apiData]
-  )
-
-  const detail = jawa?.detail || {}
-  const dayNaktu = detail.dino?.neptu
-  const pasaranName = detail.pasaran?.name
-  const pasaranNaktu = PASARAN_NAKTU[pasaranName]
-
-  const wedal =
-    Number.isFinite(Number(dayNaktu)) && Number.isFinite(Number(pasaranNaktu))
-      ? Number(dayNaktu) + Number(pasaranNaktu)
-      : null
+  const [result, setResult] = useState(null)
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState('')
 
   const isoDate =
     apiData?.date_info?.iso ||
     selectedDate?.toISOString().slice(0, 10) ||
     ''
 
-  const dayName = detail.dino?.name || apiData?.date_info?.day_name || '—'
+  useEffect(() => {
+    if (!isoDate) return
+
+    let cancelled = false
+    setLoading(true)
+    setError('')
+
+    fetch('/api/palintangan?date_value=' + encodeURIComponent(isoDate))
+      .then((response) => {
+        if (!response.ok) throw new Error('Palintangan API ' + response.status)
+        return response.json()
+      })
+      .then((data) => {
+        if (!cancelled) setResult(data)
+      })
+      .catch((err) => {
+        if (!cancelled) setError(err.message || 'Gagal memuat perhitungan Palintangan')
+      })
+      .finally(() => {
+        if (!cancelled) setLoading(false)
+      })
+
+    return () => {
+      cancelled = true
+    }
+  }, [isoDate])
+
+  const naktu = result?.naktu
+  const calendar = result?.calendar
+  const monthly = result?.monthly_rule
+  const pernaasan = result?.pernaasan
+  const gagalang = result?.gagalang
+  const watek = result?.watek
+  const pancaka = result?.pancaka_4
 
   return (
     <section className="mx-auto max-w-[1180px] px-5 py-7 sm:px-7 lg:py-9">
@@ -88,10 +81,10 @@ export default function PalintanganPage() {
         <h1 className="mt-2 text-3xl font-semibold tracking-tight text-white">
           Palintangan Sunda
         </h1>
-        <p className="mt-2 max-w-3xl text-sm leading-6 text-[#8FA4B8]">
-          Perhitungan Palintangan Sunda mengikuti kerangka Paririmbon Sunda:
-          hari, pasaran, naktu, Gagalang Poe, dan Gagalang Manis Pahing.
-          Palintangan bukan Weton.
+        <p className="mt-2 max-w-4xl text-sm leading-6 text-[#8FA4B8]">
+          Daily calculation engine berbasis Paririmbon Sunda: kalender → naktu →
+          Gagalang → Watek → Pernaasan → aturan bulanan → Pancaka.
+          Ini bukan Weton engine.
         </p>
       </header>
 
@@ -111,18 +104,22 @@ export default function PalintanganPage() {
             />
           </label>
 
-          <div className="mt-4 rounded-xl border border-white/[0.06] bg-[#07111C] p-4">
-            <div className="text-[10px] uppercase tracking-[0.12em] text-[#536A7D]">SSOT Date</div>
-            <div className="mt-1 text-sm font-semibold text-[#C8DCEA]">{isoDate || '—'}</div>
+          <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-1">
+            <Metric label="Tanggal SSOT" value={isoDate || '—'} />
+            <Metric
+              label="Status Engine"
+              value={loading ? 'Calculating…' : result?.meta?.status || '—'}
+              note={error || 'Backend calculation engine'}
+            />
           </div>
         </Panel>
 
-        <Panel eyebrow="Calendar Data" title="Hari, Pasaran, dan Naktu Sunda">
+        <Panel eyebrow="Daily Calendar" title="Hari lengkap">
           <div className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-            <Metric label="Hari" value={dayName} />
-            <Metric label="Pasaran" value={pasaranName} />
-            <Metric label="Naktu Hari" value={dayNaktu} />
-            <Metric label="Naktu Pasaran" value={pasaranNaktu} note="nilai Paririmbon" />
+            <Metric label="Hari" value={calendar?.day} />
+            <Metric label="Pasaran" value={calendar?.pasaran} />
+            <Metric label="Hijriah" value={calendar?.hijri ? calendar.hijri.day + ' ' + calendar.hijri.month : '—'} />
+            <Metric label="Tahun Hijriah" value={calendar?.hijri?.year ? calendar.hijri.year + ' H' : '—'} />
           </div>
 
           <div className="mt-5 rounded-2xl border border-cyan-300/15 bg-[#12324A] p-5">
@@ -130,11 +127,11 @@ export default function PalintanganPage() {
               Naktu Wedal
             </div>
             <div className="mt-3 flex flex-wrap items-center gap-3">
-              <span className="rounded-lg bg-[#07111C] px-4 py-3 text-sm text-[#A9BDCF]">{dayNaktu ?? '—'}</span>
+              <span className="rounded-lg bg-[#07111C] px-4 py-3 text-sm text-[#A9BDCF]">{naktu?.hari ?? '—'}</span>
               <span className="text-[#536A7D]">+</span>
-              <span className="rounded-lg bg-[#07111C] px-4 py-3 text-sm text-[#A9BDCF]">{pasaranNaktu ?? '—'}</span>
+              <span className="rounded-lg bg-[#07111C] px-4 py-3 text-sm text-[#A9BDCF]">{naktu?.pasaran ?? '—'}</span>
               <span className="text-[#536A7D]">=</span>
-              <span className="rounded-lg bg-[#07111C] px-5 py-3 text-xl font-semibold text-white">{wedal ?? '—'}</span>
+              <span className="rounded-lg bg-[#07111C] px-5 py-3 text-xl font-semibold text-white">{naktu?.wedal ?? '—'}</span>
             </div>
             <p className="mt-3 text-xs leading-5 text-[#7896A8]">
               Naktu Wedal = Naktu Hari + Naktu Pasaran.
@@ -145,74 +142,81 @@ export default function PalintanganPage() {
 
       <div className="mt-5 grid gap-5 lg:grid-cols-2">
         <Panel eyebrow="Gagalang" title="Gagalang Manis Pahing">
-          <p className="mt-3 text-xs leading-5 text-[#7896A8]">
-            Paririmbon menjelaskan lima posisi tempat keberuntungan dalam putaran
-            arah mata angin ditambah tengah-tengah (madhab papat kalima pancer).
-          </p>
-
-          <div className="mt-4 space-y-2">
-            {GAGALANG_MANIS_PAHING.map((item) => (
-              <div
-                key={item.range}
-                className="flex items-center justify-between rounded-xl border border-white/[0.06] bg-[#07111C] px-4 py-3"
-              >
-                <span className="text-xs text-[#A9BDCF]">{item.range}</span>
-                <span className="text-xs font-semibold text-white">{item.direction}</span>
-              </div>
-            ))}
+          <div className="mt-5 grid gap-3 sm:grid-cols-2">
+            <Metric label="Pasaran saat ini" value={gagalang?.pasaran} />
+            <Metric label="Pasaran berikutnya" value={gagalang?.next_pasaran} />
+            <Metric label="Arah Gagalang" value={gagalang?.direction} note="arah yang ditunjukkan pasangan Gagalang" />
+            <Metric label="Watek Hari" value={<ListValue items={watek?.names} />} />
           </div>
         </Panel>
 
-        <Panel eyebrow="Gagalang Poe" title="12 Watek Patokan Paririmbon">
-          <p className="mt-3 text-xs leading-5 text-[#7896A8]">
-            Sumber menetapkan 12 patokan Watek secara berurutan terhadap 12 bulan.
-            Ini adalah data Watek Patokan, bukan Weton atau Wuku.
-          </p>
+        <Panel eyebrow="Monthly Rule" title={monthly?.group || 'Aturan bulan'}>
+          <div className="mt-5 grid gap-3 sm:grid-cols-2">
+            <Metric label="Pantangan" value={<ListValue items={monthly?.pantangan} />} />
+            <Metric label="Keselamatan" value={<ListValue items={monthly?.keselamatan} />} />
+            <Metric label="Arah Rizki" value={monthly?.rizki_direction} />
+            <Metric
+              label="Status Hari Ini"
+              value={
+                monthly?.today_is_pantangan
+                  ? 'Pantangan'
+                  : monthly?.today_is_keselamatan
+                    ? 'Keselamatan'
+                    : 'Tidak termasuk dua daftar'
+              }
+            />
+          </div>
+        </Panel>
+      </div>
 
-          <div className="mt-4 overflow-hidden rounded-xl border border-white/[0.06]">
-            <div className="grid grid-cols-[42px_1fr_82px] border-b border-white/[0.06] bg-[#07111C] px-3 py-2 text-[10px] font-bold uppercase tracking-[0.1em] text-[#536A7D]">
-              <span>#</span>
-              <span>Bulan · Watek</span>
-              <span>Hari</span>
-            </div>
-            {WATEK_PATOKAN.map(([month, day, watek], index) => (
-              <div
-                key={watek}
-                className="grid grid-cols-[42px_1fr_82px] items-center border-b border-white/[0.04] px-3 py-2.5 last:border-0"
-              >
-                <span className="text-xs text-[#536A7D]">{index + 1}</span>
-                <div>
-                  <div className="text-xs font-semibold text-white">{watek}</div>
-                  <div className="text-[10px] text-[#71869A]">{month}</div>
-                </div>
-                <span className="text-[11px] text-[#A9BDCF]">{day}</span>
+      <div className="mt-5 grid gap-5 lg:grid-cols-2">
+        <Panel eyebrow="Pernaasan" title="Tanggal Naas bulan ini">
+          <div className="mt-5 grid gap-3 sm:grid-cols-3">
+            {(pernaasan?.dates || []).map((day) => (
+              <div key={day} className="rounded-xl border border-white/[0.07] bg-[#07111C] p-4 text-center">
+                <div className="text-[10px] font-bold uppercase tracking-[0.12em] text-[#5E7A8F]">Tanggal</div>
+                <div className="mt-2 text-2xl font-semibold text-white">{day}</div>
               </div>
             ))}
+          </div>
+
+          <div className="mt-4 rounded-xl border border-white/[0.07] bg-[#07111C] p-4">
+            <div className="text-[10px] uppercase tracking-[0.12em] text-[#536A7D]">Tanggal Hijriah input</div>
+            <div className="mt-1 text-sm font-semibold text-white">
+              {pernaasan?.hijri_day ?? '—'} {pernaasan?.month || ''}
+            </div>
+            <div className="mt-2 text-xs text-[#7896A8]">
+              {pernaasan?.is_pernaasan ? 'Tanggal ini termasuk Pernaasan.' : 'Tanggal ini bukan tanggal Pernaasan.'}
+            </div>
+          </div>
+        </Panel>
+
+        <Panel eyebrow="Pancaka 4" title="Hasil tanggal">
+          <div className="mt-5 flex flex-wrap items-center gap-3">
+            <span className="rounded-lg bg-[#07111C] px-4 py-3 text-sm text-[#A9BDCF]">{pancaka?.input_day_of_month ?? '—'}</span>
+            <span className="text-[#536A7D]">÷ 4 → sisa</span>
+            <span className="rounded-lg bg-[#12324A] px-5 py-3 text-xl font-semibold text-white">{pancaka?.remainder ?? '—'}</span>
+          </div>
+          <div className="mt-5 rounded-xl border border-cyan-300/10 bg-[#07111C] p-4">
+            <div className="text-[10px] uppercase tracking-[0.12em] text-[#536A7D]">Hasil</div>
+            <div className="mt-1 text-xl font-semibold text-white">{pancaka?.result || '—'}</div>
+            <div className="mt-2 text-xs leading-5 text-[#7896A8]">
+              {pancaka?.context ? pancaka.context + '. ' : ''}
+              {pancaka?.meaning || ''}
+            </div>
           </div>
         </Panel>
       </div>
 
       <div className="mt-5 rounded-2xl border border-white/[0.07] bg-[#0A1723] p-5 sm:p-6">
-        <div className="text-[10px] font-bold uppercase tracking-[0.14em] text-[#536A7D]">
-          Source Boundary
-        </div>
-        <h2 className="mt-1 text-sm font-semibold text-white">
-          Rule yang belum boleh ditebak
-        </h2>
+        <div className="text-[10px] font-bold uppercase tracking-[0.14em] text-[#536A7D]">Engine Boundary</div>
+        <h2 className="mt-1 text-sm font-semibold text-white">Source-controlled calculation</h2>
         <p className="mt-3 max-w-4xl text-xs leading-6 text-[#7896A8]">
-          Paririmbon menyebut Gagalang Poe memiliki 12 patokan Watek dan
-          menjelaskan perhitungan Gagalang berdasarkan hari/pasaran. Formula
-          intraday Watek Jam yang lengkap belum terverifikasi, sehingga halaman
-          ini tidak mengimpor formula Jawa/Bali atau membuat rumus baru.
+          Backend sekarang menghitung rule yang sudah memiliki transform/data yang
+          terverifikasi di Paririmbon. Naktu Bulan + Naktu Tahun tetap ditandai
+          PARTIAL sampai tabel numerik sumbernya benar-benar terverifikasi; tidak
+          diganti dengan formula Jawa/Bali atau asumsi baru.
         </p>
-        <div className="mt-4 flex flex-wrap gap-2">
-          <span className="rounded-full border border-cyan-300/15 bg-cyan-300/5 px-3 py-1 text-[10px] font-semibold text-cyan-200">
-            SSOT: PARIRIMBON SUNDA
-          </span>
-          <span className="rounded-full border border-white/[0.08] bg-white/[0.02] px-3 py-1 text-[10px] font-semibold text-[#7896A8]">
-            pp. 70–73
-          </span>
-        </div>
       </div>
     </section>
   )
