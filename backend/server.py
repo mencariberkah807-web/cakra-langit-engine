@@ -283,9 +283,9 @@ def palintangan_nama(name: str = ""):
 
 
 @app.get("/api/palintangan/pancaka12")
-def palintangan_pancaka12(name: str = ""):
+def palintangan_pancaka12(name: str = "", letters: str = ""):
     try:
-        return calculate_pancaka_12(name)
+        return calculate_pancaka_12(name, letters)
     except ValueError as exc:
         raise HTTPException(status_code=400, detail=str(exc))
 
