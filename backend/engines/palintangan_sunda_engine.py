@@ -196,6 +196,7 @@ def _find_month_group(month_name: str):
 def calculate_palintangan(target_date: date, timezone_name: str = "Asia/Jakarta"):
     calendars = get_calendar_data(target_date, timezone_name)
     jawa = calendars["jawa"]
+    saka_sunda = calendars["sakaSunda"]
     hijri = get_hijri_data(target_date.year, target_date.month, target_date.day)
 
     day_name = jawa["detail"]["dino"]["name"]
@@ -230,6 +231,14 @@ def calculate_palintangan(target_date: date, timezone_name: str = "Asia/Jakarta"
         "calendar": {
             "day": day_name,
             "pasaran": pasaran,
+            "wuku": jawa["detail"]["wuku"]["name"],
+            "wuku_day": jawa["detail"]["wuku"]["day_in_wuku"],
+            "saka_sunda": {
+                "day": saka_sunda["meta"].get("day", saka_sunda["fields"][0]["v"]),
+                "month": saka_sunda["meta"].get("monthName", saka_sunda["headline"]),
+                "year": saka_sunda["meta"].get("year", saka_sunda["headline"]),
+                "year_type": saka_sunda["sub"],
+            },
             "hijri": {
                 "day": hijri_day,
                 "month": month_name,
