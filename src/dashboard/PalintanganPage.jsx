@@ -436,6 +436,56 @@ function JodohPage({ onBack }) {
   )
 }
 
+function ArahPage({ onBack }) {
+  const [dateValue, setDateValue] = useState('')
+  const [result, setResult] = useState(null)
+  const [error, setError] = useState('')
+
+  async function calculate() {
+    setError('')
+    setResult(null)
+    if (!dateValue) { setError('Pilih tanggal.'); return }
+    try {
+      const response = await fetch('/api/palintangan/arah?date_value=' + encodeURIComponent(dateValue))
+      if (!response.ok) throw new Error('Arah API ' + response.status)
+      setResult(await response.json())
+    } catch (err) {
+      setError(err.message || 'Gagal menghitung arah')
+    }
+  }
+
+  return (
+    <section className="mx-auto max-w-[1180px] px-5 py-7 sm:px-7 lg:py-9">
+      <button type="button" onClick={onBack} className="mb-5 rounded-xl border border-white/[0.08] bg-[#07111C] px-4 py-2.5 text-xs font-semibold text-[#A9BDCF]">← Palintangan</button>
+      <header className="mb-7">
+        <div className="text-[10px] font-bold uppercase tracking-[0.16em] text-[#22D3EE]">Task · Arah</div>
+        <h1 className="mt-2 text-3xl font-semibold tracking-tight text-white">Perjalanan / Arah</h1>
+        <p className="mt-2 max-w-3xl text-sm leading-6 text-[#8FA4B8]">Menampilkan arah rizki dari rule kelompok bulan yang sudah terdokumentasi.</p>
+      </header>
+      <Panel eyebrow="Input" title="Tanggal">
+        <div className="mt-5 flex gap-3">
+          <input type="date" value={dateValue} onChange={(e) => setDateValue(e.target.value)} className="rounded-xl border border-white/[0.09] bg-[#07111C] px-3 py-3 text-sm text-white outline-none" />
+          <button type="button" onClick={calculate} className="rounded-xl bg-[#12324A] px-5 py-3 text-sm font-semibold text-white">Hitung</button>
+        </div>
+        {error ? <div className="mt-4 text-xs text-rose-300">{error}</div> : null}
+      </Panel>
+      {result ? (
+        <div className="mt-5 grid gap-5 lg:grid-cols-2">
+          <Panel eyebrow="Arah Rizki" title={result.direction.rizki}>
+            <p className="mt-4 text-sm leading-6 text-[#71869A]">Arah ini berasal dari kelompok bulan dalam source Palintangan.</p>
+          </Panel>
+          <Panel eyebrow="Context" title={result.calendar_context.day + ' · ' + result.calendar_context.pasaran}>
+            <div className="mt-5 grid grid-cols-2 gap-3">
+              <Metric label="Hijri" value={result.calendar_context.hijri.day + ' ' + result.calendar_context.hijri.month} />
+              <Metric label="Rule" value="Rizki bulan" />
+            </div>
+          </Panel>
+        </div>
+      ) : null}
+    </section>
+  )
+}
+
 function KelahiranPage({ onBack }) {
   const [dateValue, setDateValue] = useState('')
   const [result, setResult] = useState(null)
@@ -603,6 +653,10 @@ export default function PalintanganPage() {
 
   if (category === 'kelahiran') {
     return <KelahiranPage onBack={() => setCategory(null)} />
+  }
+
+  if (category === 'arah') {
+    return <ArahPage onBack={() => setCategory(null)} />
   }
 
   if (category) {
