@@ -38,7 +38,6 @@ VALIDATED_SEGMENT_ALIASES = {
 LATIN_TO_CACARAKAN = {
     "ng": "nga",
     "ny": "nya",
-    "kh": "ka",   # not a source-native mapping; kept unresolved below
     "h": "ha",
     "n": "na",
     "c": "ca",
@@ -89,11 +88,13 @@ def calculate_naktu_nama(name: str):
     parts = [part.lower() for part in clean.split(" ")]
     rows = []
     unknown = []
+    used_validated_alias = False
 
     for part in parts:
         # Preserve the previously validated source example/segments.
         alias = VALIDATED_SEGMENT_ALIASES.get(part)
         if alias:
+            used_validated_alias = True
             base, value = alias
             rows.append({
                 "segment": part,
@@ -117,7 +118,7 @@ def calculate_naktu_nama(name: str):
         "segments": parts,
         "naktu": rows,
         "total": total if not unknown else None,
-        "status": "VERIFIED" if not unknown else "PARTIAL_DATASET",
+        "status": "VERIFIED" if not unknown and used_validated_alias and all(part in VALIDATED_SEGMENT_ALIASES for part in parts) else "PARTIAL_SOURCE",
         "unknown_segments": unknown,
         "system": "Cacarakan 18",
         "source": {
@@ -125,6 +126,6 @@ def calculate_naktu_nama(name: str):
             "source_title": SOURCE_TITLE,
             "location": "naskah p.72",
         },
-        "note": "Naktu nama memakai nilai Cacarakan 18 dari SSOT. Segmen tervalidasi lama seperti Ya=14 dipertahankan sebagai dataset source-backed terpisah; source p.72 juga mencatat Cacarakan 18 ya=13 dan nya=14, sehingga keduanya tidak dicampur diam-diam.",
+        "note": "Segmen yang memang tervalidasi tetap VERIFIED. Mapping Cacarakan 18 untuk nama Latin lain tersedia sebagai source mapping, tetapi transliterasi Latin→Cacarakan bukan rule eksplisit SSOT sehingga statusnya PARTIAL_SOURCE.",
     }
 }
