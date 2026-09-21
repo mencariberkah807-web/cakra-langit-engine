@@ -539,6 +539,13 @@ function KelahiranPage({ onBack }) {
           <Panel eyebrow="Watek" title="Watek Hari">
             <div className="mt-5 flex flex-wrap gap-2">{(result.watek.names || []).map((item) => <span key={item} className="rounded-full border border-white/[0.08] px-3 py-2 text-xs text-[#B8C9D8]">{item}</span>)}</div>
           </Panel>
+          <Panel eyebrow="Jaya / Apes" title={result.jaya_apes.status}>
+            <div className="mt-5 grid grid-cols-2 gap-3">
+              <Metric label="Jaya" value={result.jaya_apes.jaya || 'Belum tersedia'} />
+              <Metric label="Apes" value={result.jaya_apes.apes || 'Belum tersedia'} />
+            </div>
+            <p className="mt-4 text-xs leading-5 text-[#71869A]">{result.jaya_apes.note || 'Baseline tervalidasi.'}</p>
+          </Panel>
           <Panel eyebrow="Boundary" title="Source status">
             <p className="mt-5 text-sm leading-6 text-[#71869A]">{result.meta.note}</p>
           </Panel>
