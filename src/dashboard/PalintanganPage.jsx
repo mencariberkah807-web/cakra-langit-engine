@@ -253,7 +253,7 @@ function DailyGlobalPage({ onBack }) {
 
           <div className="mt-3 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
             <Metric label="Wuku" value={calendar?.wuku} note={calendar?.wuku_day ? 'Hari ke-' + calendar.wuku_day : null} />
-            <Metric label="Mangsa" value={calendar?.mangsa} note="data musim Paririmbon" />
+            <Metric label="Mangsa" value={calendar?.mangsa?.name || calendar?.mangsa} note={calendar?.mangsa?.duration_days ? calendar.mangsa.duration_days + " hari · naskah p.115" : "data musim Paririmbon"} />
             <Metric label="Paringkelan" value={calendar?.paringkelan?.name} note={calendar?.paringkelan?.index ? 'Siklus ke-' + calendar.paringkelan.index + ' / 6' : null} />
             <Metric
               label="Saka Sunda"
@@ -696,6 +696,13 @@ function KelahiranPage({ onBack }) {
               <Metric label="Hijri" value={result.calendar.hijri?.day + ' ' + result.calendar.hijri?.month} />
               <Metric label="Saka Sunda" value={result.calendar.saka_sunda?.year} />
             </div>
+          </Panel>
+          <Panel eyebrow="Birth Context" title="Naga">
+            <div className="mt-5 grid grid-cols-2 gap-3">
+              <Metric label="Arah Naga" value={result.birth_context?.naga_direction || "—"} />
+              <Metric label="Status" value={result.birth_context?.status || "—"} />
+            </div>
+            <p className="mt-4 text-xs leading-5 text-[#71869A]">{result.birth_context?.note || "Data arah naga bersumber dari naskah."}</p>
           </Panel>
           <Panel eyebrow="Naktu" title="Naktu Wedal">
             <div className="mt-5 grid grid-cols-3 gap-3">
