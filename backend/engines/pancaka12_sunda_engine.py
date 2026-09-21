@@ -36,6 +36,36 @@ ARABIC_LETTER_NAKTU = {
     "y": 10,
 }
 
+ARABIC_LETTER_NAME_ALIASES = {
+    "alif": "a",
+    "ba": "b",
+    "ta": "t",
+    "tha": "th",
+    "jim": "j",
+    "ha": "h",
+    "kha": "kh",
+    "dal": "d",
+    "dhal": "dh",
+    "ra": "r",
+    "za": "z",
+    "sin": "s",
+    "syin": "sy",
+    "sad": "sh",
+    "dad": "dh2",
+    "ain": "ain",
+    "ghain": "gh",
+    "fa": "f",
+    "qaf": "q",
+    "lam": "l",
+    "mim": "m",
+    "nun": "n",
+    "wau": "w",
+    "ha5": "ha",
+    "lamalif": "la",
+    "hamzah": "hamzah",
+    "ya": "y",
+}
+
 NABI_BY_REMAINDER = {
     1: "Nabi Adam",
     2: "Nabi Sulaeman",
@@ -81,7 +111,7 @@ def calculate_pancaka_12(name: str, letters: str = ""):
     # tokens used for the calculation. A Latin name alone cannot be promoted
     # to VERIFIED because the SSOT does not define transliteration rules.
     token_source = letters.strip() if letters.strip() else clean
-    tokens = [token.strip().lower() for token in token_source.replace(",", " ").split()]
+    tokens = [ARABIC_LETTER_NAME_ALIASES.get(token.strip().lower(), token.strip().lower()) for token in token_source.replace(",", " ").split()]
     if not letters.strip():
         tokens = _tokenize_latin_name(clean)
     rows = []
