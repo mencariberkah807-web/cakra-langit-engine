@@ -19,9 +19,13 @@ function ContextCard({ label, result, accent, expanded }) {
         {label}
       </p>
       <p className={expanded ? "mt-2 text-base font-semibold text-[#F0FAFF]" : "mt-2 text-sm font-semibold text-[#E8F5FF]"}>
-        {result?.primary || result?.title || "—"}
+        {result?.primary || result?.context || result?.skyState || result?.title || "—"}
       </p>
-      {result?.secondary ? <p className={expanded ? "mt-1 text-xs text-[#7FA1B8]" : "mt-1 text-[10px] text-[#6F8EA4]"}>{result.secondary}</p> : null}
+      {(result?.secondary || result?.bortle || result?.annual_pct != null || result?.progress != null) ? (
+        <p className={expanded ? "mt-1 text-xs text-[#7FA1B8]" : "mt-1 text-[10px] text-[#6F8EA4]"}>
+          {result.secondary || (result?.bortle ? `Bortle ${result.bortle}` : result?.annual_pct != null ? `${result.annual_pct}% of annual cycle` : `${result.progress}% of annual cycle`)}
+        </p>
+      ) : null}
     </motion.article>
   );
 }
