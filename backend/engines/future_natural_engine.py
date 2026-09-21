@@ -474,7 +474,7 @@ def _fetch_ocean(latitude, longitude, timezone):
                 ]
             ),
             "timezone": timezone,
-            "cell_selection": "nearest",
+            "cell_selection": "sea",
         },
     )
     current = data.get("current") or {}
