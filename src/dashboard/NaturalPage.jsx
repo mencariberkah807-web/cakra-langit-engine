@@ -1,10 +1,8 @@
 import { Clock3, Waves, Sun, Moon, CloudSun, Orbit, Eye } from "lucide-react";
-import { useMemo } from "react";
 import { useTodayContext } from "../core/TodayContext";
 import NaturalLayer from "../cakra-ui/NaturalLayer";
 import NaturalFutureEngines from "../cakra-ui/NaturalFutureEngines";
 import Header from "../cakra-ui/Header";
-import { adaptSun } from "../adapters/sun.adapter.js";
 
 function isoLocal(date, timezone) {
   if (!date) return "";
@@ -15,18 +13,6 @@ function isoLocal(date, timezone) {
     day: "2-digit",
   }).format(date);
 }
-
-function formatDate(date, timezone) {
-  if (!date) return "—";
-  return new Intl.DateTimeFormat("id-ID", {
-    timeZone: timezone || "Asia/Jakarta",
-    weekday: "long",
-    day: "numeric",
-    month: "long",
-    year: "numeric",
-  }).format(date);
-}
-
 
 function DetailCard({ icon: Icon, title, primary, secondary, rows = [], tone = "blue" }) {
   return (
