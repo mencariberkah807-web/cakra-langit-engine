@@ -15,6 +15,7 @@ const authenticatedPaths = new Set([
   '/dashboard/weton/jodoh/hitung',
   '/dashboard/bazi',
   '/dashboard/paririmbon',
+  '/dashboard/palintangan',
   '/dashboard/almanac',
   '/dashboard/history',
   '/dashboard/tasks',
