@@ -15,6 +15,33 @@ function isoLocal(date, timezone) {
   }).format(date);
 }
 
+function formatObservationValue(value) {
+  if (value == null) return "—";
+  if (Array.isArray(value)) {
+    if (!value.length) return "—";
+    return value.map((item) => {
+      if (item && typeof item === "object") {
+        const type = item.type ? String(item.type).toLowerCase() : "";
+        const time = item.time
+          ? new Date(item.time).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
+          : "";
+        const height = item.height_m != null ? `${item.height_m} m` : "";
+        return [type, time, height].filter(Boolean).join(" · ");
+      }
+      return String(item);
+    }).join(", ");
+  }
+  if (typeof value === "object") {
+    if (value.value != null) return String(value.value);
+    if (value.label != null) return String(value.label);
+    return Object.values(value)
+      .filter((item) => item != null && typeof item !== "object")
+      .map(String)
+      .join(" · ") || "—";
+  }
+  return String(value);
+}
+
 function DetailCard({ icon: Icon, title, primary, secondary, rows = [], tone = "blue" }) {
   return (
     <article className={`rounded-[18px] border p-5 shadow-[0_12px_38px_rgba(0,0,0,.18)] ${tone === "gold" ? "border-[#80641E] bg-[linear-gradient(145deg,rgba(82,61,15,.24),rgba(8,24,39,.96))]" : tone === "green" ? "border-[#27685E] bg-[linear-gradient(145deg,rgba(10,72,64,.22),rgba(8,24,39,.96))]" : tone === "violet" ? "border-[#554B86] bg-[linear-gradient(145deg,rgba(63,50,112,.22),rgba(8,24,39,.96))]" : "border-[#275775] bg-[linear-gradient(145deg,rgba(10,48,69,.28),rgba(8,24,39,.96))]"}`}>
