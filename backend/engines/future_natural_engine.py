@@ -514,12 +514,12 @@ def _fetch_ocean(latitude, longitude, timezone):
     result = _available(
         "ocean",
         "Ocean",
-        f"Wave {current.get('wave_height', '—')} {units.get('wave_height', 'm')}",
-        f"SST {current.get('sea_surface_temperature', '—')} {units.get('sea_surface_temperature', '°C')}",
+        f"Wave {current.get('wave_height') if current.get('wave_height') is not None else '—'} {units.get('wave_height', 'm')}" if current.get('wave_height') is not None else "Wave —",
+        f"SST {current.get('sea_surface_temperature') if current.get('sea_surface_temperature') is not None else '—'} {units.get('sea_surface_temperature', '°C')}" if current.get('sea_surface_temperature') is not None else "SST —",
         [
-            {"label": "Wave period", "value": f"{current.get('wave_period', '—')} {units.get('wave_period', 's')}"},
-            {"label": "Swell", "value": f"{current.get('swell_wave_height', '—')} {units.get('swell_wave_height', 'm')}"},
-            {"label": "Current", "value": f"{current.get('ocean_current_velocity', '—')} {units.get('ocean_current_velocity', 'km/h')}"},
+            {"label": "Wave period", "value": f"{current.get('wave_period')} {units.get('wave_period', 's')}" if current.get('wave_period') is not None else "—"},
+            {"label": "Swell", "value": f"{current.get('swell_wave_height')} {units.get('swell_wave_height', 'm')}" if current.get('swell_wave_height') is not None else "—"},
+            {"label": "Current", "value": f"{current.get('ocean_current_velocity')} {units.get('ocean_current_velocity', 'km/h')}" if current.get('ocean_current_velocity') is not None else "—"},
         ],
         "Open-Meteo Marine API",
     )
