@@ -124,6 +124,7 @@ export default function PalintanganPage() {
 
           <div className="mt-3 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
             <Metric label="Wuku" value={calendar?.wuku} note={calendar?.wuku_day ? 'Hari ke-' + calendar.wuku_day : null} />
+            <Metric label="Mangsa" value={calendar?.mangsa} note="data musim Paririmbon" />
             <Metric label="Paringkelan" value={calendar?.paringkelan?.name} note={calendar?.paringkelan?.index ? 'Siklus ke-' + calendar.paringkelan.index + ' / 6' : null} />
             <Metric
               label="Saka Sunda"
