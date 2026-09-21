@@ -9,6 +9,7 @@ import ProfileOverviewPage from '../dashboard/ProfileOverviewPage'
 import BaZiPage from '../dashboard/BaZiPage'
 import ParirimbonPage from '../dashboard/ParirimbonPage'
 import NaturalPage from '../dashboard/NaturalPage'
+import PalintanganPage from '../dashboard/PalintanganPage'
 import PalelintanganPage from '../dashboard/PalelintanganPage'
 import { useAuth } from './AuthContext'
 
@@ -62,6 +63,10 @@ function UserDashboardContent({ user, onUserUpdated }) {
 
   if (path === '/dashboard/profile/edit') {
     return <ProfilePage user={user} onUserUpdated={onUserUpdated} />
+  }
+
+  if (path === '/dashboard/palintangan') {
+    return <PalintanganPage />
   }
 
   if (path === '/dashboard/bazi') {
