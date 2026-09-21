@@ -19,6 +19,7 @@ from engines.jodoh_engine import get_jodoh
 from engines.palintangan_sunda_engine import calculate_palintangan
 from engines.jodoh_sunda_engine import calculate_repak_jodoh
 from engines.nama_sunda_engine import calculate_naktu_nama
+from engines.kelahiran_sunda_engine import calculate_kelahiran
 from engines.pertanian_sunda_engine import calculate_pertanian
 from engines.location_engine import (
     find_location,
@@ -239,6 +240,16 @@ def palintangan_pertanian(date_value: str = "", city: str = "Bandung", activity:
         raise HTTPException(status_code=400, detail=f"Invalid date_value: {exc}")
 
     return calculate_pertanian(target_date, activity)
+
+
+@app.get("/api/palintangan/kelahiran")
+def palintangan_kelahiran(date_value: str = "", city: str = "Bandung"):
+    try:
+        target_date = date.fromisoformat(date_value)
+        timezone_name = CITY_TIMEZONE.get(city, "Asia/Jakarta")
+        return calculate_kelahiran(target_date, timezone_name)
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc))
 
 
 @app.get("/api/palintangan/nama")
