@@ -1,5 +1,6 @@
 import { Clock3, Waves, Sun, Moon, CloudSun, Orbit, Eye } from "lucide-react";
 import { useTodayContext } from "../core/TodayContext";
+import { useLanguage } from "../core/LanguageContext";
 import NaturalLayer from "../cakra-ui/NaturalLayer";
 import NaturalFutureEngines from "../cakra-ui/NaturalFutureEngines";
 import Header from "../cakra-ui/Header";
@@ -67,7 +68,8 @@ function DetailCard({ icon: Icon, title, primary, secondary, rows = [], tone = "
 
 export default function NaturalPage({ user }) {
   const context = useTodayContext();
-  const data = buildDashboardData(context, "id");
+  const { language } = useLanguage();
+  const data = buildDashboardData(context, language);
   const natural = data.natural || {};
   const location = data.location || context.location || {};
   const timezone = location.timezone || context.location?.timezone || "Asia/Jakarta";
