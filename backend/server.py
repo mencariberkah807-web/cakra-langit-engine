@@ -253,9 +253,10 @@ def palintangan_waktu(day_name: str = "", time_value: str = ""):
 
 @app.get("/api/palintangan/arah")
 def palintangan_arah(date_value: str = "", city: str = "Bandung"):
+    location = find_location(city, "ID")
+    timezone_name = location["timezone"] if location else "Asia/Jakarta"
     try:
         target_date = date.fromisoformat(date_value)
-        timezone_name = CITY_TIMEZONE.get(city, "Asia/Jakarta")
         return calculate_arah(target_date, timezone_name)
     except ValueError as exc:
         raise HTTPException(status_code=400, detail=str(exc))
@@ -263,9 +264,10 @@ def palintangan_arah(date_value: str = "", city: str = "Bandung"):
 
 @app.get("/api/palintangan/kelahiran")
 def palintangan_kelahiran(date_value: str = "", city: str = "Bandung"):
+    location = find_location(city, "ID")
+    timezone_name = location["timezone"] if location else "Asia/Jakarta"
     try:
         target_date = date.fromisoformat(date_value)
-        timezone_name = CITY_TIMEZONE.get(city, "Asia/Jakarta")
         return calculate_kelahiran(target_date, timezone_name)
     except ValueError as exc:
         raise HTTPException(status_code=400, detail=str(exc))
