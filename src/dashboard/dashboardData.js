@@ -37,6 +37,20 @@ export function buildDashboardData(context, language = "en") {
   const eclipseResult = naturalResults.find((result) => result.id === "eclipse") || null;
   const eclipseData = eclipseResult?.data || eclipseResult?.value || eclipseResult || {};
   const moonData = moonResult?.data || moonResult?.value || moonResult || {};
+  const skyResult = naturalResults.find((result) => result.id === "sky") || null;
+  const earthResult = naturalResults.find((result) => result.id === "earth-space") || null;
+  const skyData = apiData?.natural?.sky || {
+    ...skyResult,
+    context: skyResult?.context || skyResult?.primary || null,
+    skyState: skyResult?.skyState || skyResult?.primary || null,
+    bortle: skyResult?.bortle || skyResult?.details?.find((item) => item.label === "Bortle")?.value || null,
+  };
+  const earthData = apiData?.natural?.earth || {
+    ...earthResult,
+    primary: earthResult?.primary || (earthResult?.dayOfYear ? `Day ${earthResult.dayOfYear}` : null),
+    secondary: earthResult?.secondary || (earthResult?.progress != null ? `${earthResult.progress}% of annual cycle` : null),
+    context: earthResult?.context || earthResult?.primary || null,
+  };
   const ticker = Array.isArray(apiData?.ticker)
     ? apiData.ticker.map((item) =>
         typeof item === "string" && item.toLowerCase().startsWith("moon ")
@@ -82,14 +96,8 @@ export function buildDashboardData(context, language = "en") {
         naturalResults.find((r) => r.id === "eclipse")?.data ||
         naturalResults.find((r) => r.id === "eclipse") ||
         null,
-      sky:
-        naturalResults.find((r) => r.id === "sky")?.data ||
-        naturalResults.find((r) => r.id === "sky") ||
-        null,
-      earth:
-        naturalResults.find((r) => r.id === "earth-space")?.data ||
-        naturalResults.find((r) => r.id === "earth-space") ||
-        null,
+      sky: skyData,
+      earth: earthData,
       tide:
         apiData?.natural?.tide ||
         naturalResults.find((r) => r.id === "tide")?.data ||
