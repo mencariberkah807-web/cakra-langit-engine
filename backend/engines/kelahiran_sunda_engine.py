@@ -16,6 +16,7 @@ def calculate_kelahiran(target_date: date, timezone_name: str = "Asia/Jakarta"):
         "calendar": daily["calendar"],
         "naktu": daily["naktu"],
         "watek": daily["watek"],
+        "birth_context": daily["birth_context"],
         "gagalang": daily["gagalang"],
         "jaya_apes": jaya_apes,
         "monthly_rule": daily["monthly_rule"],
