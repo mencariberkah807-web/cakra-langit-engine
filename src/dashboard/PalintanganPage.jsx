@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useTodayContext } from '../core/TodayContext'
+import { useAuth } from '../auth/AuthContext'
 
 function Metric({ label, value, note }) {
   return (
@@ -24,6 +25,134 @@ function Panel({ eyebrow, title, children }) {
 function ListValue({ items }) {
   if (!items?.length) return <span className="text-[#71869A]">—</span>
   return <span>{items.join(' · ')}</span>
+}
+
+function DailyGlobalSummary() {
+  const { user } = useAuth()
+  const { now, selectedLocation } = useTodayContext()
+  const [profile, setProfile] = useState(null)
+  const [result, setResult] = useState(null)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState('')
+
+  const token = typeof window !== 'undefined'
+    ? window.localStorage.getItem('cakra-langit:access-token')
+    : null
+
+  useEffect(() => {
+    let cancelled = false
+
+    async function loadProfile() {
+      try {
+        const response = await fetch('/api/profile', {
+          headers: token ? { Authorization: `Bearer ${token}` } : {},
+        })
+        if (!response.ok) throw new Error('Profil tidak dapat dimuat.')
+        const payload = await response.json()
+        if (!cancelled) setProfile(payload.profile || {})
+      } catch (err) {
+        if (!cancelled) setError(err.message || 'Profil tidak dapat dimuat.')
+      }
+    }
+
+    loadProfile()
+    return () => { cancelled = true }
+  }, [token])
+
+  const profileLocation = profile?.birth_location || null
+  const location = profileLocation || selectedLocation
+  const city = location?.city || ''
+  const timezone = location?.timezone || 'Asia/Jakarta'
+
+  const dateISO = new Intl.DateTimeFormat('en-CA', {
+    timeZone: timezone,
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+  }).format(now)
+
+  useEffect(() => {
+    if (!city || !dateISO) {
+      setResult(null)
+      setLoading(false)
+      return undefined
+    }
+
+    let cancelled = false
+    setLoading(true)
+    setError('')
+
+    fetch('/api/palintangan?date_value=' + encodeURIComponent(dateISO) + '&city=' + encodeURIComponent(city))
+      .then((response) => {
+        if (!response.ok) throw new Error('Palintangan API ' + response.status)
+        return response.json()
+      })
+      .then((data) => {
+        if (!cancelled) setResult(data)
+      })
+      .catch((err) => {
+        if (!cancelled) setError(err.message || 'Gagal memuat Daily Global')
+      })
+      .finally(() => {
+        if (!cancelled) setLoading(false)
+      })
+
+    return () => { cancelled = true }
+  }, [city, dateISO])
+
+  const naktu = result?.naktu
+  const calendar = result?.calendar
+  const monthly = result?.monthly_rule
+  const watek = result?.watek
+  const displayName = profile?.display_name || user?.display_name || user?.email?.split('@')[0] || 'Pengguna'
+
+  return (
+    <section className="mb-7">
+      <Panel eyebrow="Global · Profile Context" title="Daily Global">
+        <div className="mt-4 flex flex-col gap-3 border-b border-white/[0.07] pb-5 sm:flex-row sm:items-end sm:justify-between">
+          <div>
+            <div className="text-lg font-semibold text-white">{displayName}</div>
+            <div className="mt-1 text-sm text-[#71869A]">
+              {dateISO} · {city || 'Lokasi belum diatur'}
+            </div>
+          </div>
+          <div className="text-xs text-[#536A7D]">
+            Daily Global memakai tanggal hari ini dan lokasi dari Profile.
+          </div>
+        </div>
+
+        {loading ? (
+          <div className="mt-5 rounded-xl border border-white/[0.07] bg-[#07111C] p-5 text-sm text-[#71869A]">
+            Memuat Daily Global…
+          </div>
+        ) : error ? (
+          <div className="mt-5 rounded-xl border border-rose-300/10 bg-rose-300/[0.03] p-5 text-sm text-rose-200">
+            {error}
+          </div>
+        ) : result ? (
+          <>
+            <div className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+              <Metric label="Hari" value={calendar?.day} />
+              <Metric label="Pasaran" value={calendar?.pasaran} />
+              <Metric label="Wuku" value={calendar?.wuku} />
+              <Metric label="Naktu Wedal" value={naktu?.wedal} note={naktu ? naktu.hari + ' + ' + naktu.pasaran : null} />
+            </div>
+
+            <div className="mt-3 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+              <Metric label="Watek Hari" value={<ListValue items={watek?.names} />} />
+              <Metric label="Arah Rizki" value={monthly?.rizki_direction} />
+              <Metric label="Status Hari" value={monthly?.today_is_pantangan ? 'Pantangan' : monthly?.today_is_keselamatan ? 'Keselamatan' : 'Tidak termasuk dua daftar'} />
+              <Metric label="Pernaasan" value={result?.pernaasan?.is_pernaasan ? 'Ya' : 'Tidak'} />
+            </div>
+          </>
+        ) : (
+          <div className="mt-5 rounded-xl border border-dashed border-white/[0.10] bg-[#07111C] p-5 text-sm text-[#71869A]">
+            Lengkapi lokasi pada Profile agar Daily Global dapat dihitung berdasarkan context akun.
+          </div>
+        )}
+      </Panel>
+    </section>
+  )
 }
 
 function DailyGlobalPage({ onBack }) {
@@ -311,12 +440,6 @@ function PertanianPage({ onBack }) {
 }
 
 const CATEGORIES = [
-  {
-    key: 'daily',
-    eyebrow: 'Global',
-    title: 'Daily Global',
-    description: 'Kondisi kalender dan rule global untuk tanggal yang dipilih.',
-  },
   {
     key: 'nama',
     eyebrow: 'Personal',
@@ -687,10 +810,6 @@ function CategoryPlaceholder({ category, onBack }) {
 export default function PalintanganPage() {
   const [category, setCategory] = useState(null)
 
-  if (category === 'daily') {
-    return <DailyGlobalPage onBack={() => setCategory(null)} />
-  }
-
   if (category === 'tanam') {
     return <PertanianPage onBack={() => setCategory(null)} />
   }
@@ -730,11 +849,21 @@ export default function PalintanganPage() {
           Palintangan Sunda
         </h1>
         <p className="mt-2 max-w-4xl text-sm leading-6 text-[#8FA4B8]">
-          Pilih kebutuhan perhitungan. Daily Global tetap menjadi layer kalender
-          bersama, sedangkan rule Personal dan Task dihitung hanya pada category
-          yang sesuai.
+          Daily Global ditampilkan langsung berdasarkan context Profile akun.
+          Pilih category lain hanya jika membutuhkan perhitungan Personal atau Task.
         </p>
       </header>
+
+      <DailyGlobalSummary />
+
+      <div className="mb-4">
+        <div className="text-[10px] font-bold uppercase tracking-[0.16em] text-[#536A7D]">
+          Category
+        </div>
+        <h2 className="mt-1 text-base font-semibold text-white">
+          Pilih kebutuhan perhitungan
+        </h2>
+      </div>
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {CATEGORIES.map((categoryItem) => (
