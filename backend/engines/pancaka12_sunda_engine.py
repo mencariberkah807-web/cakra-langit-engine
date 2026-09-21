@@ -72,12 +72,18 @@ def _tokenize_latin_name(name: str):
         i += 1
     return tokens
 
-def calculate_pancaka_12(name: str):
+def calculate_pancaka_12(name: str, letters: str = ""):
     clean = " ".join(name.strip().split())
-    if not clean:
-        raise ValueError("Nama diperlukan")
+    if not clean and not letters.strip():
+        raise ValueError("Nama atau huruf Arab diperlukan")
 
-    tokens = _tokenize_latin_name(clean)
+    # Source-safe production path: caller supplies the Arabic-derived letter
+    # tokens used for the calculation. A Latin name alone cannot be promoted
+    # to VERIFIED because the SSOT does not define transliteration rules.
+    token_source = letters.strip() if letters.strip() else clean
+    tokens = [token.strip().lower() for token in token_source.replace(",", " ").split()]
+    if not letters.strip():
+        tokens = _tokenize_latin_name(clean)
     rows = []
     unknown = []
 
@@ -100,7 +106,7 @@ def calculate_pancaka_12(name: str):
         "remainder": remainder if not unknown else None,
         "result_index": result_index if not unknown else None,
         "nabi": NABI_BY_REMAINDER.get(result_index) if not unknown else None,
-        "status": "VERIFIED" if not unknown else "PARTIAL_DATASET",
+        "status": "VERIFIED" if letters.strip() and not unknown else "PARTIAL_DATASET",
         "unknown_letters": unknown,
         "context": "watak nama",
         "source": {
@@ -108,6 +114,6 @@ def calculate_pancaka_12(name: str):
             "source_title": SOURCE_TITLE,
             "location": "naskah p.84-85",
         },
-        "note": "Pancaka 12 adalah rule nama terpisah: jumlah naktu huruf Arab dibagi 12; sisa menentukan nama Nabi. Mapping Nabi mengikuti urutan yang disebut pada source naskah.",
+        "note": "Pancaka 12 adalah rule nama terpisah. Production VERIFIED memakai token huruf Arab yang diberikan eksplisit; Latin name tanpa token huruf tetap PARTIAL karena SSOT tidak memberi aturan transliterasi Latin→Arab.",
     }
 }
