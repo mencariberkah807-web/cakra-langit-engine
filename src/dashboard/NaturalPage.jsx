@@ -53,41 +53,13 @@ function DetailCard({ icon: Icon, title, primary, secondary, rows = [], tone = "
 
 export default function NaturalPage({ user }) {
   const context = useTodayContext();
-  const apiData = context.apiData || {};
-  const natural = apiData.natural || {};
-  const location = apiData.location
-    ? { ...context.location, ...apiData.location, timezoneLabel: apiData.location.timezoneLabel || context.location?.timezoneLabel || null }
-    : context.location || {};
+  const data = buildDashboardData(context, "id");
+  const natural = data.natural || {};
+  const location = data.location || context.location || {};
   const timezone = location.timezone || context.location?.timezone || "Asia/Jakarta";
-  const data = {
-    ...context,
-    ...apiData,
-    location,
-    date_info: apiData.date_info || {
-      date_long: formatDate(context.selectedDate, timezone),
-    },
-  };
   const date = context.selectedDate || new Date();
   const dateISO = isoLocal(date, timezone);
-  const selectedSun = useMemo(
-    () => adaptSun({ ...context, sunTime: context.selectedTime, time: { ...context.time, instant: context.selectedDate } }),
-    [context, context.selectedTime, context.selectedDate]
-  );
-  const sunData = selectedSun?.data || selectedSun?.value || selectedSun || {};
-  const sun = {
-    ...sunData,
-    ...(natural.sun || {}),
-    sunrise: sunData.sunrise ?? natural.sun?.sunrise ?? null,
-    sunset: sunData.sunset ?? natural.sun?.sunset ?? null,
-    dawn: sunData.dawn ?? natural.sun?.dawn ?? null,
-    noon: sunData.noon ?? natural.sun?.noon ?? null,
-    dusk: sunData.dusk ?? natural.sun?.dusk ?? null,
-    golden_hour: sunData.golden_hour ?? natural.sun?.golden_hour ?? null,
-    altitude: sunData.altitude ?? natural.sun?.altitude ?? null,
-    azimuth: sunData.azimuth ?? natural.sun?.azimuth ?? null,
-    path: sunData.path?.length ? sunData.path : natural.sun?.path || [],
-    selectedTime: sunData.selectedTime ?? context.selectedTime,
-  };
+  const sun = natural.sun || {};
   const moon = natural.moon || {};
   const sky = natural.sky || {};
   const earth = natural.earth || {};
