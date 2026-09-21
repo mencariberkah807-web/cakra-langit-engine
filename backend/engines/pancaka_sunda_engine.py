@@ -14,13 +14,13 @@ PANCAKA_7_RESULTS = {
 PANCAKA_12_RESULTS = {i: None for i in range(1, 13)}
 
 
-def pancaka_7_from_naktu(total_naktu: int):
-    if total_naktu is None:
+def pancaka_7_from_naktu(naktu_huruf_nama: int):
+    if naktu_huruf_nama is None:
         return None
-    remainder = total_naktu % 7
+    remainder = naktu_huruf_nama % 7
     result_index = 7 if remainder == 0 else remainder
     return {
-        "input_naktu": total_naktu,
+        "input_naktu": naktu_huruf_nama,
         "divisor": 7,
         "remainder": remainder,
         "result_index": result_index,
@@ -30,13 +30,13 @@ def pancaka_7_from_naktu(total_naktu: int):
     }
 
 
-def pancaka_12_from_naktu(total_naktu: int):
-    if total_naktu is None:
+def pancaka_12_from_naktu_huruf_arab(naktu_huruf_arab_total: int):
+    if naktu_huruf_arab_total is None:
         return None
-    remainder = total_naktu % 12
+    remainder = naktu_huruf_arab_total % 12
     result_index = 12 if remainder == 0 else remainder
     return {
-        "input_naktu": total_naktu,
+        "input_naktu": naktu_huruf_arab_total,
         "divisor": 12,
         "remainder": remainder,
         "result_index": result_index,
@@ -44,5 +44,6 @@ def pancaka_12_from_naktu(total_naktu: int):
         "result_index_only": True,
         "note": "Sumber yang tersedia memverifikasi pembagian menjadi 12 kategori Nabi, tetapi nama Nabi per indeks belum tersedia dalam matrix.",
         "context": "Watak nama",
+        "input_type": "Naktu huruf Arab",
         "source": {"source_id": SOURCE_ID, "source_title": SOURCE_TITLE},
     }
