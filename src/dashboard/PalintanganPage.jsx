@@ -374,6 +374,68 @@ function CategoryCard({ category, onSelect }) {
   )
 }
 
+function JodohPage({ onBack }) {
+  const [one, setOne] = useState('')
+  const [two, setTwo] = useState('')
+  const [result, setResult] = useState(null)
+  const [error, setError] = useState('')
+
+  async function calculate() {
+    setError('')
+    setResult(null)
+    const a = Number(one)
+    const b = Number(two)
+    if (!Number.isInteger(a) || !Number.isInteger(b)) {
+      setError('Masukkan dua nilai Naktu nama yang valid.')
+      return
+    }
+    try {
+      const response = await fetch('/api/palintangan/jodoh?naktu_nama_one=' + encodeURIComponent(a) + '&naktu_nama_two=' + encodeURIComponent(b))
+      if (!response.ok) throw new Error('Jodoh API ' + response.status)
+      setResult(await response.json())
+    } catch (err) {
+      setError(err.message || 'Gagal menghitung Repok/Jodoh')
+    }
+  }
+
+  return (
+    <section className="mx-auto max-w-[1180px] px-5 py-7 sm:px-7 lg:py-9">
+      <button type="button" onClick={onBack} className="mb-5 rounded-xl border border-white/[0.08] bg-[#07111C] px-4 py-2.5 text-xs font-semibold text-[#A9BDCF] hover:border-cyan-300/20">← Palintangan</button>
+      <header className="mb-7">
+        <div className="text-[10px] font-bold uppercase tracking-[0.16em] text-[#22D3EE]">Task · Repok / Jodoh</div>
+        <h1 className="mt-2 text-3xl font-semibold tracking-tight text-white">Repok / Jodoh</h1>
+        <p className="mt-2 max-w-3xl text-sm leading-6 text-[#8FA4B8]">Pancaka 7 dipisahkan sebagai rule khusus Repok/Jodoh. Inputnya adalah hasil Naktu nama, bukan Naktu hari atau Four Naktu.</p>
+      </header>
+      <Panel eyebrow="Input" title="Naktu Nama">
+        <div className="mt-5 grid gap-4 sm:grid-cols-2">
+          <label className="block"><span className="mb-2 block text-xs font-semibold text-[#A9BDCF]">Naktu Nama 1</span><input type="number" min="1" value={one} onChange={(e) => setOne(e.target.value)} className="w-full rounded-xl border border-white/[0.09] bg-[#07111C] px-3 py-3 text-sm text-white outline-none" /></label>
+          <label className="block"><span className="mb-2 block text-xs font-semibold text-[#A9BDCF]">Naktu Nama 2</span><input type="number" min="1" value={two} onChange={(e) => setTwo(e.target.value)} className="w-full rounded-xl border border-white/[0.09] bg-[#07111C] px-3 py-3 text-sm text-white outline-none" /></label>
+        </div>
+        <button type="button" onClick={calculate} className="mt-5 rounded-xl bg-[#12324A] px-5 py-3 text-sm font-semibold text-white hover:bg-[#17415D]">Hitung Repok / Jodoh</button>
+        {error ? <div className="mt-4 text-xs text-rose-300">{error}</div> : null}
+      </Panel>
+      {result ? (
+        <div className="mt-5 grid gap-5 lg:grid-cols-2">
+          <Panel eyebrow="Naktu Nama" title="Input & total">
+            <div className="mt-5 grid gap-3 sm:grid-cols-3">
+              <Metric label="Nama 1" value={result.naktu_nama.one} />
+              <Metric label="Nama 2" value={result.naktu_nama.two} />
+              <Metric label="Total" value={result.naktu_nama.total} />
+            </div>
+          </Panel>
+          <Panel eyebrow="Pancaka 7" title={result.pancaka_7.result}>
+            <div className="mt-5 grid gap-3 sm:grid-cols-3">
+              <Metric label="Pembagi" value="7" />
+              <Metric label="Sisa" value={result.pancaka_7.remainder} />
+              <Metric label="Index" value={result.pancaka_7.result_index} />
+            </div>
+          </Panel>
+        </div>
+      ) : null}
+    </section>
+  )
+}
+
 function CategoryPlaceholder({ category, onBack }) {
   return (
     <section className="mx-auto max-w-[1180px] px-5 py-7 sm:px-7 lg:py-9">
@@ -410,6 +472,10 @@ export default function PalintanganPage() {
 
   if (category === 'tanam') {
     return <PertanianPage onBack={() => setCategory(null)} />
+  }
+
+  if (category === 'jodoh') {
+    return <JodohPage onBack={() => setCategory(null)} />
   }
 
   if (category) {
