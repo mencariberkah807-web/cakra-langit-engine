@@ -436,6 +436,51 @@ function JodohPage({ onBack }) {
   )
 }
 
+function WaktuPage({ onBack }) {
+  const [dayName, setDayName] = useState('Minggu')
+  const [timeValue, setTimeValue] = useState('09:00')
+  const [result, setResult] = useState(null)
+  const [error, setError] = useState('')
+
+  async function calculate() {
+    setError('')
+    try {
+      const response = await fetch('/api/palintangan/waktu?day_name=' + encodeURIComponent(dayName) + '&time_value=' + encodeURIComponent(timeValue))
+      if (!response.ok) throw new Error('Waktu API ' + response.status)
+      setResult(await response.json())
+    } catch (err) {
+      setError(err.message || 'Gagal memeriksa Waktu / Jam')
+    }
+  }
+
+  return (
+    <section className="mx-auto max-w-[1180px] px-5 py-7 sm:px-7 lg:py-9">
+      <button type="button" onClick={onBack} className="mb-5 rounded-xl border border-white/[0.08] bg-[#07111C] px-4 py-2.5 text-xs font-semibold text-[#A9BDCF]">← Palintangan</button>
+      <header className="mb-7">
+        <div className="text-[10px] font-bold uppercase tracking-[0.16em] text-[#22D3EE]">Task · Waktu</div>
+        <h1 className="mt-2 text-3xl font-semibold tracking-tight text-white">Waktu / Jam</h1>
+        <p className="mt-2 max-w-3xl text-sm leading-6 text-[#8FA4B8]">Watek Jam masih source-partial. Sistem hanya mengaktifkan test case yang benar-benar terdokumentasi.</p>
+      </header>
+      <Panel eyebrow="Input" title="Hari + Jam">
+        <div className="mt-5 flex flex-wrap gap-3">
+          <select value={dayName} onChange={(e) => setDayName(e.target.value)} className="rounded-xl border border-white/[0.09] bg-[#07111C] px-3 py-3 text-sm text-white">
+            {['Minggu','Senin','Selasa','Rabu','Kamis','Jumat','Sabtu'].map((day) => <option key={day}>{day}</option>)}
+          </select>
+          <input type="time" value={timeValue} onChange={(e) => setTimeValue(e.target.value)} className="rounded-xl border border-white/[0.09] bg-[#07111C] px-3 py-3 text-sm text-white" />
+          <button type="button" onClick={calculate} className="rounded-xl bg-[#12324A] px-5 py-3 text-sm font-semibold text-white">Periksa</button>
+        </div>
+        {error ? <div className="mt-4 text-xs text-rose-300">{error}</div> : null}
+      </Panel>
+      {result ? (
+        <Panel eyebrow="Source Status" title={result.result || result.status}>
+          <p className="mt-5 text-sm leading-6 text-[#71869A]">{result.note}</p>
+          <div className="mt-4 text-xs text-[#536A7D]">Source: {result.source.source_title} · {result.source.location}</div>
+        </Panel>
+      ) : null}
+    </section>
+  )
+}
+
 function ArahPage({ onBack }) {
   const [dateValue, setDateValue] = useState('')
   const [result, setResult] = useState(null)
@@ -664,6 +709,10 @@ export default function PalintanganPage() {
 
   if (category === 'arah') {
     return <ArahPage onBack={() => setCategory(null)} />
+  }
+
+  if (category === 'waktu') {
+    return <WaktuPage onBack={() => setCategory(null)} />
   }
 
   if (category) {
