@@ -7,6 +7,16 @@ from engines.jaya_apes_sunda_engine import calculate_jaya_apes
 SOURCE_ID = "SSOT-PARIRIMBON-JABAR"
 SOURCE_TITLE = "PARIRIMBON SUNDA (JAWA BARAT).pdf"
 
+HOUSE_DIRECTION_VERIFIED = {
+    "Sabtu": "Utara",
+    "Setu": "Utara",
+    "Minggu": "Timur",
+    "Ahad": "Timur",
+    "Selasa": "Utara",
+    "Kamis": "Timur",
+    "Kemis": "Timur",
+}
+
 BIRTH_DOA = {
     "Ahad": {"dua": "ya hayu ya kayumu", "count": 500},
     "Minggu": {"dua": "ya hayu ya kayumu", "count": 500},
@@ -35,9 +45,16 @@ def calculate_kelahiran(target_date: date, timezone_name: str = "Asia/Jakarta"):
         "naktu": daily["naktu"],
         "watek": daily["watek"],
         "birth_context": daily["birth_context"],
+        "birth_house_direction": {
+            "direction": HOUSE_DIRECTION_VERIFIED.get(daily["calendar"]["day"]),
+            "status": "PARTIAL_SOURCE" if daily["calendar"]["day"] not in HOUSE_DIRECTION_VERIFIED else "VERIFIED_DATA",
+            "source": {"source_id": SOURCE_ID, "source_title": SOURCE_TITLE, "location": "naskah p.90"},
+            "note": "Hanya hari yang eksplisit terbaca pada source yang diisi; hari lain tidak diinferensikan.",
+        },
         "birth_doa": {
             **BIRTH_DOA.get(daily["calendar"]["day"], {}),
             "count_basis": "naktu hari × 100" if daily["naktu"]["hari"] is not None else None,
+            "count_check": (BIRTH_DOA.get(daily["calendar"]["day"], {}).get("count") == daily["naktu"]["hari"] * 100) if daily["naktu"]["hari"] is not None and daily["calendar"]["day"] in BIRTH_DOA else None,
             "source": {"source_id": SOURCE_ID, "source_title": SOURCE_TITLE, "location": "naskah p.89"},
         },
         "gagalang": daily["gagalang"],
