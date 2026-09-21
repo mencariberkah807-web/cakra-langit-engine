@@ -7,6 +7,24 @@ from engines.jaya_apes_sunda_engine import calculate_jaya_apes
 SOURCE_ID = "SSOT-PARIRIMBON-JABAR"
 SOURCE_TITLE = "PARIRIMBON SUNDA (JAWA BARAT).pdf"
 
+BIRTH_DOA = {
+    "Ahad": {"dua": "ya hayu ya kayumu", "count": 500},
+    "Minggu": {"dua": "ya hayu ya kayumu", "count": 500},
+    "Senen": {"dua": "ya rahmanu ya rahimu", "count": 400},
+    "Senin": {"dua": "ya rahmanu ya rahimu", "count": 400},
+    "Selasa": {"dua": "ya malikul qudus", "count": 300},
+    "Rebo": {"dua": "ya basiru ya mutaha", "count": 700},
+    "Rabu": {"dua": "ya basiru ya mutaha", "count": 700},
+    "Kemis": {"dua": "ya alliyu ya adimu", "count": 800},
+    "Kamis": {"dua": "ya alliyu ya adimu", "count": 800},
+    "Jumaah": {"dua": "ya kapi ya mugaeni", "count": 600},
+    "Jumat": {"dua": "ya kapi ya mugaeni", "count": 600},
+    "Jemuwah": {"dua": "ya kapi ya mugaeni", "count": 600},
+    "Setu": {"dua": "ya pattahu ya rajaku", "count": 900},
+    "Sabtu": {"dua": "ya pattahu ya rajaku", "count": 900},
+}
+
+
 
 def calculate_kelahiran(target_date: date, timezone_name: str = "Asia/Jakarta"):
     daily = calculate_palintangan(target_date, timezone_name)
@@ -17,6 +35,11 @@ def calculate_kelahiran(target_date: date, timezone_name: str = "Asia/Jakarta"):
         "naktu": daily["naktu"],
         "watek": daily["watek"],
         "birth_context": daily["birth_context"],
+        "birth_doa": {
+            **BIRTH_DOA.get(daily["calendar"]["day"], {}),
+            "count_basis": "naktu hari × 100" if daily["naktu"]["hari"] is not None else None,
+            "source": {"source_id": SOURCE_ID, "source_title": SOURCE_TITLE, "location": "naskah p.89"},
+        },
         "gagalang": daily["gagalang"],
         "jaya_apes": jaya_apes,
         "monthly_rule": daily["monthly_rule"],
