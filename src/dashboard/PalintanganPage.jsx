@@ -436,6 +436,68 @@ function JodohPage({ onBack }) {
   )
 }
 
+function KelahiranPage({ onBack }) {
+  const [dateValue, setDateValue] = useState('')
+  const [result, setResult] = useState(null)
+  const [error, setError] = useState('')
+
+  async function calculate() {
+    setError('')
+    setResult(null)
+    if (!dateValue) { setError('Pilih tanggal lahir.'); return }
+    try {
+      const response = await fetch('/api/palintangan/kelahiran?date_value=' + encodeURIComponent(dateValue))
+      if (!response.ok) throw new Error('Kelahiran API ' + response.status)
+      setResult(await response.json())
+    } catch (err) {
+      setError(err.message || 'Gagal menghitung kelahiran')
+    }
+  }
+
+  return (
+    <section className="mx-auto max-w-[1180px] px-5 py-7 sm:px-7 lg:py-9">
+      <button type="button" onClick={onBack} className="mb-5 rounded-xl border border-white/[0.08] bg-[#07111C] px-4 py-2.5 text-xs font-semibold text-[#A9BDCF]">← Palintangan</button>
+      <header className="mb-7">
+        <div className="text-[10px] font-bold uppercase tracking-[0.16em] text-[#22D3EE]">Personal · Kelahiran</div>
+        <h1 className="mt-2 text-3xl font-semibold tracking-tight text-white">Kelahiran</h1>
+        <p className="mt-2 max-w-3xl text-sm leading-6 text-[#8FA4B8]">Tanggal lahir → calendar context → Naktu, Watek, dan data Palintangan yang sudah tervalidasi.</p>
+      </header>
+      <Panel eyebrow="Input" title="Tanggal lahir">
+        <div className="mt-5 flex gap-3">
+          <input type="date" value={dateValue} onChange={(e) => setDateValue(e.target.value)} className="rounded-xl border border-white/[0.09] bg-[#07111C] px-3 py-3 text-sm text-white outline-none" />
+          <button type="button" onClick={calculate} className="rounded-xl bg-[#12324A] px-5 py-3 text-sm font-semibold text-white">Hitung</button>
+        </div>
+        {error ? <div className="mt-4 text-xs text-rose-300">{error}</div> : null}
+      </Panel>
+      {result ? (
+        <div className="mt-5 grid gap-5 lg:grid-cols-2">
+          <Panel eyebrow="Calendar Context" title={result.calendar.day + ' · ' + result.calendar.pasaran}>
+            <div className="mt-5 grid grid-cols-2 gap-3">
+              <Metric label="Wuku" value={result.calendar.wuku} />
+              <Metric label="Paringkelan" value={result.calendar.paringkelan?.name} />
+              <Metric label="Hijri" value={result.calendar.hijri?.day + ' ' + result.calendar.hijri?.month} />
+              <Metric label="Saka Sunda" value={result.calendar.saka_sunda?.year} />
+            </div>
+          </Panel>
+          <Panel eyebrow="Naktu" title="Naktu Wedal">
+            <div className="mt-5 grid grid-cols-3 gap-3">
+              <Metric label="Hari" value={result.naktu.hari} />
+              <Metric label="Pasaran" value={result.naktu.pasaran} />
+              <Metric label="Wedal" value={result.naktu.wedal} />
+            </div>
+          </Panel>
+          <Panel eyebrow="Watek" title="Watek Hari">
+            <div className="mt-5 flex flex-wrap gap-2">{(result.watek.names || []).map((item) => <span key={item} className="rounded-full border border-white/[0.08] px-3 py-2 text-xs text-[#B8C9D8]">{item}</span>)}</div>
+          </Panel>
+          <Panel eyebrow="Boundary" title="Source status">
+            <p className="mt-5 text-sm leading-6 text-[#71869A]">{result.meta.note}</p>
+          </Panel>
+        </div>
+      ) : null}
+    </section>
+  )
+}
+
 function NamaPage({ onBack }) {
   const [name, setName] = useState('')
   const [result, setResult] = useState(null)
@@ -537,6 +599,10 @@ export default function PalintanganPage() {
 
   if (category === 'nama') {
     return <NamaPage onBack={() => setCategory(null)} />
+  }
+
+  if (category === 'kelahiran') {
+    return <KelahiranPage onBack={() => setCategory(null)} />
   }
 
   if (category) {
