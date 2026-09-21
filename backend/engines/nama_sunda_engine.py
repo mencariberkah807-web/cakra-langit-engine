@@ -29,7 +29,7 @@ VALIDATED_SEGMENT_ALIASES = {
     "kan": ("ka", 5),
     "ta": ("ta", 7),
     "wa": ("wa", 9),
-    "ya": ("ya", 13),
+    "ya": ("nya", 14),
 }
 
 # Consonant-to-Cacarakan base normalization for ordinary Latin names.
@@ -125,6 +125,6 @@ def calculate_naktu_nama(name: str):
             "source_title": SOURCE_TITLE,
             "location": "naskah p.72",
         },
-        "note": "Naktu nama memakai nilai Cacarakan 18 yang disebut eksplisit dalam SSOT. Vokal Latin mengikuti huruf dasar; varian Cacarakan 20 tetap tidak dipaksakan karena source menyatakan adanya perbedaan penggunaan.",
+        "note": "Naktu nama memakai nilai Cacarakan 18 dari SSOT. Segmen tervalidasi lama seperti Ya=14 dipertahankan sebagai dataset source-backed terpisah; source p.72 juga mencatat Cacarakan 18 ya=13 dan nya=14, sehingga keduanya tidak dicampur diam-diam.",
     }
 }
