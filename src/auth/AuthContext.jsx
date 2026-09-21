@@ -10,6 +10,17 @@ import {
 const API_BASE = import.meta.env.VITE_API_BASE_URL || ''
 const TOKEN_KEY = 'cakra-langit:access-token'
 const USER_KEY = 'cakra-langit:user'
+const LOCATION_STORAGE_KEY = 'personal-almanac:selected-location'
+const LOCATION_SOURCE_STORAGE_KEY = 'personal-almanac:selected-location-source'
+
+function resetLocationToBrowserDefault() {
+  try {
+    window.localStorage.removeItem(LOCATION_STORAGE_KEY)
+    window.localStorage.removeItem(LOCATION_SOURCE_STORAGE_KEY)
+  } catch {
+    // Ignore storage errors.
+  }
+}
 
 const AuthContext = createContext(null)
 
@@ -110,6 +121,7 @@ export function AuthProvider({ children }) {
     setToken(payload.access_token)
     setUser(payload.user)
     storeSession(payload.access_token, payload.user)
+    resetLocationToBrowserDefault()
     window.location.assign('/dashboard')
   }, [])
 
@@ -126,6 +138,7 @@ export function AuthProvider({ children }) {
     setToken(payload.access_token)
     setUser(payload.user)
     storeSession(payload.access_token, payload.user)
+    resetLocationToBrowserDefault()
     window.location.assign('/dashboard')
   }, [])
 
