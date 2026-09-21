@@ -70,11 +70,11 @@ function DailyGlobalPage({ onBack }) {
   const pernaasan = result?.pernaasan
   const gagalang = result?.gagalang
   const watek = result?.watek
-  const pancaka = result?.pancaka_4
 
   return (
     <section className="mx-auto max-w-[1180px] px-5 py-7 sm:px-7 lg:py-9">
       <header className="mb-7">
+        <button type="button" onClick={onBack} className="mb-4 rounded-xl border border-white/[0.08] bg-[#07111C] px-4 py-2 text-xs font-semibold text-[#A9BDCF] hover:border-cyan-300/20">← Palintangan</button>
         <div className="text-[10px] font-bold uppercase tracking-[0.16em] text-[#22D3EE]">
           Cakra Langit · Sunda
         </div>
@@ -225,21 +225,7 @@ function DailyGlobalPage({ onBack }) {
           </div>
         </Panel>
 
-        <Panel eyebrow="Pancaka 4" title="Hasil tanggal">
-          <div className="mt-5 flex flex-wrap items-center gap-3">
-            <span className="rounded-lg bg-[#07111C] px-4 py-3 text-sm text-[#A9BDCF]">{pancaka?.input_day_of_month ?? '—'}</span>
-            <span className="text-[#536A7D]">÷ 4 → sisa</span>
-            <span className="rounded-lg bg-[#12324A] px-5 py-3 text-xl font-semibold text-white">{pancaka?.remainder ?? '—'}</span>
-          </div>
-          <div className="mt-5 rounded-xl border border-cyan-300/10 bg-[#07111C] p-4">
-            <div className="text-[10px] uppercase tracking-[0.12em] text-[#536A7D]">Hasil</div>
-            <div className="mt-1 text-xl font-semibold text-white">{pancaka?.result || '—'}</div>
-            <div className="mt-2 text-xs leading-5 text-[#7896A8]">
-              {pancaka?.context ? pancaka.context + '. ' : ''}
-              {pancaka?.meaning || ''}
-            </div>
-          </div>
-        </Panel>
+
       </div>
 
       <div className="mt-5 rounded-2xl border border-white/[0.07] bg-[#0A1723] p-5 sm:p-6">
@@ -251,6 +237,74 @@ function DailyGlobalPage({ onBack }) {
           tidak dipaksa menjadi satu label baik/buruk, karena source menjelaskan
           bahwa penggunaan hasil perhitungan bergantung pada konteks niat atau pekerjaan.
         </p>
+      </div>
+    </section>
+  )
+}
+
+function PertanianPage({ onBack }) {
+  const { selectedDate, setSelectedDate } = useTodayContext()
+  const isoDate = selectedDate?.toISOString().slice(0, 10) || ''
+  const [activity, setActivity] = useState('tanam')
+  const [result, setResult] = useState(null)
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState('')
+
+  useEffect(() => {
+    if (!isoDate) return
+    let cancelled = false
+    setLoading(true)
+    setError('')
+    fetch('/api/palintangan/pertanian?date_value=' + encodeURIComponent(isoDate) + '&activity=' + encodeURIComponent(activity))
+      .then((response) => {
+        if (!response.ok) throw new Error('Pertanian API ' + response.status)
+        return response.json()
+      })
+      .then((data) => { if (!cancelled) setResult(data) })
+      .catch((err) => { if (!cancelled) setError(err.message || 'Gagal memuat rule pertanian') })
+      .finally(() => { if (!cancelled) setLoading(false) })
+    return () => { cancelled = true }
+  }, [isoDate, activity])
+
+  const pancaka = result?.pancaka_4
+
+  return (
+    <section className="mx-auto max-w-[1180px] px-5 py-7 sm:px-7 lg:py-9">
+      <button type="button" onClick={onBack} className="mb-5 rounded-xl border border-white/[0.08] bg-[#07111C] px-4 py-2.5 text-xs font-semibold text-[#A9BDCF] hover:border-cyan-300/20">← Palintangan</button>
+      <header className="mb-7">
+        <div className="text-[10px] font-bold uppercase tracking-[0.16em] text-[#22D3EE]">Task · Pertanian</div>
+        <h1 className="mt-2 text-3xl font-semibold tracking-tight text-white">Tanam / Panen</h1>
+        <p className="mt-2 max-w-3xl text-sm leading-6 text-[#8FA4B8]">Rule pertanian dipisahkan dari Daily Global. Pancaka 4 dihitung hanya di category ini.</p>
+      </header>
+      <Panel eyebrow="Input" title="Tanggal & kegiatan">
+        <div className="mt-5 grid gap-4 sm:grid-cols-2">
+          <label className="block">
+            <span className="mb-2 block text-xs font-semibold text-[#A9BDCF]">Tanggal</span>
+            <input type="date" value={isoDate} onChange={(event) => event.target.value && setSelectedDate(new Date(event.target.value + 'T12:00:00'))} className="w-full rounded-xl border border-white/[0.09] bg-[#07111C] px-3 py-3 text-sm text-white outline-none focus:border-cyan-300/40" />
+          </label>
+          <label className="block">
+            <span className="mb-2 block text-xs font-semibold text-[#A9BDCF]">Kegiatan</span>
+            <select value={activity} onChange={(event) => setActivity(event.target.value)} className="w-full rounded-xl border border-white/[0.09] bg-[#07111C] px-3 py-3 text-sm text-white outline-none">
+              <option value="tanam">Tanam</option>
+              <option value="panen">Panen</option>
+              <option value="simpan">Simpan hasil</option>
+            </select>
+          </label>
+        </div>
+      </Panel>
+      <div className="mt-5">
+        <Panel eyebrow="Pancaka 4" title="Hasil pertanian">
+          <div className="mt-5 flex flex-wrap items-center gap-3">
+            <span className="rounded-lg bg-[#07111C] px-4 py-3 text-sm text-[#A9BDCF]">{isoDate ? isoDate.slice(-2).replace(/^0/, '') : '—'}</span>
+            <span className="text-[#536A7D]">÷ 4 → sisa</span>
+            <span className="rounded-lg bg-[#12324A] px-5 py-3 text-xl font-semibold text-white">{pancaka?.remainder ?? '—'}</span>
+          </div>
+          <div className="mt-5 rounded-xl border border-cyan-300/10 bg-[#07111C] p-4">
+            <div className="text-[10px] uppercase tracking-[0.12em] text-[#536A7D]">Hasil</div>
+            <div className="mt-1 text-xl font-semibold text-white">{pancaka?.result || '—'}</div>
+            <div className="mt-2 text-xs leading-5 text-[#7896A8]">{pancaka?.context ? pancaka.context + '. ' : ''}{pancaka?.meaning || error || (loading ? 'Calculating…' : '')}</div>
+          </div>
+        </Panel>
       </div>
     </section>
   )
@@ -352,6 +406,10 @@ export default function PalintanganPage() {
 
   if (category === 'daily') {
     return <DailyGlobalPage onBack={() => setCategory(null)} />
+  }
+
+  if (category === 'tanam') {
+    return <PertanianPage onBack={() => setCategory(null)} />
   }
 
   if (category) {
