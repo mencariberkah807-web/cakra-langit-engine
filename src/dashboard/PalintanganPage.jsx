@@ -245,7 +245,7 @@ function DailyGlobalPage({ onBack }) {
 function PertanianPage({ onBack }) {
   const { selectedDate, setSelectedDate } = useTodayContext()
   const isoDate = selectedDate?.toISOString().slice(0, 10) || ''
-  const [activity, setActivity] = useState('tanam')
+  const [activity, setActivity] = useState('panen')
   const [result, setResult] = useState(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
@@ -274,7 +274,7 @@ function PertanianPage({ onBack }) {
       <header className="mb-7">
         <div className="text-[10px] font-bold uppercase tracking-[0.16em] text-[#22D3EE]">Task · Pertanian</div>
         <h1 className="mt-2 text-3xl font-semibold tracking-tight text-white">Tanam / Panen</h1>
-        <p className="mt-2 max-w-3xl text-sm leading-6 text-[#8FA4B8]">Rule pertanian dipisahkan dari Daily Global. Pancaka 4 dihitung hanya di category ini.</p>
+        <p className="mt-2 max-w-3xl text-sm leading-6 text-[#8FA4B8]">Rule pertanian dipisahkan dari Daily Global. Pancaka 4 dihitung hanya di category ini. Pemetaan Tanam belum diaktifkan karena source yang tersedia baru memverifikasi konteks panen dan penyimpanan.</p>
       </header>
       <Panel eyebrow="Input" title="Tanggal & kegiatan">
         <div className="mt-5 grid gap-4 sm:grid-cols-2">
