@@ -45,11 +45,28 @@ export function buildDashboardData(context, language = "en") {
     skyState: skyResult?.skyState || skyResult?.primary || null,
     bortle: skyResult?.bortle || skyResult?.details?.find((item) => item.label === "Bortle")?.value || null,
   };
-  const earthData = apiData?.natural?.earth || {
+  const earthApiData = apiData?.natural?.earth || {};
+  const earthData = {
     ...earthResult,
-    primary: earthResult?.primary || (earthResult?.dayOfYear ? `Day ${earthResult.dayOfYear}` : null),
-    secondary: earthResult?.secondary || (earthResult?.progress != null ? `${earthResult.progress}% of annual cycle` : null),
-    context: earthResult?.context || earthResult?.primary || null,
+    ...earthApiData,
+    primary:
+      earthApiData.primary ||
+      earthResult?.primary ||
+      (earthApiData.dayOfYear || earthApiData.day_of_year || earthResult?.dayOfYear || earthResult?.day_of_year
+        ? `Day ${earthApiData.dayOfYear ?? earthApiData.day_of_year ?? earthResult?.dayOfYear ?? earthResult?.day_of_year}`
+        : null),
+    secondary:
+      earthApiData.secondary ||
+      earthResult?.secondary ||
+      (earthApiData.annual_pct ?? earthApiData.progress ?? earthResult?.annual_pct ?? earthResult?.progress) != null
+        ? `${earthApiData.annual_pct ?? earthApiData.progress ?? earthResult?.annual_pct ?? earthResult?.progress}% of annual cycle`
+        : null,
+    context:
+      earthApiData.context ||
+      earthResult?.context ||
+      earthApiData.primary ||
+      earthResult?.primary ||
+      null,
   };
   const ticker = Array.isArray(apiData?.ticker)
     ? apiData.ticker.map((item) =>
