@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 
 import Header from "../cakra-ui/Header";
 import Ticker from "../cakra-ui/Ticker";
@@ -38,7 +38,6 @@ function EclipseCountdown({ totalityAt }) {
 export default function DashboardHome({ showFooter = true, user }) {
   const context = useTodayContext();
   const { language, t } = useLanguage();
-  const apiData = context.apiData;
   const [eclipseOpen, setEclipseOpen] = useState(false);
 
   const data = buildDashboardData(context, language);
@@ -47,7 +46,7 @@ export default function DashboardHome({ showFooter = true, user }) {
   const eclipse = data.natural.eclipse || {};
   const eclipseEvent = eclipse.today || null;
   const totalityAt = eclipseEvent?.totality?.at || null;
-  const isNight = Number.isFinite(Number(sun.altitude)) ? Number(sun.altitude) < 0 : false;
+  const isNight = Number.isFinite(Number(data.natural?.sun?.altitude)) ? Number(data.natural.sun.altitude) < 0 : false;
 
   return (
     <div className="min-h-screen bg-[#07111C] font-sans antialiased text-white transition-colors duration-700" data-cakra-mode={isNight ? "night" : "day"}>
