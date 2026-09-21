@@ -16,6 +16,48 @@ PASARAN_NAKTU = {
     "Wage": 4,
 }
 
+# Naktu Bulan/Tahun are the four-component Naktu table described on
+# Paririmbon Sunda p.51-52. "Sapar" and "Jumadilakhir" are normalized
+# from the same source table; year aliases follow the source terminology.
+BULAN_NAKTU = {
+    "Muharram": 7,
+    "Muharam": 7,
+    "Safar": 2,
+    "Sapar": 2,
+    "Rabiulawal": 3,
+    "Mulud": 3,
+    "Rabiulakhir": 5,
+    "Silihmulud": 5,
+    "Silih Mulud": 5,
+    "Jumadilawal": 6,
+    "Jumadilakhir": 1,
+    "Rajab": 2,
+    "Sya'ban": 4,
+    "Rewah": 4,
+    "Ramadan": 5,
+    "Puasa": 5,
+    "Syawal": 7,
+    "Sawal": 7,
+    "Zulkaidah": 1,
+    "Hapit": 1,
+    "Zulhijah": 3,
+    "Rayagung": 3,
+}
+
+TAHUN_NAKTU = {
+    "Alip": 1,
+    "Ehe": 5,
+    "Jimawal": 3,
+    "Jim": 3,
+    "Je": 7,
+    "Dal": 4,
+    "Be": 2,
+    "Wawu": 6,
+    "Wau": 6,
+    "Jimakir": 3,
+    "Jim akhir": 3,
+}
+
 WATEK_HARI = {
     "Jemuwah": ["Karang Piwulang"],
     "Jumaah": ["Karang Piwulang"],
@@ -164,6 +206,14 @@ def calculate_palintangan(target_date: date, timezone_name: str = "Asia/Jakarta"
 
     month_name = hijri["month_name"]
     hijri_day = hijri["day"]
+    naktu_bulan = BULAN_NAKTU.get(month_name)
+    year_name = jawa["detail"]["tahun"]
+    naktu_tahun = TAHUN_NAKTU.get(year_name)
+    four_naktu_total = (
+        day_naktu + pasaran_naktu + naktu_bulan + naktu_tahun
+        if None not in (day_naktu, pasaran_naktu, naktu_bulan, naktu_tahun)
+        else None
+    )
     month_group_name, month_rule = _find_month_group(month_name)
 
     pernaasan_dates = PERNAASAN.get(month_group_name or month_name, [])
@@ -189,13 +239,12 @@ def calculate_palintangan(target_date: date, timezone_name: str = "Asia/Jakarta"
         "naktu": {
             "hari": day_naktu,
             "pasaran": pasaran_naktu,
+            "bulan": naktu_bulan,
+            "tahun": naktu_tahun,
             "wedal": wedal,
-            "four_component_status": "PARTIAL",
-            "four_component_note": (
-                "Naktu Bulan dan Naktu Tahun adalah bagian dari empat naktu "
-                "Paririmbon, tetapi tabel numeriknya belum terverifikasi penuh "
-                "untuk production."
-            ),
+            "four_component_total": four_naktu_total,
+            "four_component_status": "IMPLEMENTED",
+            "four_component_note": "Jumlah empat naktu; interpretasi baik/buruk tetap context-specific.",
         },
         "gagalang": {
             "pasaran": pasaran,
