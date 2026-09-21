@@ -122,6 +122,23 @@ export default function PalintanganPage() {
             <Metric label="Tahun Hijriah" value={calendar?.hijri?.year ? calendar.hijri.year + ' H' : '—'} />
           </div>
 
+          <div className="mt-3 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+            <Metric label="Wuku" value={calendar?.wuku} note={calendar?.wuku_day ? 'Hari ke-' + calendar.wuku_day : null} />
+            <Metric
+              label="Saka Sunda"
+              value={
+                calendar?.saka_sunda
+                  ? calendar.saka_sunda.day + ' ' + calendar.saka_sunda.month
+                  : '—'
+              }
+              note={
+                calendar?.saka_sunda?.year
+                  ? calendar.saka_sunda.year + ' · ' + calendar.saka_sunda.year_type
+                  : null
+              }
+            />
+          </div>
+
           <div className="mt-5 grid gap-3 sm:grid-cols-2">
             <Metric label="Naktu Bulan" value={naktu?.bulan} note="lookup Paririmbon" />
             <Metric label="Naktu Tahun" value={naktu?.tahun} note="lookup Paririmbon" />
