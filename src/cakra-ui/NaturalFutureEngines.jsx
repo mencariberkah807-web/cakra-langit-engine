@@ -87,7 +87,7 @@ export default function NaturalFutureEngines({ data, dateISO, expanded = false }
     <section className="relative z-10 mt-7 border-t border-[#164263] pt-6" data-testid="natural-future-engines">
       <div className="flex items-end justify-between gap-3">
         <div>
-          <h3 className="text-xs font-bold uppercase tracking-[0.16em] text-[#A9C9DA]">Nature Layer · Future Engines</h3>
+          <h3 className="text-xs font-bold uppercase tracking-[0.16em] text-[#A9C9DA]">Nature Layer</h3>
           <p className="mt-1.5 text-sm text-[#66869B]">Extended natural environment data</p>
         </div>
         <div className="flex items-center gap-2 text-[10px] font-semibold uppercase tracking-wide text-cyan-400/80">
