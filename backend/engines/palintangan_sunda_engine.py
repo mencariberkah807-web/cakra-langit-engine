@@ -58,6 +58,25 @@ TAHUN_NAKTU = {
     "Jim akhir": 3,
 }
 
+BIRTH_NAGA_DIRECTION = {
+    "Ahad": "Utara",
+    "Ngahad": "Utara",
+    "Minggu": "Utara",
+    "Senen": "Timur",
+    "Senin": "Timur",
+    "Selasa": "Tenggara",
+    "Rebo": "Barat Laut",
+    "Rabu": "Barat Laut",
+    "Kemis": "Barat",
+    "Kamis": "Barat",
+    "Jemuwah": "Barat Daya",
+    "Jumaah": "Barat Daya",
+    "Jumat": "Barat Daya",
+    "Setu": "Barat",
+    "Saptu": "Barat",
+    "Sabtu": "Barat",
+}
+
 WATEK_HARI = {
     "Jemuwah": ["Karang Piwulang"],
     "Jumaah": ["Karang Piwulang"],
@@ -180,6 +199,21 @@ PARINGKELAN = [
 ]
 
 
+MANGSA_DURATION_DAYS = {
+    "Kasa": 41,
+    "Karo": 23,
+    "Katilu": 24,
+    "Kaopat": 25,
+    "Kalima": 27,
+    "Kagenep": 43,
+    "Kapitu": 43,
+    "Kawolu": 26,
+    "Kasasanga": 25,
+    "Kasapuluh": 24,
+    "Kasabelas": 23,
+    "Kasaduabelas": 41,
+}
+
 MANGSA = [
     ("Kasa", 6, 22),
     ("Karo", 8, 2),
@@ -271,7 +305,11 @@ def calculate_palintangan(target_date: date, timezone_name: str = "Asia/Jakarta"
                 "cycle": 6,
                 "source": _source_meta("naskah cycle 7 × 5 × 6 × 30"),
             },
-            "mangsa": mangsa,
+            "mangsa": {
+                "name": mangsa,
+                "duration_days": MANGSA_DURATION_DAYS.get(mangsa),
+                "source": _source_meta("naskah p.115"),
+            },
             "saka_sunda": {
                 "day": saka_sunda["meta"].get("day", saka_sunda["fields"][0]["v"]),
                 "month": saka_sunda["meta"].get("monthName", saka_sunda["headline"]),
@@ -304,6 +342,12 @@ def calculate_palintangan(target_date: date, timezone_name: str = "Asia/Jakarta"
             "hari": day_name,
             "names": watek,
             "source": _source_meta("naskah p.21 / p.36"),
+        },
+        "birth_context": {
+            "naga_direction": BIRTH_NAGA_DIRECTION.get(day_name),
+            "source": _source_meta("naskah p.90"),
+            "status": "SOURCE_DATA",
+            "note": "Arah tempat naga menurut hari kelahiran; ini adalah data tradisional sumber, bukan aturan arah perjalanan universal.",
         },
         "monthly_rule": {
             "group": month_group_name,
