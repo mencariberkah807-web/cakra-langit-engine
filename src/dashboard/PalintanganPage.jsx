@@ -122,6 +122,11 @@ export default function PalintanganPage() {
             <Metric label="Tahun Hijriah" value={calendar?.hijri?.year ? calendar.hijri.year + ' H' : '—'} />
           </div>
 
+          <div className="mt-5 grid gap-3 sm:grid-cols-2">
+            <Metric label="Naktu Bulan" value={naktu?.bulan} note="lookup Paririmbon" />
+            <Metric label="Naktu Tahun" value={naktu?.tahun} note="lookup Paririmbon" />
+          </div>
+
           <div className="mt-5 rounded-2xl border border-cyan-300/15 bg-[#12324A] p-5">
             <div className="text-[10px] font-bold uppercase tracking-[0.14em] text-[#6EB9D2]">
               Naktu Wedal
@@ -136,6 +141,16 @@ export default function PalintanganPage() {
             <p className="mt-3 text-xs leading-5 text-[#7896A8]">
               Naktu Wedal = Naktu Hari + Naktu Pasaran.
             </p>
+          </div>
+
+          <div className="mt-4 rounded-xl border border-white/[0.07] bg-[#07111C] p-4">
+            <div className="text-[10px] font-bold uppercase tracking-[0.12em] text-[#536A7D]">
+              Four Naktu Total
+            </div>
+            <div className="mt-2 text-2xl font-semibold text-white">{naktu?.four_component_total ?? '—'}</div>
+            <div className="mt-1 text-xs text-[#71869A]">
+              Hari + Pasaran + Bulan + Tahun
+            </div>
           </div>
         </Panel>
       </div>
@@ -212,10 +227,10 @@ export default function PalintanganPage() {
         <div className="text-[10px] font-bold uppercase tracking-[0.14em] text-[#536A7D]">Engine Boundary</div>
         <h2 className="mt-1 text-sm font-semibold text-white">Source-controlled calculation</h2>
         <p className="mt-3 max-w-4xl text-xs leading-6 text-[#7896A8]">
-          Backend sekarang menghitung rule yang sudah memiliki transform/data yang
-          terverifikasi di Paririmbon. Naktu Bulan + Naktu Tahun tetap ditandai
-          PARTIAL sampai tabel numerik sumbernya benar-benar terverifikasi; tidak
-          diganti dengan formula Jawa/Bali atau asumsi baru.
+          Backend sekarang menghitung empat komponen Naktu dari tabel Paririmbon
+          Sunda dan menjumlahkannya sebagai Four Naktu Total. Interpretasi hasil
+          tidak dipaksa menjadi satu label baik/buruk, karena source menjelaskan
+          bahwa penggunaan hasil perhitungan bergantung pada konteks niat atau pekerjaan.
         </p>
       </div>
     </section>
