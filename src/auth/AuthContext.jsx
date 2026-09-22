@@ -67,7 +67,9 @@ export function AuthProvider({ children }) {
   const [user, setUser] = useState(readStoredUser)
 
   useEffect(() => {
-    if (!token) return undefined
+    // Login/register already provides display_name. Avoid re-hydrating
+    // the profile on every page load when a complete local user exists.
+    if (!token || user?.display_name) return undefined
 
     let cancelled = false
 
