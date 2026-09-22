@@ -366,7 +366,7 @@ def calculate_palintangan(target_date: date, timezone_name: str = "Asia/Jakarta"
             "source": _source_meta("naskah p.21 / p.67"),
         },
         "meta": {
-            "status": "PARTIAL_ENGINE",
+            "status": "IMPLEMENTED_BASE_LAYER",
             "source_policy": "PARIRIMBON SUNDA is SSOT; UGA KALA excluded.",
         },
     }
