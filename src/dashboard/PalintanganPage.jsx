@@ -654,38 +654,81 @@ function ArahPage({ onBack }) {
 }
 
 function KelahiranPage({ onBack }) {
-  const [dateValue, setDateValue] = useState('')
+  const { user } = useAuth()
+  const profileBirthDate = user?.birth_date || ''
+  const [manualDate, setManualDate] = useState('')
+  const [useManual, setUseManual] = useState(false)
   const [result, setResult] = useState(null)
   const [error, setError] = useState('')
 
-  async function calculate() {
-    setError('')
-    setResult(null)
-    if (!dateValue) { setError('Pilih tanggal lahir.'); return }
-    try {
-      const response = await fetch('/api/palintangan/kelahiran?date_value=' + encodeURIComponent(dateValue))
-      if (!response.ok) throw new Error('Kelahiran API ' + response.status)
-      setResult(await response.json())
-    } catch (err) {
-      setError(err.message || 'Gagal menghitung kelahiran')
+  const dateValue = useManual ? manualDate : profileBirthDate
+
+  useEffect(() => {
+    if (!dateValue) {
+      setResult(null)
+      return undefined
     }
-  }
+
+    let cancelled = false
+    setError('')
+
+    fetch('/api/palintangan/kelahiran?date_value=' + encodeURIComponent(dateValue))
+      .then((response) => {
+        if (!response.ok) throw new Error('Kelahiran API ' + response.status)
+        return response.json()
+      })
+      .then((data) => {
+        if (!cancelled) setResult(data)
+      })
+      .catch((err) => {
+        if (!cancelled) {
+          setResult(null)
+          setError(err.message || 'Gagal menghitung kelahiran')
+        }
+      })
+
+    return () => { cancelled = true }
+  }, [dateValue])
 
   return (
     <section className="mx-auto max-w-[1180px] px-5 py-7 sm:px-7 lg:py-9">
-      <button type="button" onClick={onBack} className="mb-5 rounded-xl border border-white/[0.08] bg-[#07111C] px-4 py-2.5 text-xs font-semibold text-[#A9BDCF]">← Palintangan</button>
+      <button type="button" onClick={onBack} className="mb-5 rounded-xl border border-white/[0.08] bg-[#07111C] px-4 py-2.5 text-xs font-semibold text-[#A9BDCF] hover:border-cyan-300/20">← Palintangan</button>
       <header className="mb-7">
         <div className="text-[10px] font-bold uppercase tracking-[0.16em] text-[#22D3EE]">Personal · Kelahiran</div>
         <h1 className="mt-2 text-3xl font-semibold tracking-tight text-white">Kelahiran</h1>
-        <p className="mt-2 max-w-3xl text-sm leading-6 text-[#8FA4B8]">Tanggal lahir → calendar context → Naktu, Watek, dan data Palintangan yang sudah tervalidasi.</p>
+        <p className="mt-2 max-w-3xl text-sm leading-6 text-[#8FA4B8]">Data kelahiran diambil langsung dari Profile. Tanggal manual hanya digunakan jika ingin menghitung tanggal lain.</p>
       </header>
-      <Panel eyebrow="Input" title="Tanggal lahir">
-        <div className="mt-5 flex gap-3">
-          <input type="date" value={dateValue} onChange={(e) => setDateValue(e.target.value)} className="rounded-xl border border-white/[0.09] bg-[#07111C] px-3 py-3 text-sm text-white outline-none" />
-          <button type="button" onClick={calculate} className="rounded-xl bg-[#12324A] px-5 py-3 text-sm font-semibold text-white">Hitung</button>
+
+      <Panel eyebrow="Birth Context" title="Sumber tanggal">
+        <div className="mt-5 flex flex-col gap-4">
+          <div className="rounded-xl border border-cyan-300/10 bg-[#07111C] p-4">
+            <div className="text-[10px] font-bold uppercase tracking-[0.12em] text-[#536A7D]">Profile</div>
+            <div className="mt-2 text-lg font-semibold text-white">{profileBirthDate || 'Tanggal lahir belum diatur di Profile'}</div>
+          </div>
+
+          <label className="flex items-center gap-2 text-sm text-[#A9BDCF]">
+            <input type="checkbox" checked={useManual} onChange={(e) => setUseManual(e.target.checked)} />
+            Gunakan tanggal manual
+          </label>
+
+          {useManual ? (
+            <input
+              type="date"
+              value={manualDate}
+              onChange={(e) => setManualDate(e.target.value)}
+              className="rounded-xl border border-white/[0.09] bg-[#07111C] px-3 py-3 text-sm text-white outline-none focus:border-cyan-300/40"
+            />
+          ) : null}
+
+          {!dateValue ? (
+            <div className="text-xs text-amber-300/80">Lengkapi tanggal lahir di Profile untuk menghitung Kelahiran.</div>
+          ) : (
+            <div className="text-xs text-[#536A7D]">Tanggal yang dihitung: {dateValue}</div>
+          )}
+          {error ? <div className="text-xs text-rose-300">{error}</div> : null}
         </div>
-        {error ? <div className="mt-4 text-xs text-rose-300">{error}</div> : null}
       </Panel>
+
       {result ? (
         <div className="mt-5 grid gap-5 lg:grid-cols-2">
           <Panel eyebrow="Calendar Context" title={result.calendar.day + ' · ' + result.calendar.pasaran}>
@@ -719,6 +762,19 @@ function KelahiranPage({ onBack }) {
               <Metric label="Apes" value={result.jaya_apes.apes || 'Belum tersedia'} />
             </div>
             <p className="mt-4 text-xs leading-5 text-[#71869A]">{result.jaya_apes.note || 'Baseline tervalidasi.'}</p>
+          </Panel>
+          <Panel eyebrow="Birth Doa" title={result.birth_doa?.dua || '—'}>
+            <div className="mt-5 grid grid-cols-2 gap-3">
+              <Metric label="Jumlah" value={result.birth_doa?.count ? result.birth_doa.count + '×' : '—'} />
+              <Metric label="Basis" value={result.birth_doa?.count_basis || '—'} />
+            </div>
+          </Panel>
+          <Panel eyebrow="Gagalang" title="Gagalang">
+            <div className="mt-5 grid grid-cols-2 gap-3">
+              <Metric label="Pasaran" value={result.gagalang?.pasaran} />
+              <Metric label="Berikutnya" value={result.gagalang?.next_pasaran} />
+              <Metric label="Arah" value={result.gagalang?.direction} />
+            </div>
           </Panel>
           <Panel eyebrow="Boundary" title="Source status">
             <p className="mt-5 text-sm leading-6 text-[#71869A]">{result.meta.note}</p>
