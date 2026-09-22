@@ -56,29 +56,72 @@ LATIN_TO_CACARAKAN = {
     "b": "ba",
 }
 
-def _segment_name_part(part: str):
-    """Map one Latin name part to Cacarakan base units without guessing."""
-    text = part.lower()
-    units = []
-    i = 0
-    while i < len(text):
-        if text[i].isspace():
+def _normalize_latin_consonant(text: str):
+    """Normalize foreign/modern Latin consonants to the nearest Cacarakan base.
+
+    This is a calculator aid only. It is explicitly marked as APPROXIMATE;
+    it does not replace a source-backed transliteration.
+    """
+    aliases = (
+        ("kh", "ka"),
+        ("gh", "ga"),
+        ("ph", "pa"),
+        ("bh", "ba"),
+        ("th", "ta"),
+        ("dh", "da"),
+        ("sh", "sa"),
+        ("sy", "sa"),
+        ("ch", "ca"),
+        ("ng", "nga"),
+        ("ny", "nya"),
+    )
+    value = text.lower()
+    for source, target in aliases:
+        if value == source:
+            return target
+    return {
+        "f": "pa",
+        "v": "wa",
+        "q": "ka",
+        "x": "ka",
+        "z": "ja",
+    }.get(value, LATIN_TO_CACARAKAN.get(value))
+
+
+def suggest_cacarakan_segments(name: str):
+    """Return a calculator-style consonant/base conversion.
+
+    Example: Fareza -> pa, ra, ja.
+    Vowels are not counted as separate Naktu units; the consonant/base
+    is represented using the inherent Cacarakan 'a' vowel.
+    """
+    suggestions = []
+    for word in [item.lower() for item in name.strip().split() if item.strip()]:
+        i = 0
+        units = []
+        while i < len(word):
+            if word[i] in "aiueo":
+                i += 1
+                continue
+            pair = word[i:i + 2]
+            if pair in {"ng", "ny", "kh", "gh", "ph", "bh", "th", "dh", "sh", "sy", "ch"}:
+                mapped = _normalize_latin_consonant(pair)
+                if mapped:
+                    units.append(mapped)
+                else:
+                    units.append(None)
+                i += 2
+                continue
+            mapped = _normalize_latin_consonant(word[i])
+            units.append(mapped)
             i += 1
-            continue
-        if i + 1 < len(text) and text[i:i + 2] in ("ng", "ny"):
-            units.append(LATIN_TO_CACARAKAN[text[i:i + 2]])
-            i += 2
-            continue
-        char = text[i]
-        if char in "aiueo":
-            i += 1
-            continue
-        mapped = LATIN_TO_CACARAKAN.get(char)
-        if mapped is None:
-            return None
-        units.append(mapped)
-        i += 1
-    return units
+        suggestions.append({
+            "input": word,
+            "segments": units,
+            "display": " ".join(units) if all(units) else None,
+        })
+    return suggestions
+
 
 def calculate_naktu_nama(name: str):
     clean = " ".join(name.strip().split())
@@ -91,7 +134,6 @@ def calculate_naktu_nama(name: str):
     used_validated_alias = False
 
     for part in parts:
-        # Preserve the previously validated source example/segments.
         alias = VALIDATED_SEGMENT_ALIASES.get(part)
         if alias:
             used_validated_alias = True
@@ -100,6 +142,7 @@ def calculate_naktu_nama(name: str):
                 "segment": part,
                 "source_letter": base,
                 "naktu": value,
+                "status": "VERIFIED",
             })
             continue
 
@@ -108,10 +151,18 @@ def calculate_naktu_nama(name: str):
             unknown.append(part)
             continue
 
-        part_rows = [{"segment": part, "source_letter": unit, "naktu": CACARAKAN_18[unit]} for unit in units]
-        rows.extend(part_rows)
+        for unit in units:
+            rows.append({
+                "segment": part,
+                "source_letter": unit,
+                "naktu": CACARAKAN_18[unit],
+                "status": "SOURCE_MAPPING",
+            })
 
     total = sum(item["naktu"] for item in rows)
+
+    calculator = suggest_cacarakan_segments(clean)
+    calculator_unknown = any(item["display"] is None for item in calculator)
 
     return {
         "name": clean,
@@ -120,12 +171,18 @@ def calculate_naktu_nama(name: str):
         "total": total if not unknown else None,
         "status": "VERIFIED" if not unknown and used_validated_alias and all(part in VALIDATED_SEGMENT_ALIASES for part in parts) else "PARTIAL_SOURCE",
         "unknown_segments": unknown,
-        "system": "Cacarakan 18",
+        "calculator": {
+            "system": "Cacarakan 18 · consonant/base approximation",
+            "segments": calculator,
+            "status": "APPROXIMATE" if not calculator_unknown else "PARTIAL_APPROXIMATION",
+            "editable": True,
+            "note": "Converter membantu memecah nama Latin menjadi dasar Cacarakan yang paling dekat. Hasil ini adalah pendekatan kalkulator, bukan transliterasi SSOT yang sudah tervalidasi.",
+        },
         "source": {
             "source_id": SOURCE_ID,
             "source_title": SOURCE_TITLE,
             "location": "naskah p.72",
         },
-        "note": "Segmen yang memang tervalidasi tetap VERIFIED. Mapping Cacarakan 18 untuk nama Latin lain tersedia sebagai source mapping, tetapi transliterasi Latin→Cacarakan bukan rule eksplisit SSOT sehingga statusnya PARTIAL_SOURCE.",
+        "note": "Segmen yang memang tervalidasi tetap VERIFIED. Converter Latin→Cacarakan adalah bantuan pendekatan dan tidak mengubah status source-backed.",
     }
 }
