@@ -537,6 +537,29 @@ function JodohPage({ onBack }) {
         <button type="button" onClick={calculate} className="mt-5 rounded-xl bg-[#12324A] px-5 py-3 text-sm font-semibold text-white hover:bg-[#17415D]">Hitung Repok / Jodoh</button>
         {error ? <div className="mt-4 text-xs text-rose-300">{error}</div> : null}
       </Panel>
+      {result?.calculator ? (
+        <Panel eyebrow="Converter" title="Cacarakan · Pendekatan Kalkulator">
+          <div className="mt-5 space-y-3">
+            {result.calculator.segments.map((item) => (
+              <div key={item.input} className="rounded-xl border border-white/[0.06] bg-[#07111C] px-4 py-3">
+                <div className="flex items-center justify-between gap-4">
+                  <span className="text-sm text-[#71869A]">{item.input}</span>
+                  <strong className="text-base tracking-wide text-white">{item.display || 'Belum dapat dikonversi'}</strong>
+                </div>
+                {item.display ? (
+                  <div className="mt-2 text-xs text-[#536A7D]">
+                    Basis Cacarakan: {item.segments.join(' · ')}
+                  </div>
+                ) : null}
+              </div>
+            ))}
+          </div>
+          <p className="mt-4 text-xs leading-5 text-amber-300/80">
+            Hasil converter adalah pendekatan untuk membantu kalkulasi nama. Nilai Naktu yang sudah tervalidasi tetap mengikuti dataset SSOT.
+          </p>
+        </Panel>
+      ) : null}
+
       {result ? (
         <div className="mt-5 grid gap-5 lg:grid-cols-2">
           <Panel eyebrow="Naktu Nama" title="Input & total">
@@ -760,10 +783,14 @@ function NamaPage({ onBack }) {
         <p className="mt-2 max-w-3xl text-sm leading-6 text-[#8FA4B8]">Naktu Nama dihitung dari segmen nama yang memiliki nilai tervalidasi. Dataset yang belum tersedia tidak ditebak.</p>
       </header>
       <Panel eyebrow="Input" title="Nama">
-        <div className="mt-5 flex gap-3">
-          <input value={name} onChange={(e) => setName(e.target.value)} placeholder="Contoh: Wi Kan Ta" className="min-w-0 flex-1 rounded-xl border border-white/[0.09] bg-[#07111C] px-3 py-3 text-sm text-white outline-none focus:border-cyan-300/40" />
+        <div className="mt-5 flex flex-col gap-3 sm:flex-row">
+          <input value={name} onChange={(e) => setName(e.target.value)} placeholder="Contoh: Fareza" className="min-w-0 flex-1 rounded-xl border border-white/[0.09] bg-[#07111C] px-3 py-3 text-sm text-white outline-none focus:border-cyan-300/40" />
           <button type="button" onClick={calculate} className="rounded-xl bg-[#12324A] px-5 py-3 text-sm font-semibold text-white hover:bg-[#17415D]">Hitung</button>
         </div>
+        <p className="mt-3 text-xs leading-5 text-[#536A7D]">
+          Nama Latin akan dibaca sebagai dasar konsonan Cacarakan. Contoh pendekatan: Fareza → pa · ra · ja.
+          Ini converter kalkulator, bukan klaim transliterasi SSOT.
+        </p>
         {error ? <div className="mt-4 text-xs text-rose-300">{error}</div> : null}
       </Panel>
       {result ? (
