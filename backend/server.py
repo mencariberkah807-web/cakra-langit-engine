@@ -1,3 +1,7 @@
+from dotenv import load_dotenv
+
+load_dotenv()
+
 from datetime import date, datetime
 from typing import Annotated
 from zoneinfo import ZoneInfo
