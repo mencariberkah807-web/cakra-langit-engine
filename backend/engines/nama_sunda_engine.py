@@ -127,7 +127,16 @@ def _normalize_latin_consonant(text: str):
     }.get(value, LATIN_TO_CACARAKAN.get(value))
 
 
-def suggest_cacarakan_segments(name: str):
+def _variant_value(unit: str, system: str):
+    if system == "cacarakan_18":
+        return CACARAKAN_18.get(unit)
+    if system == "cacarakan_20":
+        matches = [value for letter, value in CACARAKAN_20_TABLE if letter == unit]
+        return matches[0] if matches else None
+    raise ValueError("system harus cacarakan_18 atau cacarakan_20")
+
+
+def suggest_cacarakan_segments(name: str, system: str = "cacarakan_18"):
     """Return a calculator-style consonant/base conversion.
 
     Example: Fareza -> pa, ra, ja.
@@ -145,6 +154,10 @@ def suggest_cacarakan_segments(name: str):
             pair = word[i:i + 2]
             if pair in {"ng", "ny", "kh", "gh", "ph", "bh", "th", "dh", "sh", "sy", "ch"}:
                 mapped = _normalize_latin_consonant(pair)
+                if system == "cacarakan_20" and pair == "dh":
+                    mapped = "dha"
+                elif system == "cacarakan_20" and pair == "th":
+                    mapped = "tha"
                 if mapped:
                     units.append(mapped)
                 else:
@@ -162,7 +175,10 @@ def suggest_cacarakan_segments(name: str):
     return suggestions
 
 
-def calculate_naktu_nama(name: str):
+def calculate_naktu_nama(name: str, system: str = "cacarakan_18"):
+    if system not in CACARAKAN_VARIANTS:
+        raise ValueError("system harus cacarakan_18 atau cacarakan_20")
+
     clean = " ".join(name.strip().split())
     if not clean:
         raise ValueError("Nama diperlukan")
@@ -194,24 +210,26 @@ def calculate_naktu_nama(name: str):
             rows.append({
                 "segment": part,
                 "source_letter": unit,
-                "naktu": CACARAKAN_18[unit],
+                "naktu": _variant_value(unit, system),
                 "status": "SOURCE_MAPPING",
             })
 
     total = sum(item["naktu"] for item in rows)
 
-    calculator = suggest_cacarakan_segments(clean)
+    calculator = suggest_cacarakan_segments(clean, system)
     calculator_unknown = any(item["display"] is None for item in calculator)
 
     return {
         "name": clean,
+        "system": system,
+        "system_label": CACARAKAN_VARIANTS[system]["label"],
         "segments": parts,
         "naktu": rows,
         "total": total if not unknown else None,
         "status": "VERIFIED" if not unknown and used_validated_alias and all(part in VALIDATED_SEGMENT_ALIASES for part in parts) else "PARTIAL_SOURCE",
         "unknown_segments": unknown,
         "calculator": {
-            "system": "Cacarakan 18 · consonant/base approximation",
+            "system": CACARAKAN_VARIANTS[system]["label"] + " · consonant/base approximation",
             "segments": calculator,
             "status": "APPROXIMATE" if not calculator_unknown else "PARTIAL_APPROXIMATION",
             "editable": True,
