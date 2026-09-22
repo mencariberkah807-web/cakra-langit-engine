@@ -34,10 +34,9 @@ function DailyGlobalSummary() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
 
-  // Daily Global does not fetch /api/profile directly.
-  // It uses the authenticated user context and the active location context,
-  // avoiding duplicate profile requests and stale-session 401 console noise.
-  const location = selectedLocation
+  // Profile birth location is the primary context for Daily Global.
+  // selectedLocation remains the fallback for the broader Today context.
+  const location = user?.birth_location || selectedLocation
   const city = location?.city || ''
   const timezone = location?.timezone || 'Asia/Jakarta'
 
