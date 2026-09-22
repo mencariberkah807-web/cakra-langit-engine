@@ -67,9 +67,7 @@ export function AuthProvider({ children }) {
   const [user, setUser] = useState(readStoredUser)
 
   useEffect(() => {
-    // Login/register already provides display_name. Avoid re-hydrating
-    // the profile on every page load when a complete local user exists.
-    if (!token || user?.display_name) return undefined
+    if (!token) return undefined
 
     let cancelled = false
 
@@ -80,11 +78,21 @@ export function AuthProvider({ children }) {
         })
         if (cancelled) return
 
-        const profileName = payload?.profile?.display_name
-        if (profileName === undefined) return
+        const profile = payload?.profile || {}
+        const profileName = profile.display_name
+        if (profileName === undefined && !profile.birth_location) return
 
         setUser((current) => {
-          const next = { ...(current || {}), display_name: profileName || null }
+          const next = {
+            ...(current || {}),
+            ...(profileName !== undefined ? { display_name: profileName || null } : {}),
+            birth_date: profile.birth_date || null,
+            birth_time: profile.birth_time || null,
+            birth_time_unknown: Boolean(profile.birth_time_unknown),
+            birth_location_id: profile.birth_location_id || null,
+            birth_timezone: profile.birth_timezone || null,
+            birth_location: profile.birth_location || null,
+          }
           try {
             window.localStorage.setItem(USER_KEY, JSON.stringify(next))
             window.dispatchEvent(new CustomEvent('cakra-langit:user-updated', { detail: next }))
