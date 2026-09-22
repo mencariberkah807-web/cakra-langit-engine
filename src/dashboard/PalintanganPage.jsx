@@ -30,37 +30,14 @@ function ListValue({ items }) {
 function DailyGlobalSummary() {
   const { user } = useAuth()
   const { now, selectedLocation } = useTodayContext()
-  const [profile, setProfile] = useState(null)
   const [result, setResult] = useState(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
 
-  const token = typeof window !== 'undefined'
-    ? window.localStorage.getItem('cakra-langit:access-token')
-    : null
-
-  useEffect(() => {
-    let cancelled = false
-
-    async function loadProfile() {
-      try {
-        const response = await fetch('/api/profile', {
-          headers: token ? { Authorization: `Bearer ${token}` } : {},
-        })
-        if (!response.ok) throw new Error('Profil tidak dapat dimuat.')
-        const payload = await response.json()
-        if (!cancelled) setProfile(payload.profile || {})
-      } catch (err) {
-        if (!cancelled) setError(err.message || 'Profil tidak dapat dimuat.')
-      }
-    }
-
-    loadProfile()
-    return () => { cancelled = true }
-  }, [token])
-
-  const profileLocation = profile?.birth_location || null
-  const location = profileLocation || selectedLocation
+  // Daily Global does not fetch /api/profile directly.
+  // It uses the authenticated user context and the active location context,
+  // avoiding duplicate profile requests and stale-session 401 console noise.
+  const location = selectedLocation
   const city = location?.city || ''
   const timezone = location?.timezone || 'Asia/Jakarta'
 
@@ -104,7 +81,7 @@ function DailyGlobalSummary() {
   const calendar = result?.calendar
   const monthly = result?.monthly_rule
   const watek = result?.watek
-  const displayName = profile?.display_name || user?.display_name || user?.email?.split('@')[0] || 'Pengguna'
+  const displayName = user?.display_name || user?.email?.split('@')[0] || 'Pengguna'
 
   return (
     <section className="mb-7">
