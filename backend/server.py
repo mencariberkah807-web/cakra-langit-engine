@@ -275,9 +275,9 @@ def palintangan_kelahiran(date_value: str = "", city: str = "Bandung"):
 
 
 @app.get("/api/palintangan/nama")
-def palintangan_nama(name: str = ""):
+def palintangan_nama(name: str = "", system: str = "cacarakan_18"):
     try:
-        return calculate_naktu_nama(name)
+        return calculate_naktu_nama(name, system=system)
     except ValueError as exc:
         raise HTTPException(status_code=400, detail=str(exc))
 
