@@ -289,5 +289,3 @@ def calculate_naktu_nama(name: str, system: str = "cacarakan_18"):
         },
         "note": "Nama dihitung setelah melalui tahap konversi Latin → Cacarakan. Nilai yang tidak tersedia atau ambigu pada varian sumber tidak dipaksakan.",
     }
-}
-
