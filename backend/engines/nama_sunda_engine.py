@@ -187,6 +187,8 @@ def suggest_cacarakan_segments(name: str, system: str = "cacarakan_18"):
                 i += 2
                 continue
             mapped = _normalize_latin_consonant(word[i])
+            if system == "cacarakan_20" and mapped == "ja":
+                mapped = "jha"
             units.append(mapped)
             i += 1
         suggestions.append({
@@ -219,6 +221,7 @@ def calculate_naktu_nama(name: str, system: str = "cacarakan_18"):
 
         for unit in units:
             matches = []
+            approximate_mapping = False
 
             if system == "cacarakan_18":
                 value = CACARAKAN_18.get(unit)
@@ -230,13 +233,19 @@ def calculate_naktu_nama(name: str, system: str = "cacarakan_18"):
                     for letter, value in CACARAKAN_20_TABLE
                     if letter == unit
                 ]
+                # Cacarakan 20 has a source-table gap around ja/jha.
+                # For calculator use, Latin "j" falls back to jha,
+                # using position 13 as an APPROXIMATE mapping.
+                if not matches and unit == "jha":
+                    matches = [13]
+                    approximate_mapping = True
 
             if len(matches) == 1:
                 rows.append({
                     "segment": segment,
                     "source_letter": unit,
                     "naktu": matches[0],
-                    "status": "SOURCE_MAPPING",
+                    "status": "APPROXIMATE_MAPPING" if approximate_mapping else "SOURCE_MAPPING",
                 })
             elif len(matches) == 0:
                 rows.append({
