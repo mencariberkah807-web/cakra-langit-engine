@@ -753,8 +753,28 @@ function KelahiranPage({ onBack }) {
   )
 }
 
+function NamaResultPanel({ title, result }) {
+  return (
+    <Panel eyebrow={title} title={result?.system_label || title}>
+      <div className="mt-5 grid gap-3 sm:grid-cols-2">
+        <Metric label="Status" value={result?.status} />
+        <Metric label="Total Naktu" value={result?.total ?? 'Belum dapat dihitung'} />
+      </div>
+      <div className="mt-4 space-y-2">
+        {(result?.naktu || []).map((item, index) => (
+          <div key={item.segment + '-' + index} className="flex items-center justify-between rounded-xl border border-white/[0.06] bg-[#07111C] px-4 py-3">
+            <span className="text-sm text-[#A9BDCF]">{item.segment}</span>
+            <span className="text-xs text-[#71869A]">{item.source_letter} → <strong className="text-white">{item.naktu}</strong></span>
+          </div>
+        ))}
+      </div>
+    </Panel>
+  )
+}
+
 function NamaPage({ onBack }) {
   const [name, setName] = useState('')
+  const [mode, setMode] = useState('cacarakan_18')
   const [result, setResult] = useState(null)
   const [error, setError] = useState('')
 
@@ -765,14 +785,35 @@ function NamaPage({ onBack }) {
       setError('Masukkan nama.')
       return
     }
+
     try {
-      const response = await fetch('/api/palintangan/nama?name=' + encodeURIComponent(name))
-      if (!response.ok) throw new Error('Nama API ' + response.status)
-      setResult(await response.json())
+      const systems = mode === 'compare' ? ['cacarakan_18', 'cacarakan_20'] : [mode]
+      const responses = await Promise.all(
+        systems.map((system) =>
+          fetch('/api/palintangan/nama?name=' + encodeURIComponent(name) + '&system=' + encodeURIComponent(system))
+            .then((response) => {
+              if (!response.ok) throw new Error('Nama API ' + response.status)
+              return response.json()
+            })
+        )
+      )
+      setResult(mode === 'compare'
+        ? { mode: 'compare', results: { cacarakan_18: responses[0], cacarakan_20: responses[1] } }
+        : responses[0])
     } catch (err) {
       setError(err.message || 'Gagal menghitung Naktu Nama')
     }
   }
+
+  const renderCalculator = (item) => (
+    <div key={item.input} className="rounded-xl border border-white/[0.06] bg-[#07111C] px-4 py-3">
+      <div className="flex items-center justify-between gap-4">
+        <span className="text-sm text-[#71869A]">{item.input}</span>
+        <strong className="text-base tracking-wide text-white">{item.display || 'Belum dapat dikonversi'}</strong>
+      </div>
+      {item.display ? <div className="mt-2 text-xs text-[#536A7D]">Basis Cacarakan: {item.segments.join(' · ')}</div> : null}
+    </div>
+  )
 
   return (
     <section className="mx-auto max-w-[1180px] px-5 py-7 sm:px-7 lg:py-9">
@@ -780,33 +821,51 @@ function NamaPage({ onBack }) {
       <header className="mb-7">
         <div className="text-[10px] font-bold uppercase tracking-[0.16em] text-[#22D3EE]">Personal · Nama</div>
         <h1 className="mt-2 text-3xl font-semibold tracking-tight text-white">Hitung Nama</h1>
-        <p className="mt-2 max-w-3xl text-sm leading-6 text-[#8FA4B8]">Naktu Nama dihitung dari segmen nama yang memiliki nilai tervalidasi. Dataset yang belum tersedia tidak ditebak.</p>
+        <p className="mt-2 max-w-3xl text-sm leading-6 text-[#8FA4B8]">Dokumentasi Naktu Nama dengan dua varian Cacarakan yang disimpan terpisah. Mode Bandingkan menampilkan keduanya tanpa memilih salah satu.</p>
       </header>
-      <Panel eyebrow="Input" title="Nama">
-        <div className="mt-5 flex flex-col gap-3 sm:flex-row">
-          <input value={name} onChange={(e) => setName(e.target.value)} placeholder="Contoh: Fareza" className="min-w-0 flex-1 rounded-xl border border-white/[0.09] bg-[#07111C] px-3 py-3 text-sm text-white outline-none focus:border-cyan-300/40" />
-          <button type="button" onClick={calculate} className="rounded-xl bg-[#12324A] px-5 py-3 text-sm font-semibold text-white hover:bg-[#17415D]">Hitung</button>
+
+      <Panel eyebrow="Input" title="Nama & sistem Cacarakan">
+        <div className="mt-5 flex flex-col gap-3">
+          <input value={name} onChange={(e) => setName(e.target.value)} placeholder="Contoh: Fareza atau Dea" className="w-full rounded-xl border border-white/[0.09] bg-[#07111C] px-3 py-3 text-sm text-white outline-none focus:border-cyan-300/40" />
+          <div className="flex flex-wrap gap-4 rounded-xl border border-white/[0.06] bg-[#07111C] p-4">
+            {[
+              ['cacarakan_18', 'Cacarakan 18'],
+              ['cacarakan_20', 'Cacarakan 20'],
+              ['compare', 'Bandingkan'],
+            ].map(([value, label]) => (
+              <label key={value} className="flex cursor-pointer items-center gap-2 text-sm text-[#A9BDCF]">
+                <input type="radio" name="cacarakan-system" value={value} checked={mode === value} onChange={() => setMode(value)} />
+                {label}
+              </label>
+            ))}
+          </div>
+          <button type="button" onClick={calculate} className="self-start rounded-xl bg-[#12324A] px-5 py-3 text-sm font-semibold text-white hover:bg-[#17415D]">Hitung</button>
         </div>
-        <p className="mt-3 text-xs leading-5 text-[#536A7D]">
-          Nama Latin akan dibaca sebagai dasar konsonan Cacarakan. Contoh pendekatan: Fareza → pa · ra · ja.
-          Ini converter kalkulator, bukan klaim transliterasi SSOT.
-        </p>
+        <p className="mt-3 text-xs leading-5 text-[#536A7D]">Converter Latin → Cacarakan tetap merupakan pendekatan kalkulator. Perbedaan antar-varian ditampilkan sebagai dokumentasi, bukan dikoreksi atau dipilih.</p>
         {error ? <div className="mt-4 text-xs text-rose-300">{error}</div> : null}
       </Panel>
-      {result ? (
+
+      {result?.mode === 'compare' ? (
+        <>
+          <div className="mt-5 grid gap-5 lg:grid-cols-2">
+            <NamaResultPanel title="Cacarakan 18" result={result.results.cacarakan_18} />
+            <NamaResultPanel title="Cacarakan 20" result={result.results.cacarakan_20} />
+          </div>
+          <div className="mt-5">
+            <Panel eyebrow="Bandingkan" title="Dua hasil disimpan berdampingan">
+              <div className="mt-5 grid gap-3 sm:grid-cols-2">
+                <Metric label="Cacarakan 18" value={result.results.cacarakan_18.total ?? '—'} />
+                <Metric label="Cacarakan 20" value={result.results.cacarakan_20.total ?? '—'} />
+              </div>
+            </Panel>
+          </div>
+        </>
+      ) : result ? (
         <div className="mt-5 grid gap-5 lg:grid-cols-2">
-          <Panel eyebrow="Naktu Huruf / Segmen" title={result.status}>
-            <div className="mt-5 space-y-3">
-              {result.segments.map((segment) => {
-                const found = result.naktu.find((item) => item.segment === segment)
-                return <div key={segment} className="flex items-center justify-between rounded-xl border border-white/[0.06] bg-[#07111C] px-4 py-3"><span className="text-sm text-[#A9BDCF]">{segment}</span><strong className="text-white">{found ? found.naktu : 'Belum tervalidasi'}</strong></div>
-              })}
-            </div>
-            {result.unknown_segments?.length ? <p className="mt-4 text-xs leading-5 text-amber-300">Dataset belum memuat: {result.unknown_segments.join(', ')}.</p> : null}
-          </Panel>
-          <Panel eyebrow="Naktu Nama" title={result.total ?? 'Belum dapat dihitung'}>
-            <p className="mt-5 text-sm leading-6 text-[#71869A]">Total hanya diberikan ketika seluruh segmen nama memiliki nilai source-backed.</p>
-            {result.total !== null ? <div className="mt-4 text-xs text-[#536A7D]">Source-backed total Naktu Nama.</div> : null}
+          <NamaResultPanel title={result.system_label} result={result} />
+          <Panel eyebrow="Converter" title={result.calculator?.system || 'Pendekatan Kalkulator'}>
+            <div className="mt-5 space-y-3">{(result.calculator?.segments || []).map(renderCalculator)}</div>
+            <p className="mt-4 text-xs leading-5 text-amber-300/80">Converter adalah pendekatan kalkulator, bukan transliterasi SSOT yang sudah tervalidasi.</p>
           </Panel>
         </div>
       ) : null}
