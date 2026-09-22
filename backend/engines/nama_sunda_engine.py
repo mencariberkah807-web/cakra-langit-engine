@@ -23,6 +23,45 @@ CACARAKAN_18 = {
     "nga": 18,
 }
 
+# Cacarakan 20 variant exactly as documented in the SSOT (p.72).
+# The source itself lists two consecutive "ya" entries at 13 and 14.
+# This apparent source ambiguity is preserved instead of silently corrected.
+CACARAKAN_20_TABLE = [
+    ("ha", 1),
+    ("na", 2),
+    ("ca", 3),
+    ("ra", 4),
+    ("ka", 5),
+    ("da", 6),
+    ("ta", 7),
+    ("sa", 8),
+    ("wa", 9),
+    ("la", 10),
+    ("pa", 11),
+    ("dha", 12),
+    ("ya", 13),
+    ("ya", 14),
+    ("nya", 15),
+    ("ma", 16),
+    ("ga", 17),
+    ("ba", 18),
+    ("tha", 19),
+    ("nga", 20),
+]
+
+CACARAKAN_VARIANTS = {
+    "cacarakan_18": {
+        "label": "Cacarakan 18",
+        "table": [(key, value) for key, value in CACARAKAN_18.items()],
+        "status": "SOURCE_BACKED",
+    },
+    "cacarakan_20": {
+        "label": "Cacarakan 20",
+        "table": CACARAKAN_20_TABLE,
+        "status": "SOURCE_BACKED_WITH_SOURCE_AMBIGUITY",
+    },
+}
+
 # Existing validated segment aliases are preserved explicitly.
 VALIDATED_SEGMENT_ALIASES = {
     "wi": ("wa", 9),
