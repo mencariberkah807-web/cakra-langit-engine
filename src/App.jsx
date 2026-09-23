@@ -55,7 +55,11 @@ export default function App() {
     return isAuthenticated ? <UserDashboardLayer /> : <LoginPage />
   }
 
-  if (authenticatedPaths.has(path)) {
+  const isAuthenticatedRoute =
+    authenticatedPaths.has(path) ||
+    path.startsWith('/dashboard/palintangan/')
+
+  if (isAuthenticatedRoute) {
     return isAuthenticated ? <UserDashboardLayer /> : <LoginPage />
   }
 
