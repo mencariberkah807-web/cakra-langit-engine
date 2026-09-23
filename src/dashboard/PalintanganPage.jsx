@@ -308,6 +308,7 @@ function DailyGlobalPage({ onBack }) {
         </Panel>
       </div>
 
+
         <Panel eyebrow="Pernaasan" title="Tanggal Naas bulan ini">
           <div className="mt-5 grid gap-3 sm:grid-cols-3">
             {(pernaasan?.dates || []).map((day) => (
@@ -328,8 +329,6 @@ function DailyGlobalPage({ onBack }) {
             </div>
           </div>
         </Panel>
-
-
       </div>
 
       <div className="mt-5 rounded-2xl border border-white/[0.07] bg-[#0A1723] p-5 sm:p-6">
