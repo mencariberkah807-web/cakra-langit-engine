@@ -739,18 +739,26 @@ function KelahiranPage({ onBack }) {
               <Metric label="Saka Sunda" value={result.calendar.saka_sunda?.year} />
             </div>
           </Panel>
-          <Panel eyebrow="Birth Context" title="Naga">
-            <div className="mt-5 grid grid-cols-2 gap-3">
+          <Panel eyebrow="Birth Context" title="Naga & Rumah">
+            <div className="mt-5 grid gap-3 sm:grid-cols-2">
               <Metric label="Arah Naga" value={result.birth_context?.naga_direction || "—"} />
-              <Metric label="Status" value={result.birth_context?.status || "—"} />
+              <Metric label="Status Naga" value={result.birth_context?.status || "—"} />
+              <Metric label="Arah Rumah" value={result.birth_house_direction?.direction || "Belum tersedia"} />
+              <Metric label="Status Rumah" value={result.birth_house_direction?.status || "—"} />
             </div>
             <p className="mt-4 text-xs leading-5 text-[#71869A]">{result.birth_context?.note || "Data arah naga bersumber dari naskah."}</p>
+            <p className="mt-2 text-xs leading-5 text-[#71869A]">{result.birth_house_direction?.note || "Data arah rumah hanya ditampilkan jika eksplisit tersedia pada source."}</p>
           </Panel>
-          <Panel eyebrow="Naktu" title="Naktu Wedal">
-            <div className="mt-5 grid grid-cols-3 gap-3">
-              <Metric label="Hari" value={result.naktu.hari} />
-              <Metric label="Pasaran" value={result.naktu.pasaran} />
-              <Metric label="Wedal" value={result.naktu.wedal} />
+          <Panel eyebrow="Naktu" title="Four Naktu">
+            <div className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+              <Metric label="Naktu Hari" value={result.naktu.hari} />
+              <Metric label="Naktu Pasaran" value={result.naktu.pasaran} />
+              <Metric label="Naktu Bulan" value={result.naktu.bulan} />
+              <Metric label="Naktu Tahun" value={result.naktu.tahun} />
+            </div>
+            <div className="mt-3 grid gap-3 sm:grid-cols-2">
+              <Metric label="Naktu Wedal" value={result.naktu.wedal} note="Naktu Hari + Naktu Pasaran" />
+              <Metric label="Four Naktu Total" value={result.naktu.four_component_total} note={result.naktu.four_component_status || '—'} />
             </div>
           </Panel>
           <Panel eyebrow="Watek" title="Watek Hari">
@@ -770,14 +778,52 @@ function KelahiranPage({ onBack }) {
             </div>
           </Panel>
           <Panel eyebrow="Gagalang" title="Gagalang">
-            <div className="mt-5 grid grid-cols-2 gap-3">
+            <div className="mt-5 grid gap-3 sm:grid-cols-3">
               <Metric label="Pasaran" value={result.gagalang?.pasaran} />
               <Metric label="Berikutnya" value={result.gagalang?.next_pasaran} />
               <Metric label="Arah" value={result.gagalang?.direction} />
             </div>
           </Panel>
+          <Panel eyebrow="Pernaasan" title="Tanggal Naas">
+            <div className="mt-5 grid gap-3 sm:grid-cols-3">
+              {(result.pernaasan?.dates || []).map((day) => (
+                <Metric key={day} label="Tanggal Hijriah" value={day} />
+              ))}
+            </div>
+            <div className="mt-4 grid gap-3 sm:grid-cols-2">
+              <Metric label="Bulan" value={result.pernaasan?.month} />
+              <Metric label="Tanggal lahir termasuk Pernaasan" value={result.pernaasan?.is_pernaasan ? 'Ya' : 'Tidak'} />
+            </div>
+            <p className="mt-3 text-xs leading-5 text-[#71869A]">Pernaasan ditampilkan sebagai data tanggal sumber. Formula pembentukannya tidak diinferensikan.</p>
+          </Panel>
+          <Panel eyebrow="Aturan Bulanan" title={result.monthly_rule?.group || '—'}>
+            <div className="mt-5 grid gap-3 sm:grid-cols-3">
+              <Metric label="Pantangan" value={(result.monthly_rule?.pantangan || []).join(' · ') || '—'} />
+              <Metric label="Keselamatan" value={(result.monthly_rule?.keselamatan || []).join(' · ') || '—'} />
+              <Metric label="Arah Rizki" value={result.monthly_rule?.rizki_direction || '—'} />
+            </div>
+          </Panel>
           <Panel eyebrow="Boundary" title="Source status">
-            <p className="mt-5 text-sm leading-6 text-[#71869A]">{result.meta.note}</p>
+            <div className="mt-5 grid gap-3 sm:grid-cols-2">
+              <Metric label="Engine" value={result.meta?.status || '—'} />
+              <Metric label="Source" value={result.meta?.source_id || result.meta?.source_title || '—'} />
+            </div>
+            <p className="mt-4 text-sm leading-6 text-[#71869A]">{result.meta?.note || 'Kelahiran memakai data dan rule yang tersedia dari source.'}</p>
+          </Panel>
+          <Panel eyebrow="Audit" title="Calculation Trace">
+            <div className="mt-5 space-y-3">
+              {(result.calculation_trace || []).map((item) => (
+                <div key={item.rule_id} className="rounded-xl border border-white/[0.06] bg-[#07111C] p-4">
+                  <div className="flex flex-wrap items-center justify-between gap-2">
+                    <span className="text-xs font-semibold text-white">{item.rule_id} · {item.rule}</span>
+                    <span className="rounded-full border border-white/[0.08] px-2.5 py-1 text-[10px] font-semibold text-[#8FA4B8]">{item.status}</span>
+                  </div>
+                  <div className="mt-2 text-[11px] leading-5 text-[#71869A]">
+                    <span className="text-[#A9BDCF]">Context:</span> {item.context} · <span className="text-[#A9BDCF]">Transform:</span> {item.transform}
+                  </div>
+                </div>
+              ))}
+            </div>
           </Panel>
         </div>
       ) : null}
