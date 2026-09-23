@@ -46,7 +46,7 @@ def calculate_kelahiran(target_date: date, timezone_name: str = "Asia/Jakarta"):
     birth_context = daily["birth_context"]
     house_direction = HOUSE_DIRECTION_VERIFIED.get(day_name)
     doa = BIRTH_DOA.get(day_name, {})
-    jaya_apes = calculate_jaya_apes(day_name, pasaran, naktu["wedal"])
+    jaya_apes = calculate_jaya_apes(day_name, pasaran, naktu["wedal"], birth_date)
 
     # Audit trace: every production birth rule exposes Source + Input +
     # Transform + Output + Context + Status. Missing source data is explicit.
