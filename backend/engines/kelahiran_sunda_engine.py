@@ -162,7 +162,10 @@ def calculate_kelahiran(target_date: date, timezone_name: str = "Asia/Jakarta"):
             "note": "Hanya hari yang eksplisit terbaca pada source yang diisi; hari lain tidak diinferensikan.",
         },
         "birth_doa": {
-            **doa,
+            "doa": doa.get("dua"),
+            # Keep the legacy misspelled key so existing UI consumers do not break.
+            "dua": doa.get("dua"),
+            "count": doa.get("count"),
             "count_basis": "naktu hari × 100" if naktu["hari"] is not None else None,
             "count_check": (doa.get("count") == naktu["hari"] * 100) if naktu["hari"] is not None and doa else None,
             "source": {"source_id": SOURCE_ID, "source_title": SOURCE_TITLE, "location": "naskah p.89"},
