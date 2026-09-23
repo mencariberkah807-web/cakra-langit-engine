@@ -78,16 +78,33 @@ BIRTH_NAGA_DIRECTION = {
 }
 
 WATEK_HARI = {
-    "Jemuwah": ["Karang Piwulang"],
-    "Jumaah": ["Karang Piwulang"],
+    "Jemuwah": ["Karang Piluwang"],
+    "Jumaah": ["Karang Piluwang"],
     "Setu": ["Sumur Pinungkeb", "Karang Tinangtang"],
     "Saptu": ["Sumur Pinungkeb", "Karang Tinangtang"],
     "Ngahad": ["Macan Katawang", "Nuju Pati"],
     "Ahad": ["Macan Katawang", "Nuju Pati"],
     "Senen": ["Nuju Padu"],
     "Selasa": ["Mantri Sinareja"],
-    "Rebo": ["Demang Kanduruan", "Putri Tinuting"],
-    "Kemis": ["Demang Palasah", "Alas Kobar"],
+    "Rebo": ["Demang Kanduruwan", "Putri Tinurung"],
+    "Kemis": ["Demang Palasan", "Alas Kobar"],
+}
+
+# p.38 gives the numbered Watek entries and their source interpretation.
+# Keep the day lookup above for compatibility, but expose the underlying
+# data so calculation results carry the actual source meaning.
+WATEK_DETAIL = {
+    2: {"name": "Karang Piluwang", "meaning": "jelek kepada diri sendiri"},
+    3: {"name": "Sumur Pinungkeb", "meaning": "sesak napas bawaannya"},
+    4: {"name": "Karang Tinangtang", "meaning": "kuat wataknya baik"},
+    5: {"name": "Macan Katawang", "meaning": "baik dilihat orang"},
+    6: {"name": "Nuju Pati", "meaning": "jelek akan menemui ajal"},
+    7: {"name": "Nuju Padu", "meaning": "jelek suka cerewet"},
+    8: {"name": "Mantri Sinareja", "meaning": "jelek suka sakit"},
+    9: {"name": "Demang Kanduruwan", "meaning": "paling baik"},
+    10: {"name": "Putri Tinurung", "meaning": "banyak yang memberi"},
+    11: {"name": "Demang Palasan", "meaning": "tidak mendapat pekerjaan"},
+    12: {"name": "Alas Kobar", "meaning": "bakal kebakaran"},
 }
 
 GAGALANG_MANIS_PAHING = {
@@ -341,7 +358,13 @@ def calculate_palintangan(target_date: date, timezone_name: str = "Asia/Jakarta"
         "watek": {
             "hari": day_name,
             "names": watek,
-            "source": _source_meta("naskah p.21 / p.36"),
+            "entries": [
+                WATEK_DETAIL[item]
+                for item in watek
+                for _naktu, _item in WATEK_DETAIL.items()
+                if _item["name"] == item
+            ],
+            "source": _source_meta("naskah p.21 / p.36; makna naskah p.38"),
         },
         "birth_context": {
             "naga_direction": BIRTH_NAGA_DIRECTION.get(day_name),
