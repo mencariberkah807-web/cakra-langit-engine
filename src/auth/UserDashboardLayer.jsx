@@ -69,6 +69,19 @@ function UserDashboardContent({ user, onUserUpdated }) {
     return <PalintanganPage />
   }
 
+  const palintanganCategoryRoutes = {
+    '/dashboard/palintangan/nama': 'nama',
+    '/dashboard/palintangan/kelahiran': 'kelahiran',
+    '/dashboard/palintangan/repok': 'jodoh',
+    '/dashboard/palintangan/tanam': 'tanam',
+    '/dashboard/palintangan/arah': 'arah',
+    '/dashboard/palintangan/waktu': 'waktu',
+  }
+
+  if (palintanganCategoryRoutes[path]) {
+    return <PalintanganPage initialCategory={palintanganCategoryRoutes[path]} />
+  }
+
   if (path === '/dashboard/bazi') {
     return <BaZiPage />
   }
