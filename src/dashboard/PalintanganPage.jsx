@@ -932,36 +932,57 @@ function CategoryPlaceholder({ category, onBack }) {
   )
 }
 
-export default function PalintanganPage() {
-  const [category, setCategory] = useState(null)
+export default function PalintanganPage({ initialCategory = null }) {
+  const [category, setCategory] = useState(initialCategory)
+
+  const openCategory = (key) => {
+    const routes = {
+      nama: 'nama',
+      kelahiran: 'kelahiran',
+      jodoh: 'repok',
+      tanam: 'tanam',
+      arah: 'arah',
+      waktu: 'waktu',
+    }
+    const route = routes[key]
+    if (route) {
+      window.location.assign('/dashboard/palintangan/' + route)
+      return
+    }
+    setCategory(key)
+  }
+
+  const backToHub = () => {
+    window.location.assign('/dashboard/palintangan')
+  }
 
   if (category === 'tanam') {
-    return <PertanianPage onBack={() => setCategory(null)} />
+    return <PertanianPage onBack={backToHub} />
   }
 
   if (category === 'jodoh') {
-    return <JodohPage onBack={() => setCategory(null)} />
+    return <JodohPage onBack={backToHub} />
   }
 
   if (category === 'nama') {
-    return <NamaPage onBack={() => setCategory(null)} />
+    return <NamaPage onBack={backToHub} />
   }
 
   if (category === 'kelahiran') {
-    return <KelahiranPage onBack={() => setCategory(null)} />
+    return <KelahiranPage onBack={backToHub} />
   }
 
   if (category === 'arah') {
-    return <ArahPage onBack={() => setCategory(null)} />
+    return <ArahPage onBack={backToHub} />
   }
 
   if (category === 'waktu') {
-    return <WaktuPage onBack={() => setCategory(null)} />
+    return <WaktuPage onBack={backToHub} />
   }
 
   if (category) {
     const selected = CATEGORIES.find((item) => item.key === category)
-    return <CategoryPlaceholder category={selected} onBack={() => setCategory(null)} />
+    return <CategoryPlaceholder category={selected} onBack={backToHub} />
   }
 
   return (
@@ -995,7 +1016,7 @@ export default function PalintanganPage() {
           <CategoryCard
             key={categoryItem.key}
             category={categoryItem}
-            onSelect={setCategory}
+            onSelect={openCategory}
           />
         ))}
       </div>
