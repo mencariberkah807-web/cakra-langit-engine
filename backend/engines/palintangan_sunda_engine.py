@@ -107,6 +107,11 @@ WATEK_DETAIL = {
     12: {"name": "Alas Kobar", "meaning": "bakal kebakaran"},
 }
 
+WATEK_DETAIL_BY_NAME = {
+    item["name"]: item
+    for item in WATEK_DETAIL.values()
+}
+
 GAGALANG_MANIS_PAHING = {
     "Kaliwon": {"next": "Manis", "direction": "Timur"},
     "Legi": {"next": "Pahing", "direction": "Selatan"},
@@ -359,10 +364,9 @@ def calculate_palintangan(target_date: date, timezone_name: str = "Asia/Jakarta"
             "hari": day_name,
             "names": watek,
             "entries": [
-                WATEK_DETAIL[item]
+                WATEK_DETAIL_BY_NAME[item]
                 for item in watek
-                for _naktu, _item in WATEK_DETAIL.items()
-                if _item["name"] == item
+                if item in WATEK_DETAIL_BY_NAME
             ],
             "source": _source_meta("naskah p.21 / p.36; makna naskah p.38"),
         },
