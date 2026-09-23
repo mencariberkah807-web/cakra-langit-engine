@@ -2,7 +2,6 @@ from datetime import date
 
 from engines.calendar_engine import get_calendar_data
 from engines.hijri_engine import get_hijri_data
-from engines.kala_ider_sunda_engine import calculate_kala_ider
 
 
 SOURCE_ID = "SSOT-PARIRIMBON-JABAR"
@@ -287,7 +286,6 @@ def calculate_palintangan(target_date: date, timezone_name: str = "Asia/Jakarta"
 
     watek = WATEK_HARI.get(day_name, [])
     gagalang = GAGALANG_MANIS_PAHING.get(pasaran)
-    kala_ider = calculate_kala_ider(target_date, day_name, pasaran)
 
     pawukon_day = jawa["detail"]["wuku"]["pawukon_day"]
     paringkelan_index = (pawukon_day - 1) % 6
@@ -351,7 +349,6 @@ def calculate_palintangan(target_date: date, timezone_name: str = "Asia/Jakarta"
             "status": "SOURCE_DATA",
             "note": "Arah tempat naga menurut hari kelahiran; ini adalah data tradisional sumber, bukan aturan arah perjalanan universal.",
         },
-        "daily_kala_ider": kala_ider,
         "monthly_rule": {
             "group": month_group_name,
             "pantangan": month_rule["pantangan"] if month_rule else None,
