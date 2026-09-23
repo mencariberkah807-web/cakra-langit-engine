@@ -2,6 +2,7 @@ from datetime import date
 
 from engines.calendar_engine import get_calendar_data
 from engines.hijri_engine import get_hijri_data
+from engines.jaya_apes_sunda_engine import calculate_jaya_apes
 
 
 SOURCE_ID = "SSOT-PARIRIMBON-JABAR"
@@ -308,6 +309,12 @@ def calculate_palintangan(target_date: date, timezone_name: str = "Asia/Jakarta"
 
     watek = WATEK_HARI.get(day_name, [])
     gagalang = GAGALANG_MANIS_PAHING.get(pasaran)
+    jaya_apes = calculate_jaya_apes(
+        day_name,
+        pasaran,
+        wedal=wedal,
+        target_date=target_date.isoformat(),
+    )
 
     pawukon_day = jawa["detail"]["wuku"]["pawukon_day"]
     paringkelan_index = (pawukon_day - 1) % 6
@@ -370,6 +377,7 @@ def calculate_palintangan(target_date: date, timezone_name: str = "Asia/Jakarta"
             ],
             "source": _source_meta("naskah p.21 / p.36; makna naskah p.38"),
         },
+        "jaya_apes": jaya_apes,
         "birth_context": {
             "naga_direction": BIRTH_NAGA_DIRECTION.get(day_name),
             "source": _source_meta("naskah p.90"),
