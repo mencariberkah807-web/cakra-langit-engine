@@ -308,17 +308,6 @@ function DailyGlobalPage({ onBack }) {
         </Panel>
       </div>
 
-      <div className="mt-5 grid gap-5 lg:grid-cols-2">
-        <Panel eyebrow="Kala Ider · Research" title={result?.daily_kala_ider?.status || 'Data belum tersedia'}>
-          <div className="mt-5 grid gap-3 sm:grid-cols-2">
-            <Metric label="Jaya" value={result?.daily_kala_ider?.jaya || 'Belum terdokumentasi'} />
-            <Metric label="Apes" value={result?.daily_kala_ider?.apes || 'Belum terdokumentasi'} />
-            <Metric label="Tanggal" value={result?.daily_kala_ider?.date || '—'} />
-            <Metric label="Scope" value="Daily Global" />
-          </div>
-          <p className="mt-4 text-xs leading-5 text-[#71869A]">{result?.daily_kala_ider?.note || 'Data Kala Ider ditampilkan hanya jika ada kasus penelitian yang terdokumentasi.'}</p>
-        </Panel>
-
         <Panel eyebrow="Pernaasan" title="Tanggal Naas bulan ini">
           <div className="mt-5 grid gap-3 sm:grid-cols-3">
             {(pernaasan?.dates || []).map((day) => (
