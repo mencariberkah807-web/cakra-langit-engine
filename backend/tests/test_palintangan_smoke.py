@@ -17,6 +17,8 @@ def test_daily_global():
     assert result["calendar"]["pasaran"]
     assert result["naktu"]["wedal"] is not None
     assert result["monthly_rule"]["rizki_direction"]
+    assert result["watek"]["entries"]
+    assert all(entry["name"] and entry["meaning"] for entry in result["watek"]["entries"])
 
 
 def test_pertanian():
