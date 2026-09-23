@@ -329,7 +329,6 @@ function DailyGlobalPage({ onBack }) {
             </div>
           </div>
         </Panel>
-      </div>
 
       <div className="mt-5 rounded-2xl border border-white/[0.07] bg-[#0A1723] p-5 sm:p-6">
         <div className="text-[10px] font-bold uppercase tracking-[0.14em] text-[#536A7D]">Engine Boundary</div>
