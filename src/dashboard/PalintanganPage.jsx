@@ -112,9 +112,13 @@ export default function PalintanganPage() {
             <Value label="Hari Wuku" value={detail?.wuku?.day_in_wuku} />
           </div>
         </Section>
-        <Section eyebrow="Next Rule" title="Palintangan">
-          <div className="rounded-xl border border-dashed border-white/[0.1] bg-[#07111C] p-4 text-xs leading-5 text-[#71869A]">
-            Rule Palintangan belum dihitung pada tahap ini. Layer berikutnya harus menggunakan rule yang ditemukan dan diverifikasi dari <span className="font-semibold text-[#A9BDCF]">PARIRIMBON SUNDA (JAWA BARAT)</span>.
+        <Section eyebrow="Result" title="Palintangan — Jaya / Apes">
+          <div className="grid gap-3 sm:grid-cols-2">
+            <Value label="Positive term" value="Jaya / Mujur" sub="satu makna operasional" />
+            <Value label="Negative term" value="Apes / Naas" sub="satu makna operasional" />
+          </div>
+          <div className="mt-4 rounded-xl border border-dashed border-white/[0.1] bg-[#07111C] p-4 text-xs leading-5 text-[#71869A]">
+            Terminologi digabung: Jaya = Mujur dan Apes = Naas. Matriks/formula Palintangan yang menentukan hasil belum terverifikasi pada SSOT, sehingga hasil perhitungan tetap belum diisi.
           </div>
         </Section>
       </div>
