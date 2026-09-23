@@ -742,14 +742,12 @@ function KelahiranPage({ onBack }) {
           <Panel eyebrow="Birth Context" title="Naga & Rumah">
             <div className="mt-5 grid gap-3 sm:grid-cols-2">
               <Metric label="Arah Naga" value={result.birth_context?.naga_direction || "—"} />
-              {result.birth_house_direction?.direction ? (
-                <Metric label="Arah Rumah" value={result.birth_house_direction.direction} />
-              ) : null}
+              <Metric label="Status Naga" value={result.birth_context?.status || "—"} />
+              <Metric label="Arah Rumah" value={result.birth_house_direction?.direction || "Belum tersedia"} />
+              <Metric label="Status Rumah" value={result.birth_house_direction?.status || "—"} />
             </div>
             <p className="mt-4 text-xs leading-5 text-[#71869A]">{result.birth_context?.note || "Data arah naga bersumber dari naskah."}</p>
-            {result.birth_house_direction?.direction ? (
-              <p className="mt-2 text-xs leading-5 text-[#71869A]">Arah rumah mengikuti data eksplisit pada naskah.</p>
-            ) : null}
+            <p className="mt-2 text-xs leading-5 text-[#71869A]">{result.birth_house_direction?.note || "Data arah rumah hanya ditampilkan jika eksplisit tersedia pada source."}</p>
           </Panel>
           <Panel eyebrow="Naktu" title="Four Naktu">
             <div className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
@@ -766,17 +764,13 @@ function KelahiranPage({ onBack }) {
           <Panel eyebrow="Watek" title="Watek Hari">
             <div className="mt-5 flex flex-wrap gap-2">{(result.watek.names || []).map((item) => <span key={item} className="rounded-full border border-white/[0.08] px-3 py-2 text-xs text-[#B8C9D8]">{item}</span>)}</div>
           </Panel>
-          {result.jaya_apes?.jaya || result.jaya_apes?.apes ? (
-            <Panel eyebrow="Jaya / Apes" title="Hasil Jaya / Apes">
-              <div className="mt-5 grid grid-cols-2 gap-3">
-                <Metric label="Jaya" value={result.jaya_apes.jaya || '—'} />
-                <Metric label="Apes" value={result.jaya_apes.apes || '—'} />
-              </div>
-              <p className="mt-4 text-xs leading-5 text-[#71869A]">
-                Ditampilkan hanya bila pasangan data kelahiran memiliki baris hasil yang tervalidasi.
-              </p>
-            </Panel>
-          ) : null}
+          <Panel eyebrow="Jaya / Apes" title={result.jaya_apes.status}>
+            <div className="mt-5 grid grid-cols-2 gap-3">
+              <Metric label="Jaya" value={result.jaya_apes.jaya || 'Belum tersedia'} />
+              <Metric label="Apes" value={result.jaya_apes.apes || 'Belum tersedia'} />
+            </div>
+            <p className="mt-4 text-xs leading-5 text-[#71869A]">{result.jaya_apes.note || 'Baseline tervalidasi.'}</p>
+          </Panel>
           <Panel eyebrow="Birth Doa" title={result.birth_doa?.dua || '—'}>
             <div className="mt-5 grid grid-cols-2 gap-3">
               <Metric label="Jumlah" value={result.birth_doa?.count ? result.birth_doa.count + '×' : '—'} />
@@ -809,12 +803,12 @@ function KelahiranPage({ onBack }) {
               <Metric label="Arah Rizki" value={result.monthly_rule?.rizki_direction || '—'} />
             </div>
           </Panel>
-          <Panel eyebrow="Source" title="Kelahiran Sunda">
+          <Panel eyebrow="Boundary" title="Source status">
             <div className="mt-5 grid gap-3 sm:grid-cols-2">
               <Metric label="Engine" value={result.meta?.status || '—'} />
-              <Metric label="Source" value={result.meta?.source_id || 'SSOT-PARIRIMBON-JABAR'} />
+              <Metric label="Source" value={result.meta?.source_id || result.meta?.source_title || '—'} />
             </div>
-            <p className="mt-4 text-sm leading-6 text-[#71869A]">Output Kelahiran hanya menampilkan hasil yang memiliki data/rule sumber yang dapat dihitung untuk tanggal lahir ini.</p>
+            <p className="mt-4 text-sm leading-6 text-[#71869A]">{result.meta?.note || 'Kelahiran memakai data dan rule yang tersedia dari source.'}</p>
           </Panel>
           <Panel eyebrow="Audit" title="Calculation Trace">
             <div className="mt-5 space-y-3">
