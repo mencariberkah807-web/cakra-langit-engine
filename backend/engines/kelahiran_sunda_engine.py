@@ -38,7 +38,6 @@ BIRTH_DOA = {
 
 def calculate_kelahiran(target_date: date, timezone_name: str = "Asia/Jakarta"):
     daily = calculate_palintangan(target_date, timezone_name)
-    jaya_apes = calculate_jaya_apes(daily["calendar"]["day"], daily["calendar"]["pasaran"], daily["naktu"]["wedal"], target_date.isoformat())
     birth_date = target_date.isoformat()
     day_name = daily["calendar"]["day"]
     pasaran = daily["calendar"]["pasaran"]
@@ -47,7 +46,7 @@ def calculate_kelahiran(target_date: date, timezone_name: str = "Asia/Jakarta"):
     birth_context = daily["birth_context"]
     house_direction = HOUSE_DIRECTION_VERIFIED.get(day_name)
     doa = BIRTH_DOA.get(day_name, {})
-    jaya_apes = calculate_jaya_apes(day_name, pasaran, naktu["wedal"], birth_date)
+    jaya_apes = calculate_jaya_apes(day_name, pasaran, naktu["wedal"])
 
     # Audit trace: every production birth rule exposes Source + Input +
     # Transform + Output + Context + Status. Missing source data is explicit.
