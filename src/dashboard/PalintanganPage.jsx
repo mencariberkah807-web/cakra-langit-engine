@@ -1,5 +1,6 @@
 import { useMemo } from 'react'
 import { useTodayContext } from '../core/TodayContext'
+import CalculationNavCards from './CalculationNavCards'
 
 const PASARAN_NAKTU = {
   Kliwon: 8,
@@ -118,6 +119,9 @@ export default function PalintanganPage() {
           </div>
         </Section>
       </div>
+    <div className="mt-5">
+      <CalculationNavCards current="/dashboard/palintangan" />
+    </div>
     </section>
   )
 }
