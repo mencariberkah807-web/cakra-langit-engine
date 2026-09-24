@@ -1,13 +1,71 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
+import { useTodayContext } from '../core/TodayContext'
+
+const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://127.0.0.1:8000'
+const TOKEN_KEY = 'cakra-langit:access-token'
 
 const CALCULATIONS = [
-  { id: 'weton', label: 'Weton', description: 'Dina, Pasaran, dan Neptu' },
-  { id: 'pangarasan', label: 'Pangarasan', description: 'Perhitungan berdasarkan Neptu' },
-  { id: 'pancasuda', label: 'Pancasuda', description: 'Metode Pancasuda yang bersumber' },
-  { id: 'rakam', label: 'Rakam', description: 'Perhitungan Rakam' },
+  { id: 'weton', label: 'Weton', description: 'Dina, Pasaran, dan Neptu', active: true },
+  { id: 'pancasuda', label: 'Pancasuda', description: 'Klasifikasi sisa Neptu dibagi 5', active: true },
+  { id: 'pangarasan', label: 'Pangarasan', description: 'Klasifikasi Neptu Weton 7–18', active: true },
+  { id: 'rakam', label: 'Rakam', description: 'Klasifikasi kupih Dina + Pasaran', active: true },
 ]
 
-const API_BASE = import.meta.env.VITE_API_BASE_URL || ''
+const PANCASUDA = {
+  1: { name: 'Sri', meaning: 'Rezeki / kelimpahan' },
+  2: { name: 'Lungguh', meaning: 'Derajat / kedudukan' },
+  3: { name: 'Gedhong', meaning: 'Harta / kekayaan' },
+  4: { name: 'Lara', meaning: 'Kesulitan / sakit' },
+  5: { name: 'Pati', meaning: 'Kehilangan / akhir' },
+}
+
+const PANGARASAN = {
+  7: { name: 'Lakuning Bumi', meaning: 'Pemurah, pengampun, dan pelindung' },
+  8: { name: 'Lakuning Geni', meaning: 'Berwatak seperti api' },
+  9: { name: 'Lakuning Angin', meaning: 'Berwatak seperti angin' },
+  10: { name: 'Aras Pepet', meaning: 'Tertutup dan cenderung prihatin' },
+  11: { name: 'Aras Tuding', meaning: 'Sering menjadi orang yang ditunjuk' },
+  12: { name: 'Aras Kembang', meaning: 'Memiliki pesona yang memikat' },
+  13: { name: 'Lakuning Lintang', meaning: 'Berwatak seperti bintang' },
+  14: { name: 'Lakuning Rembulan', meaning: 'Simpatik dan penuh daya tarik' },
+  15: { name: 'Lakuning Srengenge', meaning: 'Terang dan berwibawa' },
+  16: { name: 'Lakuning Banyu', meaning: 'Tenang dan mengalir seperti air' },
+  17: { name: 'Lakuning Bumi', meaning: 'Pemurah, pengampun, dan pelindung' },
+  18: { name: 'Lakuning Geni', meaning: 'Berwatak seperti api' },
+}
+
+const RAKAM_DINO_KUPIH = {
+  Jemuwah: 1,
+  Setu: 2,
+  Ngahad: 3,
+  Senen: 4,
+  Selasa: 5,
+  Rebo: 6,
+  Kemis: 7,
+}
+
+const RAKAM_PASARAN_KUPIH = {
+  Kliwon: 1,
+  Legi: 2,
+  Pahing: 3,
+  Pon: 4,
+  Wage: 5,
+}
+
+const RAKAM = {
+  0: 'Pati',
+  1: 'Kala Tinantang',
+  2: 'Demang Kandhuruwan',
+  3: 'Sanggar Waringin',
+  4: 'Mantri Sinaroja',
+  5: 'Macan Ketawan',
+}
+
+const CONTEXT_MODES = [
+  { id: 'profile', label: 'Profil Saya' },
+  { id: 'other', label: 'Orang Lain' },
+  { id: 'partner', label: 'Pasangan' },
+]
 
 function SectionCard({ title, eyebrow, children, className = '' }) {
   return (
@@ -21,199 +79,216 @@ function SectionCard({ title, eyebrow, children, className = '' }) {
   )
 }
 
-function ValueCard({ label, value }) {
+function Metric({ label, value, accent = 'text-[#8FA4B8]' }) {
   return (
-    <div className="rounded-xl border border-white/[0.06] bg-[#07111C] px-3 py-3">
-      <div className="text-[10px] text-[#536A7D]">{label}</div>
-      <div className="mt-1 text-sm font-semibold text-[#DCEBFA]">{value ?? '—'}</div>
+    <div className="rounded-xl border border-white/[0.06] bg-[#07111C] px-4 py-4">
+      <div className="text-[10px] font-semibold uppercase tracking-[0.12em] text-[#536A7D]">{label}</div>
+      <div className={`mt-2 text-lg font-semibold ${accent}`}>{value ?? '—'}</div>
     </div>
   )
 }
 
 export default function WetonPage() {
-  const [birthDate, setBirthDate] = useState('')
-  const [birthTime, setBirthTime] = useState('')
-  const [data, setData] = useState(null)
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState('')
+  const {
+    apiData,
+    location,
+    locations,
+    setSelectedDate,
+    setSelectedTime,
+    setLocationById,
+    goLive,
+  } = useTodayContext()
+  const [profile, setProfile] = useState(null)
+  const [contextMode, setContextMode] = useState('profile')
+  const [manualDate, setManualDate] = useState('')
+  const [manualTime, setManualTime] = useState('12:00')
+  const [personName, setPersonName] = useState('')
 
-  async function calculate() {
-    if (!birthDate) {
-      setError('Tanggal lahir wajib diisi.')
-      return
+  useEffect(() => {
+    const token = typeof window !== 'undefined' ? window.localStorage.getItem(TOKEN_KEY) : null
+    let cancelled = false
+    async function loadProfile() {
+      try {
+        const response = await fetch(`${API_BASE}/api/profile`, { headers: token ? { Authorization: `Bearer ${token}` } : {} })
+        if (!response.ok) return
+        const payload = await response.json()
+        if (cancelled) return
+        const nextProfile = payload?.profile || null
+        setProfile(nextProfile)
+        if (nextProfile?.birth_date) {
+          const nextTime = nextProfile.birth_time_unknown ? '12:00' : (nextProfile.birth_time?.slice(0, 5) || '12:00')
+          setManualDate(nextProfile.birth_date)
+          setManualTime(nextTime)
+          setSelectedDate(new Date(`${nextProfile.birth_date}T12:00:00`))
+          setSelectedTime(nextTime)
+        }
+        if (nextProfile?.birth_location_id) setLocationById(nextProfile.birth_location_id)
+      } catch {
+        // Keep the existing context if profile hydration is unavailable.
+      }
     }
+    loadProfile()
+    return () => { cancelled = true }
+  }, [setSelectedDate, setSelectedTime, setLocationById])
 
-    setLoading(true)
-    setError('')
+  const isManual = contextMode !== 'profile'
+  const hasBirthContext = contextMode === 'profile' ? Boolean(profile?.birth_date) : Boolean(manualDate)
+  const jawa = hasBirthContext ? apiData?.calendars?.find((calendar) => calendar.id === 'jawa') : null
+  const detail = jawa?.detail || {}
+  const dino = detail.dino || {}
+  const pasaran = detail.pasaran || {}
+  const wuku = detail.wuku || {}
+  const sunsetApplied = Boolean(jawa?.meta?.sunsetApplied)
 
-    try {
-      const params = new URLSearchParams({
-        city: 'Bandung',
-        date_value: birthDate,
-        datetime_value: `${birthDate}T${birthTime || '12:00'}:00+07:00`,
-      })
+  const formula = useMemo(() => {
+    if (dino.neptu == null || pasaran.neptu == null || detail.neptu_total == null) return null
+    return `${dino.name} ${dino.neptu} + ${pasaran.name} ${pasaran.neptu} = ${detail.neptu_total}`
+  }, [dino.name, dino.neptu, pasaran.name, pasaran.neptu, detail.neptu_total])
 
-      const response = await fetch(`${API_BASE}/api/almanac?${params.toString()}`)
-      if (!response.ok) {
-        const body = await response.json().catch(() => null)
-        throw new Error(body?.detail || `Almanac API error: ${response.status}`)
+  const pancasuda = useMemo(() => {
+    const total = Number(detail.neptu_total)
+    if (!Number.isFinite(total) || total <= 0) return null
+    const remainder = total % 5 || 5
+    return { remainder, ...PANCASUDA[remainder] }
+  }, [detail.neptu_total])
+
+  const pangarasan = useMemo(() => {
+    const total = Number(detail.neptu_total)
+    if (!Number.isInteger(total) || !PANGARASAN[total]) return null
+    return { total, ...PANGARASAN[total] }
+  }, [detail.neptu_total])
+
+  const rakam = useMemo(() => {
+    const dinoKupih = RAKAM_DINO_KUPIH[dino.name]
+    const pasaranKupih = RAKAM_PASARAN_KUPIH[pasaran.name]
+    if (dinoKupih == null || pasaranKupih == null) return null
+    const remainder = (dinoKupih + pasaranKupih) % 6
+    return { dinoKupih, pasaranKupih, remainder, name: RAKAM[remainder] }
+  }, [dino.name, pasaran.name])
+
+  function activateContext(mode) {
+    setContextMode(mode)
+    if (mode === 'profile') {
+      setPersonName('')
+      if (profile?.birth_date) {
+        const nextTime = profile.birth_time_unknown ? '12:00' : (profile.birth_time?.slice(0, 5) || '12:00')
+        setManualDate(profile.birth_date)
+        setManualTime(nextTime)
+        setSelectedDate(new Date(`${profile.birth_date}T12:00:00`))
+        setSelectedTime(nextTime)
+        if (profile.birth_location_id) setLocationById(profile.birth_location_id)
+      } else {
+        goLive()
       }
-
-      const result = await response.json()
-      const jawa = result.calendars?.find((calendar) => calendar.id === 'jawa')
-
-      if (!jawa?.detail) {
-        throw new Error('Data Kalender Jawa tidak tersedia.')
-      }
-
-      setData({ ...result, jawa })
-    } catch (err) {
-      setData(null)
-      setError(err instanceof Error ? err.message : 'Gagal menghitung Weton.')
-    } finally {
-      setLoading(false)
     }
   }
 
-  useEffect(() => {
-    if (!birthDate) return
-    calculate()
-  }, [])
+  function handleDateChange(event) {
+    const value = event.target.value
+    setManualDate(value)
+    if (value) setSelectedDate(new Date(`${value}T12:00:00`))
+  }
 
-  const detail = data?.jawa?.detail
-  const jawa = data?.jawa
+  function handleTimeChange(event) {
+    const value = event.target.value
+    setManualTime(value)
+    if (value) setSelectedTime(value)
+  }
+
+  function handleLocationChange(event) {
+    if (event.target.value) setLocationById(event.target.value)
+  }
+
+  const contextLabel = contextMode === 'partner' ? 'Data Kelahiran Pasangan' : 'Data Kelahiran Orang Lain'
+  const displaySubject = contextMode === 'profile' ? (profile?.display_name || 'Profil Saya') : (personName || (contextMode === 'partner' ? 'Pasangan' : 'Weton'))
 
   return (
     <section className="mx-auto max-w-[1180px] px-5 py-7 sm:px-7 lg:py-9">
       <header className="mb-7">
         <div className="text-[10px] font-bold uppercase tracking-[0.16em] text-[#22D3EE]">Cakra Langit · Jawa</div>
         <h1 className="mt-2 text-2xl font-semibold tracking-tight text-white sm:text-3xl">Weton Jawa</h1>
-        <p className="mt-2 max-w-2xl text-sm leading-6 text-[#8FA4B8]">
-          Hitung Weton dari tanggal kelahiran menggunakan engine Kalender Jawa yang sudah tersedia.
-        </p>
+        <p className="mt-2 max-w-3xl text-sm leading-6 text-[#8FA4B8]">Eksplorasi Weton berdasarkan konteks kelahiran. Profil menjadi sumber default; data manual hanya berlaku untuk perhitungan ini.</p>
       </header>
 
       <div className="grid gap-5 lg:grid-cols-[minmax(0,0.82fr)_minmax(0,1.18fr)]">
         <div className="space-y-5">
-          <SectionCard title="Data Kelahiran" eyebrow="Input">
-            <div className="grid gap-4">
-              <label className="block">
-                <span className="mb-2 block text-xs font-semibold text-[#A9BDCF]">Tanggal lahir</span>
-                <input
-                  type="date"
-                  value={birthDate}
-                  onChange={(event) => setBirthDate(event.target.value)}
-                  className="w-full rounded-xl border border-white/[0.09] bg-[#07111C] px-3 py-3 text-sm text-white outline-none transition focus:border-cyan-300/40 focus:ring-2 focus:ring-cyan-300/10"
-                />
-              </label>
-
-              <label className="block">
-                <span className="mb-2 block text-xs font-semibold text-[#A9BDCF]">Waktu lahir <span className="font-normal text-[#536A7D]">(opsional)</span></span>
-                <input
-                  type="time"
-                  value={birthTime}
-                  onChange={(event) => setBirthTime(event.target.value)}
-                  className="w-full rounded-xl border border-white/[0.09] bg-[#07111C] px-3 py-3 text-sm text-white outline-none transition focus:border-cyan-300/40 focus:ring-2 focus:ring-cyan-300/10"
-                />
-              </label>
-
-              <button
-                type="button"
-                onClick={calculate}
-                disabled={loading || !birthDate}
-                className="rounded-xl bg-[#22A7E8] px-4 py-3 text-sm font-semibold text-white transition hover:bg-[#2CB4F3] disabled:cursor-not-allowed disabled:opacity-50"
-              >
-                {loading ? 'Menghitung…' : 'Hitung Weton'}
-              </button>
-
-              {error && (
-                <div className="rounded-xl border border-red-400/20 bg-red-400/5 px-4 py-3 text-xs leading-5 text-red-200">
-                  {error}
-                </div>
-              )}
-            </div>
-          </SectionCard>
-
-          <SectionCard title="Pilih Perhitungan" eyebrow="Method">
-            <div className="grid gap-2">
-              {CALCULATIONS.map((item, index) => (
-                <button
-                  key={item.id}
-                  type="button"
-                  disabled={index !== 0}
-                  className={`w-full rounded-xl border px-4 py-3 text-left transition ${
-                    index === 0
-                      ? 'border-cyan-300/20 bg-[#12324A] text-white shadow-[0_0_24px_rgba(34,211,238,0.06)]'
-                      : 'border-white/[0.06] bg-[#07111C] text-[#536A7D] opacity-70'
-                  }`}
-                >
-                  <div className="flex items-center justify-between gap-3">
-                    <span className="text-sm font-semibold">{item.label}</span>
-                    {index === 0 && <span className="text-[9px] font-bold uppercase tracking-[0.12em] text-[#22D3EE]">Aktif</span>}
-                    {index !== 0 && <span className="text-[9px] font-semibold uppercase tracking-[0.1em]">Segera</span>}
-                  </div>
-                  <div className="mt-1 text-[11px] text-[#71869A]">{item.description}</div>
+          <SectionCard title="Birth Context" eyebrow="Context">
+            <div className="grid grid-cols-1 gap-2 sm:grid-cols-3">
+              {CONTEXT_MODES.map((mode) => (
+                <button key={mode.id} type="button" onClick={() => activateContext(mode.id)} className={`rounded-xl border px-3 py-3 text-left transition ${contextMode === mode.id ? 'border-cyan-300/25 bg-[#12324A] shadow-[0_0_24px_rgba(34,211,238,0.06)]' : 'border-white/[0.06] bg-[#07111C] hover:border-white/[0.12]'}`}>
+                  <div className={`text-xs font-semibold ${contextMode === mode.id ? 'text-white' : 'text-[#8FA4B8]'}`}>{mode.label}</div>
+                  <div className="mt-1 text-[10px] text-[#536A7D]">{mode.id === 'profile' ? 'Gunakan data profil' : mode.id === 'partner' ? 'Konteks pasangan' : 'Hitung data lain'}</div>
                 </button>
               ))}
             </div>
+            {contextMode === 'profile' ? (
+              <div className="mt-4 rounded-xl border border-cyan-300/15 bg-cyan-300/[0.035] p-4">
+                <div className="text-xs font-semibold text-cyan-200">{profile?.birth_date ? 'Profil Saya terhubung' : 'Profil kelahiran belum tersedia'}</div>
+                <p className="mt-1 text-[11px] leading-5 text-[#8FA4B8]">{profile?.birth_date ? 'Tanggal, waktu, dan lokasi kelahiran dari Profil Saya digunakan sebagai konteks default untuk Weton ini.' : 'Lengkapi data kelahiran di Profil Saya untuk menjadikan profil sebagai sumber otomatis.'}</p>
+                {profile?.birth_date && <div className="mt-3 grid gap-2 sm:grid-cols-3"><Metric label="Tanggal" value={profile.birth_date} /><Metric label="Waktu" value={profile.birth_time_unknown ? 'Tidak diketahui' : profile.birth_time?.slice(0, 5)} /><Metric label="Lokasi" value={profile.birth_location?.city || '—'} /></div>}
+              </div>
+            ) : (
+              <div className="mt-4 space-y-4">
+                <label className="block"><span className="mb-2 block text-xs font-semibold text-[#A9BDCF]">Nama <span className="font-normal text-[#536A7D]">(opsional)</span></span><input type="text" value={personName} onChange={(event) => setPersonName(event.target.value)} placeholder={contextMode === 'partner' ? 'Nama pasangan' : 'Nama orang yang dihitung'} className="w-full rounded-xl border border-white/[0.09] bg-[#07111C] px-3 py-3 text-sm text-white placeholder:text-[#536A7D] outline-none transition focus:border-cyan-300/40 focus:ring-2 focus:ring-cyan-300/10" /></label>
+                <div className="grid gap-4 sm:grid-cols-2">
+                  <label className="block"><span className="mb-2 block text-xs font-semibold text-[#A9BDCF]">Tanggal lahir</span><input type="date" value={manualDate} onChange={handleDateChange} className="w-full rounded-xl border border-white/[0.09] bg-[#07111C] px-3 py-3 text-sm text-white outline-none transition focus:border-cyan-300/40 focus:ring-2 focus:ring-cyan-300/10" /></label>
+                  <label className="block"><span className="mb-2 block text-xs font-semibold text-[#A9BDCF]">Waktu lahir</span><input type="time" value={manualTime} onChange={handleTimeChange} className="w-full rounded-xl border border-white/[0.09] bg-[#07111C] px-3 py-3 text-sm text-white outline-none transition focus:border-cyan-300/40 focus:ring-2 focus:ring-cyan-300/10" /></label>
+                </div>
+                <label className="block"><span className="mb-2 block text-xs font-semibold text-[#A9BDCF]">Lokasi konteks kalender</span><select value={location?.id || ''} onChange={handleLocationChange} className="w-full rounded-xl border border-white/[0.09] bg-[#07111C] px-3 py-3 text-sm text-white outline-none transition focus:border-cyan-300/40 focus:ring-2 focus:ring-cyan-300/10">{locations?.map((item) => <option key={item.id} value={item.id}>{item.city}{item.province ? ` · ${item.province}` : ''}</option>)}</select><span className="mt-2 block text-[10px] leading-4 text-[#536A7D]">Digunakan sebagai konteks lokasi existing untuk boundary kalender. Tidak mengubah data profil.</span></label>
+              </div>
+            )}
+          </SectionCard>
+
+          <SectionCard title="Perhitungan Tersedia" eyebrow="Method">
+            <div className="grid gap-2">{CALCULATIONS.map((item) => <div key={item.id} className={`w-full rounded-xl border px-4 py-3 ${item.active ? 'border-cyan-300/20 bg-[#12324A] shadow-[0_0_24px_rgba(34,211,238,0.06)]' : 'border-white/[0.06] bg-[#07111C]'}`}><div className="flex items-center justify-between gap-3"><span className={`text-sm font-semibold ${item.active ? 'text-white' : 'text-[#71869A]'}`}>{item.label}</span><span className={`text-[9px] font-bold uppercase tracking-[0.12em] ${item.active ? 'text-[#22D3EE]' : 'text-[#536A7D]'}`}>{item.active ? 'Terhubung' : 'Menunggu sumber'}</span></div><div className="mt-1 text-[11px] text-[#71869A]">{item.description}</div></div>)}</div>
           </SectionCard>
         </div>
 
         <div className="space-y-5">
           <SectionCard title="Hasil Weton" eyebrow="Result">
-            {!detail ? (
-              <div className="rounded-xl border border-white/[0.07] bg-[#07111C] p-5 text-center sm:p-7">
-                <div className="text-[10px] font-bold uppercase tracking-[0.16em] text-[#536A7D]">Belum ada data</div>
-                <div className="mt-2 text-lg font-semibold text-white">Masukkan data kelahiran</div>
-                <p className="mx-auto mt-2 max-w-md text-xs leading-5 text-[#71869A]">
-                  Hasil Weton akan ditampilkan setelah perhitungan dijalankan.
-                </p>
-              </div>
-            ) : (
+            {jawa ? (
               <>
-                <div className="rounded-xl border border-cyan-300/10 bg-[#07111C] p-5 sm:p-7">
-                  <div className="text-[10px] font-bold uppercase tracking-[0.16em] text-[#536A7D]">Weton</div>
-                  <div className="mt-2 text-2xl font-semibold tracking-tight text-white">{jawa.sub}</div>
-                  <div className="mt-1 text-xs text-[#71869A]">
-                    {detail.jawa_date} · Tahun {detail.tahun} · Windu {detail.windu}
-                  </div>
-
-                  <div className="mt-5 grid grid-cols-[1fr_auto_1fr_auto_1fr] items-stretch gap-2">
-                    <ValueCard label="Dino" value={detail.dino.name} />
-                    <div className="self-center text-lg text-[#536A7D]">+</div>
-                    <ValueCard label="Pasaran" value={detail.pasaran.name} />
-                    <div className="self-center text-lg text-[#536A7D]">=</div>
-                    <ValueCard label="Neptu" value={detail.neptu_total} />
-                  </div>
-                </div>
-
-                <div className="mt-4 grid grid-cols-2 gap-2 sm:grid-cols-4">
-                  <ValueCard label="Wuku" value={detail.wuku.name} />
-                  <ValueCard label="Hari Wuku" value={`ke-${detail.wuku.day_in_wuku}`} />
-                  <ValueCard label="Pawukon" value={`${detail.wuku.pawukon_day} / 210`} />
-                  <ValueCard label="Kurup" value={jawa.fields?.find((field) => field.k === 'Kurup')?.v} />
-                </div>
+                <div className="rounded-xl border border-cyan-300/10 bg-[#07111C] p-5 sm:p-6"><div className="text-[10px] font-bold uppercase tracking-[0.16em] text-[#536A7D]">{displaySubject}</div><div className="mt-2 text-2xl font-semibold text-white">{jawa.sub || '—'}</div><div className="mt-1 text-sm text-[#71869A]">{jawa.headline || '—'}</div></div>
+                <div className="mt-4 grid gap-2 sm:grid-cols-3"><Metric label="Dina" value={dino.name} /><Metric label="Pasaran" value={pasaran.name} /><Metric label="Total Neptu" value={detail.neptu_total} accent="text-amber-300" /></div>
+                <div className="mt-4 grid gap-2 sm:grid-cols-2"><Metric label="Neptu Dina" value={dino.neptu} /><Metric label="Neptu Pasaran" value={pasaran.neptu} /></div>
+                {formula && <div className="mt-4 rounded-xl border border-white/[0.06] bg-[#07111C] px-4 py-3 font-mono text-xs text-[#A9BDCF]">{formula}</div>}
+                <div className="mt-4 grid gap-2 sm:grid-cols-2"><Metric label="Tanggal efektif Jawa" value={jawa.effectiveDate} /><Metric label="Boundary" value={jawa.boundary || 'SUNSET'} /></div>
+                {sunsetApplied && <div className="mt-3 rounded-xl border border-amber-300/15 bg-amber-300/[0.04] px-4 py-3 text-[11px] leading-5 text-[#A9BDCF]">Waktu lahir melewati sunset lokasi. Engine Jawa menggunakan tanggal efektif hari berikutnya sesuai boundary kalender existing.</div>}
               </>
+            ) : (
+              <div className="rounded-xl border border-white/[0.07] bg-[#07111C] p-5 text-center sm:p-7"><div className="text-[10px] font-bold uppercase tracking-[0.16em] text-[#536A7D]">Birth Context</div><div className="mt-2 text-lg font-semibold text-white">{contextMode === 'profile' ? 'Memuat konteks Profil Saya…' : `Masukkan ${contextLabel.toLowerCase()}`}</div><p className="mx-auto mt-2 max-w-md text-xs leading-5 text-[#71869A]">{contextMode === 'profile' ? 'Weton akan menggunakan data kelahiran profil setelah konteks tersedia.' : 'Setelah tanggal lahir dipilih, hasil dihitung menggunakan Almanac API dan engine Jawa existing.'}</p></div>
             )}
           </SectionCard>
 
-          <SectionCard title="Konteks Kalender Jawa" eyebrow="Calendar Context">
-            <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
-              <ValueCard label="Dina" value={detail?.dino?.name} />
-              <ValueCard label="Pasaran" value={detail?.pasaran?.name} />
-              <ValueCard label="Neptu" value={detail?.neptu_total} />
-              <ValueCard label="Wuku" value={detail?.wuku?.name} />
-              <ValueCard label="Windu" value={detail ? detail.windu : null} />
-              <ValueCard label="Lambang" value={jawa?.fields?.find((field) => field.k === 'Lambang')?.v} />
-              <ValueCard label="Kurup" value={jawa?.fields?.find((field) => field.k === 'Kurup')?.v} />
-              <ValueCard label="Tahun Jawa" value={detail?.tahun} />
-            </div>
+          {jawa && pancasuda && (
+            <SectionCard title="Pancasuda" eyebrow="Petungan Jawa">
+              <div className="rounded-xl border border-amber-300/10 bg-[#07111C] p-5"><div className="flex items-end justify-between gap-4"><div><div className="text-[10px] font-bold uppercase tracking-[0.14em] text-[#536A7D]">Sisa Neptu ÷ 5</div><div className="mt-2 text-2xl font-semibold text-amber-200">{pancasuda.name}</div></div><div className="text-right"><div className="text-[10px] uppercase tracking-[0.12em] text-[#536A7D]">Sisa</div><div className="mt-1 text-xl font-semibold text-white">{pancasuda.remainder}</div></div></div><p className="mt-3 text-xs leading-5 text-[#8FA4B8]">{pancasuda.meaning}. Hasil ini memakai klasifikasi Pancasuda lima sisa; sisa 0 dibaca sebagai 5 (Pati).</p><div className="mt-4 rounded-lg border border-white/[0.05] px-3 py-2 font-mono text-[11px] text-[#71869A]">{detail.neptu_total} mod 5 = {pancasuda.remainder}</div></div>
+            </SectionCard>
+          )}
 
-            {data?.jawa?.meta?.sunsetApplied && (
-              <p className="mt-4 rounded-xl border border-amber-300/10 bg-amber-300/5 px-4 py-3 text-[11px] leading-5 text-amber-100/80">
-                Waktu lahir melewati batas sunset yang dihitung engine, sehingga tanggal efektif Kalender Jawa bergeser ke hari berikutnya.
-              </p>
-            )}
+          {jawa && pangarasan && (
+            <SectionCard title="Pangarasan" eyebrow="Petungan Jawa">
+              <div className="rounded-xl border border-cyan-300/10 bg-[#07111C] p-5"><div className="text-[10px] font-bold uppercase tracking-[0.14em] text-[#536A7D]">Neptu Weton</div><div className="mt-2 text-2xl font-semibold text-cyan-200">{pangarasan.name}</div><p className="mt-3 text-xs leading-5 text-[#8FA4B8]">{pangarasan.meaning}.</p><div className="mt-4 rounded-lg border border-white/[0.05] px-3 py-2 font-mono text-[11px] text-[#71869A]">Neptu {pangarasan.total} → {pangarasan.name}</div></div>
+            </SectionCard>
+          )}
+
+          {jawa && rakam && (
+            <SectionCard title="Rakam" eyebrow="Petungan Jawa">
+              <div className="rounded-xl border border-white/[0.07] bg-[#07111C] p-5"><div className="text-[10px] font-bold uppercase tracking-[0.14em] text-[#536A7D]">Kupih Dina + Pasaran</div><div className="mt-2 text-2xl font-semibold text-white">{rakam.name}</div><p className="mt-3 text-xs leading-5 text-[#8FA4B8]">Klasifikasi berdasarkan kupih hari dan pasaran.</p><div className="mt-4 grid grid-cols-3 gap-2"><Metric label="Kupih Dina" value={rakam.dinoKupih} /><Metric label="Kupih Pasaran" value={rakam.pasaranKupih} /><Metric label="Sisa ÷ 6" value={rakam.remainder} accent="text-amber-300" /></div></div>
+            </SectionCard>
+          )}
+
+          <SectionCard title="Konteks Kalender Jawa" eyebrow="Calendar Context">
+            <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">{[
+              ['Tanggal Jawa', jawa?.detail?.jawa_date],
+              ['Tahun Jawa', detail.tahun],
+              ['Wuku', wuku.name],
+              ['Hari Wuku', wuku.day_in_wuku],
+              ['Pawukon Day', wuku.pawukon_day],
+              ['Windu', detail.windu],
+              ['Lambang', jawa?.fields?.find((field) => field.k === 'Lambang')?.v],
+              ['Kurup', jawa?.fields?.find((field) => field.k === 'Kurup')?.v],
+            ].map(([label, value]) => <div key={label} className="rounded-xl border border-white/[0.06] bg-[#07111C] px-3 py-3"><div className="text-[10px] text-[#536A7D]">{label}</div><div className="mt-1 text-xs font-semibold text-[#8FA4B8]">{value ?? '—'}</div></div>)}</div>
           </SectionCard>
         </div>
       </div>
