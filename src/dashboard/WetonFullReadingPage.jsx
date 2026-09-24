@@ -122,7 +122,7 @@ export default function WetonFullReadingPage() {
     }
     loadProfile()
     return () => { cancelled = true }
-  }, [setSelectedDate, setSelectedTime, setLocationById])
+  }, [])
 
   const jawa = useMemo(() => apiData?.calendars?.find((calendar) => calendar.id === 'jawa') || null, [apiData])
   const detail = jawa?.detail || {}
