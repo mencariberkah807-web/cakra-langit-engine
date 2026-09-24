@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import CalculationNavCards from './CalculationNavCards'
 
 const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://127.0.0.1:8000'
 
@@ -104,6 +105,10 @@ export default function WetonJodohPage() {
           <p className="mt-4 text-xs leading-5 text-[#668397]">Metode yang dipakai adalah salah satu versi pembagian 8 kategori: Pegat, Ratu, Jodoh, Topo, Tinari, Padu, Sujanan, Pesthi. Versi primbon lain dapat memakai pembagian berbeda.</p>
         </div>
       ) : null}
+
+    <div className="mt-5">
+      <CalculationNavCards current="/dashboard/weton/jodoh" />
+    </div>
     </section>
   )
 }
