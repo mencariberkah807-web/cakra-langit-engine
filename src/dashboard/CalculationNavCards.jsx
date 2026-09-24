@@ -1,4 +1,4 @@
-import { ArrowUpRight, CalendarDays, Compass, HeartHandshake, Layers3, Sparkles, Sun, UserRound } from 'lucide-react'
+import { ArrowUpRight, Compass, HeartHandshake, Layers3, Sparkles, UserRound } from 'lucide-react'
 
 const CALCULATIONS = [
   {
@@ -28,20 +28,6 @@ const CALCULATIONS = [
     eyebrow: 'SUNDA',
     title: 'Paririmbon',
     description: 'Jelajahi perhitungan dan pembacaan Paririmbon Sunda.',
-  },
-  {
-    href: '/dashboard/today',
-    icon: Sun,
-    eyebrow: 'HARI INI',
-    title: 'Kalkulasi Hari Ini',
-    description: 'Lihat konteks hari dan lapisan kalender saat ini.',
-  },
-  {
-    href: '/dashboard/almanac',
-    icon: CalendarDays,
-    eyebrow: 'KALENDER',
-    title: 'Almanac',
-    description: 'Lihat informasi kalender dan konteks tanggal.',
   },
   {
     href: '/dashboard/bazi',
