@@ -15,6 +15,9 @@ const WETON_READINGS = {
     pangarasan: { name: "Lakuning Geni", meaning: "Dalam sumber Ki-Demang: mudah marah dan ambisius." },
     rakam: { name: "Sanggar Waringin", meaning: "Teduh hati dan suka memberi perlindungan." },
     saptawara: { name: "Tunggak Semi", meaning: "Rezeki digambarkan dapat tumbuh kembali setelah berkurang." },
+    kesehatan: "Gunakan pembacaan ini sebagai pengingat menjaga ritme hidup, istirahat, dan kebiasaan sehat; bukan sebagai diagnosis.",
+    hariBaik: "Dalam salah satu rujukan Primbon.ID untuk Wage, Rabu, Jumat, dan Minggu disebut sebagai hari yang dipercaya baik untuk memulai kegiatan.",
+    wuku: "Mandhasiya: sumber Ki-Demang mencatat tema perlindungan, penghematan, dan kehati-hatian dalam perjalanan serta mencari nafkah.",
   },
 }
 
@@ -306,6 +309,15 @@ export default function WetonFullReadingPage() {
             </WorkspaceCard>
             <WorkspaceCard title="Asmara & Relasi" eyebrow="Hubungan">
               <p className="text-sm leading-7 text-[#A9C0CF]">{sourceReading.asmara || "Dalam pembacaan tradisional, komunikasi, kepercayaan, dan kemampuan memahami pasangan menjadi bagian penting."}</p>
+            </WorkspaceCard>
+            <WorkspaceCard title="Kesehatan & Laku" eyebrow="Kehidupan">
+              <p className="text-sm leading-7 text-[#A9C0CF]">{sourceReading.kesehatan || "Gunakan pembacaan tradisional sebagai pengingat menjaga ritme hidup dan kebiasaan sehat; bukan diagnosis."}</p>
+            </WorkspaceCard>
+            <WorkspaceCard title="Hari Baik" eyebrow="Hari yang dipercaya">
+              <p className="text-sm leading-7 text-[#A9C0CF]">{sourceReading.hariBaik || "Belum ada daftar khusus untuk weton ini dari rujukan yang sedang dipakai."}</p>
+            </WorkspaceCard>
+            <WorkspaceCard title="Wuku & Pawukon" eyebrow="Konteks Wuku">
+              <p className="text-sm leading-7 text-[#A9C0CF]">{sourceReading.wuku || `Wuku ${wuku.name || "belum tersedia"} menjadi lapisan tambahan dalam pembacaan Pawukon.`}</p>
             </WorkspaceCard>
             <WorkspaceCard title="Pancasuda" eyebrow="Petungan">
               <div className="text-xl font-semibold text-[#E6D58B]">{pancasuda?.name || "—"}</div>
