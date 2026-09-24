@@ -4,23 +4,6 @@ import { useTodayContext } from '../core/TodayContext'
 const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://127.0.0.1:8000'
 const TOKEN_KEY = 'cakra-langit:access-token'
 
-const WETON_READINGS = {
-  "Senen Wage": {
-    watak: "Sederhana, tekun, tidak banyak mencari perhatian. Cenderung teliti dan berhati-hati dalam mengambil keputusan. Sikap yang lebih pendiam dapat membuat perasaan atau maksudnya tidak selalu langsung dipahami orang lain.",
-    rezeki: "Rezeki digambarkan selalu ada: dapat berkurang atau habis, kemudian datang kembali. Polanya lebih kuat ketika dibangun dengan ketekunan dan keterampilan yang terus diasah.",
-    karier: "Cocok untuk pekerjaan yang membutuhkan ketelitian, administrasi, riset, analisis, pengelolaan, perdagangan, atau pekerjaan teknis yang menuntut konsistensi.",
-    asmara: "Membutuhkan hubungan yang tenang, jelas, dan saling memahami. Perasaan sebaiknya disampaikan secara terbuka agar sikap pendiam tidak berubah menjadi jarak.",
-    pancasuda: { name: "Tunggak Semi", meaning: "Rezeki selalu ada; ketika berkurang atau habis, datang kembali." },
-    pangarasan: { name: "Lakuning Geni", meaning: "Mudah marah dan ambisius." },
-    rakam: { name: "Sanggar Waringin", meaning: "Teduh hati dan suka memberi perlindungan." },
-    saptawara: { name: "Tunggak Semi", meaning: "Rezeki tumbuh kembali setelah berkurang." },
-    kesehatan: "Jaga ritme kerja dan istirahat, terutama ketika dorongan untuk terus bekerja sedang tinggi. Ketenangan, tidur cukup, dan kebiasaan hidup teratur menjadi penyeimbang.",
-    hariBaik: "Hari yang dipercaya baik untuk memulai kegiatan: Rabu, Jumat, dan Minggu.",
-    wuku: "Mandhasiya baik untuk persahabatan, mengobati penyakit, dan hajat pernikahan. Perlu berhati-hati untuk bepergian, mencari nafkah, membuat sumur, dan membuka lahan.",
-    arah: { sandang: "Selatan", pangan: "Utara", sakit: "Timur", pati: "Barat" },
-  },
-}
-
 const NEPTU_PETUNGAN = {
   7: { name: "Lungguh", meaning: "Dikaitkan dengan kedudukan, kepercayaan, atau tanggung jawab." },
   8: { name: "Dunya (Gedhong)", meaning: "Dikaitkan dengan kecukupan harta melalui usaha dan kerja keras." },
@@ -63,6 +46,107 @@ const CAREER_BY_DAY = {
   Setu: "Wirausaha, pengelolaan, pekerjaan mandiri, hukum, kepemimpinan, atau bidang yang membutuhkan ketegasan.",
   Ngahad: "Komunikasi, pemasaran, perdagangan, pelayanan, hubungan masyarakat, atau pekerjaan dengan banyak relasi.",
 }
+
+
+const WETON_KEYS = [
+  ['Minggu', 'Legi'], ['Minggu', 'Pahing'], ['Minggu', 'Pon'], ['Minggu', 'Wage'], ['Minggu', 'Kliwon'],
+  ['Senen', 'Legi'], ['Senen', 'Pahing'], ['Senen', 'Pon'], ['Senen', 'Wage'], ['Senen', 'Kliwon'],
+  ['Selasa', 'Legi'], ['Selasa', 'Pahing'], ['Selasa', 'Pon'], ['Selasa', 'Wage'], ['Selasa', 'Kliwon'],
+  ['Rebo', 'Legi'], ['Rebo', 'Pahing'], ['Rebo', 'Pon'], ['Rebo', 'Wage'], ['Rebo', 'Kliwon'],
+  ['Kemis', 'Legi'], ['Kemis', 'Pahing'], ['Kemis', 'Pon'], ['Kemis', 'Wage'], ['Kemis', 'Kliwon'],
+  ['Jemuwah', 'Legi'], ['Jemuwah', 'Pahing'], ['Jemuwah', 'Pon'], ['Jemuwah', 'Wage'], ['Jemuwah', 'Kliwon'],
+  ['Setu', 'Legi'], ['Setu', 'Pahing'], ['Setu', 'Pon'], ['Setu', 'Wage'], ['Setu', 'Kliwon'],
+]
+
+const DAY_NEPTU = { Senen: 4, Selasa: 3, Rebo: 7, Kemis: 8, Jemuwah: 6, Setu: 9, Ngahad: 5 }
+const PASARAN_NEPTU = { Legi: 5, Pahing: 9, Pon: 7, Wage: 4, Kliwon: 8 }
+
+const PAARASAN_BY_WETON = {
+  'Minggu Legi': 'Pendhita Mbangun Teki', 'Minggu Pahing': 'Lakuning Bulan', 'Minggu Pon': 'Lakuning Kembang', 'Minggu Wage': 'Lakuning Angin', 'Minggu Kliwon': 'Lakuning Lintang',
+  'Senen Legi': 'Lakuning Angin', 'Senen Pahing': 'Lakuning Lintang', 'Senen Pon': 'Lakuning Setan', 'Senen Wage': 'Lakuning Geni', 'Senen Kliwon': 'Lakuning Kembang',
+  'Selasa Legi': 'Lakuning Geni', 'Selasa Pahing': 'Lakuning Kembang', 'Selasa Pon': 'Pendhita Mbangun Teki', 'Selasa Wage': 'Lakuning Bumi', 'Selasa Kliwon': 'Lakuning Setan',
+  'Rebo Legi': 'Lakuning Kembang', 'Rebo Pahing': 'Lakuning Banyu', 'Rebo Pon': 'Lakuning Bulan', 'Rebo Wage': 'Lakuning Setan', 'Rebo Kliwon': 'Lakuning Srengenge',
+  'Kemis Legi': 'Lakuning Lintang', 'Kemis Pahing': 'Lakuning Bumi', 'Kemis Pon': 'Lakuning Srengenge', 'Kemis Wage': 'Lakuning Kembang', 'Kemis Kliwon': 'Lakuning Banyu',
+  'Jemuwah Legi': 'Lakuning Setan', 'Jemuwah Pahing': 'Lakuning Srengenge', 'Jemuwah Pon': 'Lakuning Lintang', 'Jemuwah Wage': 'Pendhita Mbangun Teki', 'Jemuwah Kliwon': 'Lakuning Bulan',
+  'Setu Legi': 'Lakuning Bulan', 'Setu Pahing': 'Lakuning Paripurna', 'Setu Pon': 'Lakuning Banyu', 'Setu Wage': 'Lakuning Lintang', 'Setu Kliwon': 'Lakuning Bumi',
+}
+
+const PAARASAN_MEANING = {
+  'Pendhita Mbangun Teki': 'Tenang, gemar memberi nasihat, suka menyendiri untuk berpikir, dan tidak mudah tergoda duniawi.',
+  'Lakuning Bulan': 'Menerangi dalam kegelapan, pembawa kedamaian, pendengar yang baik, dan pengemong.',
+  'Lakuning Kembang': 'Cinta damai, mengutamakan keharmonisan, ramah, dan membawa kebahagiaan bagi sekitar.',
+  'Lakuning Angin': 'Lincah, mudah bergaul, memiliki daya tarik memikat, dan pesonanya disukai banyak orang.',
+  'Lakuning Lintang': 'Pendiam, pesonanya kuat, suka menyendiri, namun kata-katanya berbobot.',
+  'Lakuning Setan': 'Berpendirian goyah, berani mengambil risiko, namun sering tepat dalam keputusan sulit.',
+  'Lakuning Geni': 'Mudah tersinggung, ambisius, penuh semangat, dan meledak-ledak bila merasa disudutkan.',
+  'Lakuning Banyu': 'Tenang, menyejukkan, pandai menyelesaikan masalah, namun bisa menghanyutkan bila diremehkan.',
+  'Lakuning Bumi': 'Sangat pendiam, murah hati, penyabar, namun memiliki tekad kuat yang sulit dipatahkan.',
+  'Lakuning Srengenge': 'Sentosa, berwibawa, menghidupi, dan menerangi; kuat dalam peran memimpin.',
+  'Lakuning Paripurna': 'Tegas, berkuasa, kuat dalam tindakan, dan cenderung dominan dalam kelompok.',
+}
+
+const RAKAM_BY_WETON = {
+  'Minggu Legi': 'Mantri Sinaroja', 'Minggu Pahing': 'Demang Kandhuwuran', 'Minggu Pon': 'Nuju Pati', 'Minggu Wage': 'Sanggar Waringin', 'Minggu Kliwon': 'Kala Tinantang',
+  'Senen Legi': 'Sanggar Waringin', 'Senen Pahing': 'Kala Tinantang', 'Senen Pon': 'Macan Ketawan', 'Senen Wage': 'Demang Kandhuwuran', 'Senen Kliwon': 'Nuju Pati',
+  'Selasa Legi': 'Demang Kandhuwuran', 'Selasa Pahing': 'Nuju Pati', 'Selasa Pon': 'Mantri Sinaroja', 'Selasa Wage': 'Kala Tinantang', 'Selasa Kliwon': 'Macan Ketawan',
+  'Rebo Legi': 'Nuju Pati', 'Rebo Pahing': 'Mantri Sinaroja', 'Rebo Pon': 'Demang Kandhuwuran', 'Rebo Wage': 'Macan Ketawan', 'Rebo Kliwon': 'Sanggar Waringin',
+  'Kemis Legi': 'Kala Tinantang', 'Kemis Pahing': 'Macan Ketawan', 'Kemis Pon': 'Sanggar Waringin', 'Kemis Wage': 'Nuju Pati', 'Kemis Kliwon': 'Mantri Sinaroja',
+  'Jemuwah Legi': 'Macan Ketawan', 'Jemuwah Pahing': 'Sanggar Waringin', 'Jemuwah Pon': 'Kala Tinantang', 'Jemuwah Wage': 'Mantri Sinaroja', 'Jemuwah Kliwon': 'Demang Kandhuwuran',
+  'Setu Legi': 'Demang Kandhuwuran', 'Setu Pahing': 'Nuju Pati', 'Setu Pon': 'Mantri Sinaroja', 'Setu Wage': 'Kala Tinantang', 'Setu Kliwon': 'Macan Ketawan',
+}
+
+const RAKAM_MEANING = {
+  'Kala Tinantang': 'Pemberani dan tidak takut menghadapi rintangan, namun perlu menjaga agar keberanian tidak berubah menjadi konflik.',
+  'Demang Kandhuwuran': 'Sering mendapat tanggung jawab atau jabatan, sehingga perlu menjaga kehati-hatian.',
+  'Sanggar Waringin': 'Menjadi tempat berlindung bagi banyak orang, bijaksana, dan memberi ketenteraman.',
+  'Mantri Sinaroja': 'Memiliki karisma kepemimpinan, mampu menyelesaikan tugas berat, dan dihormati.',
+  'Macan Ketawan': 'Berkecukupan namun batinnya dapat mudah gelisah; perlu menjaga rasa syukur dan ketenangan.',
+  'Nuju Pati': 'Menggambarkan ujian hidup yang berat; pengalaman tersebut dibaca sebagai proses membangun ketangguhan.',
+}
+
+const SAPTAWARA_BY_WETON = {
+  'Minggu Legi': 'Satriya Wibawa', 'Minggu Pahing': 'Lebu Katiup Angin', 'Minggu Pon': 'Satriya Wirang', 'Minggu Wage': 'Tunggak Semi', 'Minggu Kliwon': 'Bumi Kapetak',
+  'Senen Legi': 'Tunggak Semi', 'Senen Pahing': 'Bumi Kapetak', 'Senen Pon': 'Sumur Sinaba', 'Senen Wage': 'Wasesa Segara', 'Senen Kliwon': 'Satriya Wirang',
+  'Selasa Legi': 'Wasesa Segara', 'Selasa Pahing': 'Satriya Wirang', 'Selasa Pon': 'Satriya Wibawa', 'Selasa Wage': 'Lebu Katiup Angin', 'Selasa Kliwon': 'Sumur Sinaba',
+  'Rebo Legi': 'Satriya Wirang', 'Rebo Pahing': 'Tunggak Semi', 'Rebo Pon': 'Lebu Katiup Angin', 'Rebo Wage': 'Sumur Sinaba', 'Rebo Kliwon': 'Wasesa Segara',
+  'Kemis Legi': 'Bumi Kapetak', 'Kemis Pahing': 'Satriya Wibawa', 'Kemis Pon': 'Wasesa Segara', 'Kemis Wage': 'Satriya Wirang', 'Kemis Kliwon': 'Tunggak Semi',
+  'Jemuwah Legi': 'Sumur Sinaba', 'Jemuwah Pahing': 'Wasesa Segara', 'Jemuwah Pon': 'Bumi Kapetak', 'Jemuwah Wage': 'Satriya Wibawa', 'Jemuwah Kliwon': 'Lebu Katiup Angin',
+  'Setu Legi': 'Lebu Katiup Angin', 'Setu Pahing': 'Sumur Sinaba', 'Setu Pon': 'Tunggak Semi', 'Setu Wage': 'Bumi Kapetak', 'Setu Kliwon': 'Satriya Wibawa',
+}
+
+const SAPTAWARA_MEANING = {
+  'Satriya Wibawa': 'Mendapat kemuliaan, kehormatan, dan keberuntungan ketika menjalankan tanggung jawab dengan baik.',
+  'Lebu Katiup Angin': 'Rezeki dapat cepat datang tetapi cepat pula keluar; pengelolaan keuangan perlu dijaga.',
+  'Satriya Wirang': 'Pengalaman malu atau ujian sosial dibaca sebagai kesempatan untuk belajar dan berkembang.',
+  'Tunggak Semi': 'Rezeki digambarkan mudah tumbuh kembali; setelah berkurang masih ada jalan untuk mendapatkannya lagi.',
+  'Bumi Kapetak': 'Pekerja keras, tahan banting, dan kuat menghadapi ujian.',
+  'Wasesa Segara': 'Pemaaf, berjiwa besar, berbudi luhur, dan rezekinya digambarkan luas.',
+  'Sumur Sinaba': 'Wawasan luas, menjadi tempat bertanya, dan nasihatnya didengar orang lain.',
+}
+
+const WETON_READINGS = Object.fromEntries(
+  WETON_KEYS.map(([day, pasaran]) => {
+    const key = day + ' ' + pasaran
+    const total = (DAY_NEPTU[day] || 0) + (PASARAN_NEPTU[pasaran] || 0)
+    const pancasuda = NEPTU_PETUNGAN[total]
+    const pangarasanName = PAARASAN_BY_WETON[key]
+    const rakamName = RAKAM_BY_WETON[key]
+    const saptawaraName = SAPTAWARA_BY_WETON[key]
+    return [key, {
+      watak: (DAY_READING[day] || '') + ' ' + (PASARAN_READING[pasaran] || ''),
+      rezeki: pancasuda?.meaning || 'Rezeki dibaca melalui petungan weton dan usaha yang dijalankan.',
+      karier: CAREER_BY_DAY[day] || 'Pekerjaan yang sesuai dengan kekuatan, keterampilan, dan pengalaman.',
+      asmara: 'Dalam relasi, unsur hari dan pasaran dibaca sebagai kecenderungan karakter. Hubungan akan lebih kuat ketika komunikasi, kepercayaan, dan pembagian peran dijaga dengan jelas.',
+      pancasuda,
+      pangarasan: { name: pangarasanName, meaning: PAARASAN_MEANING[pangarasanName] },
+      rakam: { name: rakamName, meaning: RAKAM_MEANING[rakamName] },
+      saptawara: { name: saptawaraName, meaning: SAPTAWARA_MEANING[saptawaraName] },
+      kesehatan: 'Jaga ritme hidup, istirahat, dan kebiasaan sehat. Dalam pembacaan tradisional, neptu ' + total + ' menjadi pengingat untuk menjaga keseimbangan aktivitas dan pemulihan.',
+      hariBaik: 'Hari baik dipercaya bergantung pada tujuan kegiatan dan petungan harian. Cocokkan weton dengan hari yang akan dipilih untuk kegiatan tertentu.',
+      wuku: 'Wuku pada tanggal kelahiran menjadi lapisan tambahan dalam pembacaan Pawukon.',
+    }]
+  })
+)
 
 const JODOH_RESULTS = {
   1: "Pegat",
