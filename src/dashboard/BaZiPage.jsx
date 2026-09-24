@@ -103,6 +103,12 @@ export default function BaZiPage() {
           </p>
         </section>
       </div>
+
+    <div className="mt-5">
+      <CalculationNavCards current="/dashboard/bazi" />
+    </div>
     </section>
   );
 }
+
+import CalculationNavCards from './CalculationNavCards'
