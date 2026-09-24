@@ -138,6 +138,12 @@ export default function ParirimbonPage() {
           <p className="mt-2 text-sm leading-6 text-[#536A7D]">UI ini hanya mempresentasikan data dan status penelitian. Formula yang belum terverifikasi tidak dihitung atau disimpulkan oleh page.</p>
         </section>
       </div>
+
+    <div className="mt-5">
+      <CalculationNavCards current="/dashboard/paririmbon" />
+    </div>
     </section>
   );
 }
+
+import CalculationNavCards from './CalculationNavCards'
