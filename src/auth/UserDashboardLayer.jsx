@@ -3,6 +3,7 @@ import { LanguageProvider } from '../core/LanguageContext'
 import UserLayout from '../layouts/UserLayout'
 import DashboardHome from '../dashboard/DashboardHome'
 import WetonFullReadingPage from '../dashboard/WetonFullReadingPage'
+import WetonJodohPage from '../dashboard/WetonJodohPage'
 import BaZiPage from '../dashboard/BaZiPage'
 import ParirimbonPage from '../dashboard/ParirimbonPage'
 import PalelintanganPage from '../dashboard/PalelintanganPage'
@@ -43,6 +44,10 @@ function UserDashboardContent({ user }) {
 
   if (path === '/dashboard/weton') {
     return <WetonFullReadingPage />
+  }
+
+  if (path === '/dashboard/weton/jodoh') {
+    return <WetonJodohPage />
   }
 
   if (path === '/dashboard/bazi') {
