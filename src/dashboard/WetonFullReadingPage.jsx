@@ -4,38 +4,83 @@ import { useTodayContext } from '../core/TodayContext'
 const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://127.0.0.1:8000'
 const TOKEN_KEY = 'cakra-langit:access-token'
 
-const PANCASUDA = {
-  1: { name: 'Sri', meaning: 'Rezeki / kelimpahan' },
-  2: { name: 'Lungguh', meaning: 'Derajat / kedudukan' },
-  3: { name: 'Gedhong', meaning: 'Harta / kekayaan' },
-  4: { name: 'Lara', meaning: 'Kesulitan / sakit' },
-  5: { name: 'Pati', meaning: 'Kehilangan / akhir' },
+const WETON_READINGS = {
+  "Senen Wage": {
+    source: "Ki-Demang + JavaneseTime",
+    watak: "Sederhana, tekun, cenderung tidak mencari perhatian. Mampu bekerja baik ketika tujuan jelas, tetapi sikap pendiam kadang mudah disalahpahami.",
+    rezeki: "Dalam tafsir tradisional, rezeki berkembang melalui keterampilan yang terus dilatih dan kerja yang tekun.",
+    karier: "Bidang yang membutuhkan ketelitian, administrasi, riset, analisis, pengelolaan, atau pekerjaan teknis.",
+    asmara: "Cenderung membutuhkan hubungan yang tenang dan jelas. Komunikasi tentang perasaan dan kebutuhan perlu dijaga agar tidak terjadi jarak.",
+    pancasuda: { name: "Dunya (Gedhong)", meaning: "Dikaitkan dengan kecukupan harta melalui usaha dan ketekunan." },
+    pangarasan: { name: "Lakuning Geni", meaning: "Dalam sumber Ki-Demang: mudah marah dan ambisius." },
+    rakam: { name: "Sanggar Waringin", meaning: "Teduh hati dan suka memberi perlindungan." },
+    saptawara: { name: "Tunggak Semi", meaning: "Rezeki digambarkan dapat tumbuh kembali setelah berkurang." },
+  },
 }
 
-const PANGARASAN = {
-  7: { name: 'Lakuning Bumi', meaning: 'Pemurah, pengampun, dan pelindung' },
-  8: { name: 'Lakuning Geni', meaning: 'Berwatak seperti api' },
-  9: { name: 'Lakuning Angin', meaning: 'Berwatak seperti angin' },
-  10: { name: 'Aras Pepet', meaning: 'Tertutup dan cenderung prihatin' },
-  11: { name: 'Aras Tuding', meaning: 'Sering menjadi orang yang ditunjuk' },
-  12: { name: 'Aras Kembang', meaning: 'Memiliki pesona yang memikat' },
-  13: { name: 'Lakuning Lintang', meaning: 'Berwatak seperti bintang' },
-  14: { name: 'Lakuning Rembulan', meaning: 'Simpatik dan penuh daya tarik' },
-  15: { name: 'Lakuning Srengenge', meaning: 'Terang dan berwibawa' },
-  16: { name: 'Lakuning Banyu', meaning: 'Tenang dan mengalir seperti air' },
-  17: { name: 'Lakuning Bumi', meaning: 'Pemurah, pengampun, dan pelindung' },
-  18: { name: 'Lakuning Geni', meaning: 'Berwatak seperti api' },
+const NEPTU_PETUNGAN = {
+  7: { name: "Lungguh", meaning: "Dikaitkan dengan kedudukan, kepercayaan, atau tanggung jawab." },
+  8: { name: "Dunya (Gedhong)", meaning: "Dikaitkan dengan kecukupan harta melalui usaha dan kerja keras." },
+  9: { name: "Loro (Lara)", meaning: "Dibaca sebagai pengingat untuk berhati-hati dan menjaga diri." },
+  10: { name: "Pati", meaning: "Dibaca sebagai fase yang menuntut kehati-hatian dan ikhtiar." },
+  11: { name: "Sri", meaning: "Dikaitkan dengan kelancaran rezeki dan penerimaan sosial." },
+  12: { name: "Lungguh", meaning: "Dikaitkan dengan kedudukan, kepercayaan, atau tanggung jawab." },
+  13: { name: "Dunya (Gedhong)", meaning: "Dikaitkan dengan kecukupan harta melalui usaha dan kerja keras." },
+  14: { name: "Loro (Lara)", meaning: "Dibaca sebagai pengingat untuk berhati-hati dan menjaga diri." },
+  15: { name: "Pati", meaning: "Dibaca sebagai fase yang menuntut kehati-hatian dan ikhtiar." },
+  16: { name: "Sri", meaning: "Dikaitkan dengan kelancaran rezeki dan penerimaan sosial." },
+  17: { name: "Lungguh", meaning: "Dikaitkan dengan kedudukan, kepercayaan, atau tanggung jawab." },
+  18: { name: "Dunya (Gedhong)", meaning: "Dikaitkan dengan kecukupan harta melalui usaha dan kerja keras." },
+}
+
+const DAY_READING = {
+  Senen: "Cenderung perasa, mempertimbangkan akibat, dan menjaga hubungan; perlu menghindari terlalu banyak memendam.",
+  Selasa: "Cenderung berkemauan kuat dan berani bergerak; perlu menjaga kesabaran ketika menghadapi tekanan.",
+  Rebo: "Cenderung cerdas, adaptif, dan banyak akal; perlu menjaga agar banyak gagasan tetap terarah.",
+  Kemis: "Cenderung bijaksana, bertanggung jawab, dan mengayomi; perlu menyeimbangkan ketegasan dengan keluwesan.",
+  Jemuwah: "Cenderung lembut, empatik, dan menjaga hubungan; perlu tetap tegas terhadap batas pribadi.",
+  Setu: "Cenderung mandiri, berwibawa, dan teguh; perlu menghindari sikap terlalu kaku.",
+  Ngahad: "Cenderung terbuka, mudah bergaul, dan percaya diri; perlu menjaga konsistensi dan pertimbangan.",
+}
+
+const PASARAN_READING = {
+  Legi: "Legi sering dibaca sebagai unsur yang ramah, mudah bergaul, dan membawa suasana menyenangkan.",
+  Pahing: "Pahing sering dibaca sebagai unsur yang kuat, berani, tegas, dan bersemangat.",
+  Pon: "Pon sering dibaca sebagai unsur yang tenang, berwibawa, dan mempunyai insting tajam.",
+  Wage: "Wage sering dibaca sebagai unsur yang sederhana, teliti, hemat, dan berhati-hati.",
+  Kliwon: "Kliwon sering dibaca sebagai unsur yang peka, karismatik, dan kuat dalam kepekaan batin.",
+}
+
+const CAREER_BY_DAY = {
+  Senen: "Administrasi, riset, analisis, pengelolaan, perdagangan, atau pekerjaan yang membutuhkan ketelitian.",
+  Selasa: "Wirausaha, pekerjaan lapangan, perdagangan, olahraga, atau bidang yang membutuhkan keberanian.",
+  Rebo: "Desain, teknologi, pendidikan, komunikasi, analisis, atau pekerjaan kreatif.",
+  Kemis: "Kepemimpinan, organisasi, pelayanan, pengelolaan, pemerintahan, atau kegiatan sosial.",
+  Jemuwah: "Pelayanan, pendidikan, kesehatan, seni, konseling, komunikasi, atau kegiatan sosial.",
+  Setu: "Wirausaha, pengelolaan, pekerjaan mandiri, hukum, kepemimpinan, atau bidang yang membutuhkan ketegasan.",
+  Ngahad: "Komunikasi, pemasaran, perdagangan, pelayanan, hubungan masyarakat, atau pekerjaan dengan banyak relasi.",
+}
+
+const JODOH_RESULTS = {
+  1: "Pegat",
+  2: "Ratu",
+  3: "Jodoh",
+  4: "Topo",
+  5: "Tinari",
+  6: "Padu",
+  7: "Sujanan",
+  8: "Pesthi",
 }
 
 const RAKAM_DINO_KUPIH = { Jemuwah: 1, Setu: 2, Ngahad: 3, Senen: 4, Selasa: 5, Rebo: 6, Kemis: 7 }
 const RAKAM_PASARAN_KUPIH = { Kliwon: 1, Legi: 2, Pahing: 3, Pon: 4, Wage: 5 }
 const RAKAM = {
-  0: 'Pati',
-  1: 'Kala Tinantang',
-  2: 'Demang Kandhuruwan',
-  3: 'Sanggar Waringin',
-  4: 'Mantri Sinaroja',
-  5: 'Macan Ketawan',
+  0: "Kala Tinantang",
+  1: "Demang Kandhuruwan",
+  2: "Sanggar Waringin",
+  3: "Mantri Sinaroja",
+  4: "Macan Ketawan",
+  5: "Nuju Pati",
 }
 
 const READING_LAYERS = [
@@ -129,10 +174,10 @@ export default function WetonFullReadingPage() {
   const dino = detail.dino || {}
   const pasaran = detail.pasaran || {}
   const wuku = detail.wuku || {}
-  const watak = detail.watak || {}
   const total = Number(detail.neptu_total)
-  const pancasuda = Number.isFinite(total) && total > 0 ? { remainder: total % 5 || 5, ...PANCASUDA[total % 5 || 5] } : null
-  const pangarasan = Number.isInteger(total) ? PANGARASAN[total] : null
+  const wetonKey = jawa?.sub || `${dino.name || ""} ${pasaran.name || ""}`.trim()
+  const sourceReading = WETON_READINGS[wetonKey] || {}
+  const neptuReading = NEPTU_PETUNGAN[total] || null
   const rakam = useMemo(() => {
     const dinoKupih = RAKAM_DINO_KUPIH[dino.name]
     const pasaranKupih = RAKAM_PASARAN_KUPIH[pasaran.name]
@@ -140,6 +185,19 @@ export default function WetonFullReadingPage() {
     const remainder = (dinoKupih + pasaranKupih) % 6
     return { dinoKupih, pasaranKupih, remainder, name: RAKAM[remainder] }
   }, [dino.name, pasaran.name])
+  const pancasuda = sourceReading.pancasuda || neptuReading
+  const pangarasan = sourceReading.pangarasan || {
+    name: `Unsur ${pasaran.name || "Pasaran"}`,
+    meaning: PASARAN_READING[pasaran.name] || "Pembacaan tradisional berdasarkan pasaran.",
+  }
+  const rakamReading = sourceReading.rakam || (rakam ? {
+    name: rakam.name,
+    meaning: "Hasil petungan Rakam dari kombinasi kupih hari dan pasaran.",
+  } : null)
+  const saptawara = sourceReading.saptawara || {
+    name: "Pembacaan Saptawara",
+    meaning: "Pembacaan tambahan berdasarkan tradisi weton dan nilai hari.",
+  }
 
   const profileName = profile?.display_name || 'Profil Saya'
   const birthLocation = profile?.birth_location
@@ -211,7 +269,7 @@ export default function WetonFullReadingPage() {
             <WorkspaceCard title="Pancasuda" eyebrow="Petungan · Neptu">
               <div className="text-2xl font-semibold text-[#E6D58B]">{pancasuda?.name || '—'}</div>
               <div className="mt-1 text-xs text-[#A99362]">Sisa {pancasuda?.remainder ?? '—'} · {pancasuda?.meaning || 'Belum tersedia'}</div>
-              <div className="mt-3 font-mono text-[10px] text-[#6F6247]">{pancasuda ? `${total} ÷ 5 → sisa ${pancasuda.remainder}` : '—'}</div>
+              <div className="mt-3 font-mono text-[10px] text-[#6F6247]">{pancasuda ? `Neptu ${total}` : '—'}</div>
             </WorkspaceCard>
             <WorkspaceCard title="Pangarasan" eyebrow="Petungan · Neptu">
               <div className="text-2xl font-semibold text-[#E6D58B]">{pangarasan?.name || '—'}</div>
@@ -219,7 +277,7 @@ export default function WetonFullReadingPage() {
               <div className="mt-3 font-mono text-[10px] text-[#6F6247]">Neptu {Number.isInteger(total) ? total : '—'}</div>
             </WorkspaceCard>
             <WorkspaceCard title="Rakam" eyebrow="Petungan · Kupih">
-              <div className="text-2xl font-semibold text-[#E6D58B]">{rakam?.name || '—'}</div>
+              <div className="text-2xl font-semibold text-[#E6D58B]">{rakamReading?.name || '—'}</div>
               <div className="mt-1 text-xs text-[#A99362]">Sisa {rakam?.remainder ?? '—'}</div>
               <div className="mt-3 font-mono text-[10px] text-[#6F6247]">{rakam ? `${rakam.dinoKupih} + ${rakam.pasaranKupih} → sisa ${rakam.remainder}` : '—'}</div>
             </WorkspaceCard>
@@ -227,31 +285,44 @@ export default function WetonFullReadingPage() {
         </Section>
 
         <Section eyebrow="04 · Reading" title="Watak Weton" accent="cyan">
-          {watak?.name ? (
-            <div className="grid gap-4 lg:grid-cols-[minmax(0,0.8fr)_minmax(0,1.7fr)]">
-              <div className="rounded-2xl border border-[#28546A] bg-[radial-gradient(circle_at_top_right,rgba(34,211,238,0.12),transparent_48%),linear-gradient(135deg,rgba(9,31,44,0.98),rgba(5,16,25,0.98))] p-6">
-                <div className="text-[9px] font-bold uppercase tracking-[0.2em] text-[#5FA6BE]">Watak Neptu</div>
-                <div className="mt-3 text-2xl font-semibold tracking-tight text-[#EDF9FF]">{watak.name}</div>
-                <div className="mt-4 inline-flex rounded-full border border-[#244C61] bg-[#0A2230] px-3 py-1 text-[9px] font-bold uppercase tracking-[0.12em] text-[#77BBD4]">Neptu {detail.neptu_total ?? '—'}</div>
-              </div>
-              <div className="rounded-2xl border border-[#173B50] bg-[linear-gradient(135deg,rgba(9,25,37,0.98),rgba(5,15,24,0.98))] p-6">
-                <div className="text-[9px] font-bold uppercase tracking-[0.18em] text-[#5E8195]">Pembacaan Tradisional</div>
-                <p className="mt-3 max-w-3xl text-sm leading-7 text-[#A9C0CF]">{watak.desc}</p>
-                <div className="mt-4 h-px bg-[#18374A]" />
-                <p className="mt-3 text-[11px] leading-5 text-[#668397]">Disajikan sebagai referensi tradisional dan bahan pertimbangan dalam panduan kehidupan.</p>
-              </div>
-            </div>
-          ) : <div className="rounded-xl border border-[#173044] bg-[#06131F] p-6 text-sm text-[#8FAEC1]">Data watak belum tersedia dari konteks Jawa existing.</div>}
+          <div className="grid gap-4 lg:grid-cols-2">
+            <WorkspaceCard title={wetonKey || "Weton"} eyebrow="Watak · Tradisi Jawa">
+              <p className="text-sm leading-7 text-[#A9C0CF]">{sourceReading.watak || `${DAY_READING[dino.name] || "Pembacaan hari tersedia."} ${PASARAN_READING[pasaran.name] || ""}`}</p>
+            </WorkspaceCard>
+            <WorkspaceCard title="Unsur Hari & Pasaran" eyebrow="Pembacaan gabungan">
+              <p className="text-sm leading-7 text-[#A9C0CF]">{DAY_READING[dino.name] || "Pembacaan hari belum tersedia."}</p>
+              <p className="mt-3 text-sm leading-7 text-[#A9C0CF]">{PASARAN_READING[pasaran.name] || "Pembacaan pasaran belum tersedia."}</p>
+            </WorkspaceCard>
+          </div>
         </Section>
 
-        <Section eyebrow="05 · Reading Layers" title="Pembacaan Lanjutan" accent="blue">
+        <Section eyebrow="05 · Reading Layers" title="Pembacaan Lengkap" accent="blue">
           <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-            {READING_LAYERS.map(([title, description, status]) => (
-              <div key={title} className="rounded-xl border border-[#173044] bg-[linear-gradient(135deg,rgba(9,25,37,0.98),rgba(5,15,24,0.98))] p-5">
-                <div className="flex items-center justify-between gap-3"><h3 className="text-sm font-semibold text-[#D8F3FF]">{title}</h3><span className="rounded-full border border-[#254155] bg-[#091A28] px-2 py-1 text-[8px] font-bold uppercase tracking-[0.1em] text-[#668397]">{status}</span></div>
-                <p className="mt-2 text-xs leading-5 text-[#7896A8]">{description}</p>
+            <WorkspaceCard title="Rezeki & Panguripan" eyebrow="Tradisi Jawa">
+              <p className="text-sm leading-7 text-[#A9C0CF]">{sourceReading.rezeki || neptuReading?.meaning || "Pembacaan rezeki berdasarkan petungan tradisional."}</p>
+            </WorkspaceCard>
+            <WorkspaceCard title="Pekerjaan & Karier" eyebrow="Pakaryan">
+              <p className="text-sm leading-7 text-[#A9C0CF]">{sourceReading.karier || CAREER_BY_DAY[dino.name] || "Pembacaan pekerjaan berdasarkan kecenderungan weton."}</p>
+            </WorkspaceCard>
+            <WorkspaceCard title="Asmara & Relasi" eyebrow="Hubungan">
+              <p className="text-sm leading-7 text-[#A9C0CF]">{sourceReading.asmara || "Dalam pembacaan tradisional, komunikasi, kepercayaan, dan kemampuan memahami pasangan menjadi bagian penting."}</p>
+            </WorkspaceCard>
+            <WorkspaceCard title="Pancasuda" eyebrow="Petungan">
+              <div className="text-xl font-semibold text-[#E6D58B]">{pancasuda?.name || "—"}</div>
+              <p className="mt-2 text-xs leading-5 text-[#A99362]">{pancasuda?.meaning || "Belum tersedia."}</p>
+            </WorkspaceCard>
+            <WorkspaceCard title="Paarasan / Pangarasan" eyebrow="Petungan">
+              <div className="text-xl font-semibold text-[#E6D58B]">{pangarasan?.name || "—"}</div>
+              <p className="mt-2 text-xs leading-5 text-[#A99362]">{pangarasan?.meaning || "Belum tersedia."}</p>
+            </WorkspaceCard>
+            <WorkspaceCard title="Rakam & Saptawara" eyebrow="Petungan">
+              <div className="text-xl font-semibold text-[#E6D58B]">{rakamReading?.name || "—"}</div>
+              <p className="mt-2 text-xs leading-5 text-[#A99362]">{rakamReading?.meaning || "Belum tersedia."}</p>
+              <div className="mt-3 border-t border-[#18374A] pt-3">
+                <div className="text-sm font-semibold text-[#BFD8E7]">{saptawara.name}</div>
+                <p className="mt-1 text-[11px] leading-5 text-[#7896A8]">{saptawara.meaning}</p>
               </div>
-            ))}
+            </WorkspaceCard>
           </div>
         </Section>
 
