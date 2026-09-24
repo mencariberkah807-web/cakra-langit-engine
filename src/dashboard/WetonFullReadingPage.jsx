@@ -268,7 +268,7 @@ export default function WetonFullReadingPage() {
           <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
             <WorkspaceCard title="Pancasuda" eyebrow="Petungan · Neptu">
               <div className="text-2xl font-semibold text-[#E6D58B]">{pancasuda?.name || '—'}</div>
-              <div className="mt-1 text-xs text-[#A99362]">Sisa {pancasuda?.remainder ?? '—'} · {pancasuda?.meaning || 'Belum tersedia'}</div>
+              <div className="mt-1 text-xs text-[#A99362]">Neptu {total} · {pancasuda?.meaning || 'Belum tersedia'}</div>
               <div className="mt-3 font-mono text-[10px] text-[#6F6247]">{pancasuda ? `Neptu ${total}` : '—'}</div>
             </WorkspaceCard>
             <WorkspaceCard title="Pangarasan" eyebrow="Petungan · Neptu">
@@ -328,15 +328,6 @@ export default function WetonFullReadingPage() {
 
         <Section eyebrow="06 · Jawa Workspace" title="Fitur Jawa Lainnya" accent="blue">
           <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-            <WorkspaceCard title="Kecocokan Jodoh" eyebrow="Repok · Jodoh" description="Hitung kecocokan dua orang menggunakan tanggal lahir dan Weton pada halaman Jodoh khusus.">
-              <button
-                type="button"
-                onClick={() => { window.location.href = '/dashboard/weton/jodoh' }}
-                className="w-full rounded-xl border border-[#2E78A0] bg-[#0C4665] px-4 py-2.5 text-xs font-bold text-[#E5F8FF] transition hover:bg-[#105575]"
-              >
-                Buka Hitung Kecocokan Jodoh
-              </button>
-            </WorkspaceCard>
             <WorkspaceCard title="Arah Rejeki" eyebrow="Kala · Arah" description="Arah rejeki harus mengikuti konteks Kala yang benar-benar tersedia, bukan dipaksakan sebagai sifat Weton.">
               <div className="text-sm font-semibold text-[#BFD8E7]">Konteks Kala</div>
               <div className="mt-1 text-[11px] leading-5 text-[#7896A8]">Gunakan arah rizki hanya ketika data Kala untuk tanggal/konteks tersebut tersedia.</div>
