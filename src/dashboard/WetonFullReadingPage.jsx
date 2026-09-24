@@ -415,25 +415,21 @@ export default function WetonFullReadingPage() {
           </div>
         </Section>
 
-        <Section eyebrow="06 · Petungan Tambahan" title="Arah & Pola Kehidupan" accent="blue">
+        <Section eyebrow="06 · Ringkasan" title="Arah & Pola Kehidupan" accent="blue">
           <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-            <WorkspaceCard title="Sandang · Pangan" eyebrow="Arah Weton">
-              <div className="grid grid-cols-2 gap-2">
-                <Metric label="Sandang" value={sourceReading.arah?.sandang || '—'} />
-                <Metric label="Pangan" value={sourceReading.arah?.pangan || '—'} />
-              </div>
-              <p className="mt-3 text-xs leading-5 text-[#7896A8]">Arah yang dibaca untuk sandang dan pangan pada weton ini.</p>
+            <WorkspaceCard title="Fokus Rezeki" eyebrow="Panguripan">
+              <p className="text-sm leading-7 text-[#A9C0CF]">{sourceReading.rezeki}</p>
             </WorkspaceCard>
-            <WorkspaceCard title="Sakit · Pati" eyebrow="Arah Weton">
-              <div className="grid grid-cols-2 gap-2">
-                <Metric label="Sakit" value={sourceReading.arah?.sakit || '—'} />
-                <Metric label="Pati" value={sourceReading.arah?.pati || '—'} />
-              </div>
-              <p className="mt-3 text-xs leading-5 text-[#7896A8]">Arah yang dibaca untuk kategori sakit dan pati pada weton ini.</p>
+            <WorkspaceCard title="Fokus Relasi" eyebrow="Hubungan">
+              <p className="text-sm leading-7 text-[#A9C0CF]">{sourceReading.asmara}</p>
             </WorkspaceCard>
-            <WorkspaceCard title="Inti Pembacaan" eyebrow="Senen Wage">
-              <div className="text-sm font-semibold text-[#D8F3FF]">Tunggak Semi · Sanggar Waringin · Lakuning Geni</div>
-              <p className="mt-2 text-xs leading-5 text-[#7896A8]">Rezeki kembali tumbuh, hati teduh dan suka melindungi, dengan dorongan kuat untuk bergerak dan mencapai tujuan.</p>
+            <WorkspaceCard title="Laku Utama" eyebrow="Petungan">
+              <div className="text-base font-semibold text-[#D8F3FF]">{pangarasan?.name || '—'}</div>
+              <p className="mt-2 text-xs leading-5 text-[#7896A8]">{pangarasan?.meaning || 'Pembacaan laku berdasarkan kombinasi weton.'}</p>
+              <div className="mt-3 border-t border-[#18374A] pt-3">
+                <div className="text-sm font-semibold text-[#BFD8E7]">{rakamReading?.name || '—'}</div>
+                <p className="mt-1 text-[11px] leading-5 text-[#7896A8]">{rakamReading?.meaning || 'Pembacaan Rakam.'}</p>
+              </div>
             </WorkspaceCard>
           </div>
         </Section>
