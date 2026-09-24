@@ -6,18 +6,18 @@ const TOKEN_KEY = 'cakra-langit:access-token'
 
 const WETON_READINGS = {
   "Senen Wage": {
-    source: "Ki-Demang + JavaneseTime",
-    watak: "Sederhana, tekun, cenderung tidak mencari perhatian. Mampu bekerja baik ketika tujuan jelas, tetapi sikap pendiam kadang mudah disalahpahami.",
-    rezeki: "Dalam tafsir tradisional, rezeki berkembang melalui keterampilan yang terus dilatih dan kerja yang tekun.",
-    karier: "Bidang yang membutuhkan ketelitian, administrasi, riset, analisis, pengelolaan, atau pekerjaan teknis.",
-    asmara: "Cenderung membutuhkan hubungan yang tenang dan jelas. Komunikasi tentang perasaan dan kebutuhan perlu dijaga agar tidak terjadi jarak.",
-    pancasuda: { name: "Dunya (Gedhong)", meaning: "Dikaitkan dengan kecukupan harta melalui usaha dan ketekunan." },
-    pangarasan: { name: "Lakuning Geni", meaning: "Dalam sumber Ki-Demang: mudah marah dan ambisius." },
+    watak: "Sederhana, tekun, tidak banyak mencari perhatian. Cenderung teliti dan berhati-hati dalam mengambil keputusan. Sikap yang lebih pendiam dapat membuat perasaan atau maksudnya tidak selalu langsung dipahami orang lain.",
+    rezeki: "Rezeki digambarkan selalu ada: dapat berkurang atau habis, kemudian datang kembali. Polanya lebih kuat ketika dibangun dengan ketekunan dan keterampilan yang terus diasah.",
+    karier: "Cocok untuk pekerjaan yang membutuhkan ketelitian, administrasi, riset, analisis, pengelolaan, perdagangan, atau pekerjaan teknis yang menuntut konsistensi.",
+    asmara: "Membutuhkan hubungan yang tenang, jelas, dan saling memahami. Perasaan sebaiknya disampaikan secara terbuka agar sikap pendiam tidak berubah menjadi jarak.",
+    pancasuda: { name: "Tunggak Semi", meaning: "Rezeki selalu ada; ketika berkurang atau habis, datang kembali." },
+    pangarasan: { name: "Lakuning Geni", meaning: "Mudah marah dan ambisius." },
     rakam: { name: "Sanggar Waringin", meaning: "Teduh hati dan suka memberi perlindungan." },
-    saptawara: { name: "Tunggak Semi", meaning: "Rezeki digambarkan dapat tumbuh kembali setelah berkurang." },
-    kesehatan: "Gunakan pembacaan ini sebagai pengingat menjaga ritme hidup, istirahat, dan kebiasaan sehat; bukan sebagai diagnosis.",
-    hariBaik: "Dalam salah satu rujukan Primbon.ID untuk Wage, Rabu, Jumat, dan Minggu disebut sebagai hari yang dipercaya baik untuk memulai kegiatan.",
-    wuku: "Mandhasiya: sumber Ki-Demang mencatat tema perlindungan, penghematan, dan kehati-hatian dalam perjalanan serta mencari nafkah.",
+    saptawara: { name: "Tunggak Semi", meaning: "Rezeki tumbuh kembali setelah berkurang." },
+    kesehatan: "Jaga ritme kerja dan istirahat, terutama ketika dorongan untuk terus bekerja sedang tinggi. Ketenangan, tidur cukup, dan kebiasaan hidup teratur menjadi penyeimbang.",
+    hariBaik: "Hari yang dipercaya baik untuk memulai kegiatan: Rabu, Jumat, dan Minggu.",
+    wuku: "Mandhasiya baik untuk persahabatan, mengobati penyakit, dan hajat pernikahan. Perlu berhati-hati untuk bepergian, mencari nafkah, membuat sumur, dan membuka lahan.",
+    arah: { sandang: "Selatan", pangan: "Utara", sakit: "Timur", pati: "Barat" },
   },
 }
 
@@ -86,13 +86,6 @@ const RAKAM = {
   5: "Nuju Pati",
 }
 
-const READING_LAYERS = [
-  ['Pranata Mangsa', 'Mangsa dan pembacaan konteks musim.', 'Sumber belum terhubung'],
-  ['Kesehatan', 'Pembacaan kesehatan dari sumber yang tervalidasi.', 'Sumber belum terhubung'],
-  ['Rezeki', 'Pembacaan rezeki dan kecenderungan finansial.', 'Sumber belum terhubung'],
-  ['Asmara', 'Pembacaan hubungan dan karakter relasi.', 'Sumber belum terhubung'],
-  ['Analisis Kitab', 'Dina Ala, Kala Tinantang, Tibo Loro, dan metode kitab lain.', 'Sumber belum terhubung'],
-]
 
 function Section({ eyebrow, title, children, accent = 'cyan' }) {
   const accents = {
@@ -281,8 +274,8 @@ export default function WetonFullReadingPage() {
             </WorkspaceCard>
             <WorkspaceCard title="Rakam" eyebrow="Petungan · Kupih">
               <div className="text-2xl font-semibold text-[#E6D58B]">{rakamReading?.name || '—'}</div>
-              <div className="mt-1 text-xs text-[#A99362]">Sisa {rakam?.remainder ?? '—'}</div>
-              <div className="mt-3 font-mono text-[10px] text-[#6F6247]">{rakam ? `${rakam.dinoKupih} + ${rakam.pasaranKupih} → sisa ${rakam.remainder}` : '—'}</div>
+              <div className="mt-1 text-xs text-[#A99362]">{rakamReading?.meaning || 'Pembacaan Rakam berdasarkan weton.'}</div>
+              <div className="mt-3 text-[10px] text-[#6F6247]">Rakam: {rakamReading?.name || '—'}</div>
             </WorkspaceCard>
           </div>
         </Section>
@@ -338,23 +331,31 @@ export default function WetonFullReadingPage() {
           </div>
         </Section>
 
-        <Section eyebrow="06 · Jawa Workspace" title="Fitur Jawa Lainnya" accent="blue">
+        <Section eyebrow="06 · Petungan Tambahan" title="Arah & Pola Kehidupan" accent="blue">
           <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-            <WorkspaceCard title="Arah Rejeki" eyebrow="Kala · Arah" description="Arah rejeki harus mengikuti konteks Kala yang benar-benar tersedia, bukan dipaksakan sebagai sifat Weton.">
-              <div className="text-sm font-semibold text-[#BFD8E7]">Konteks Kala</div>
-              <div className="mt-1 text-[11px] leading-5 text-[#7896A8]">Gunakan arah rizki hanya ketika data Kala untuk tanggal/konteks tersebut tersedia.</div>
-              <div className="mt-2 text-[9px] uppercase tracking-[0.12em] text-[#587388]">Belum ada hasil personal Weton</div>
+            <WorkspaceCard title="Sandang · Pangan" eyebrow="Arah Weton">
+              <div className="grid grid-cols-2 gap-2">
+                <Metric label="Sandang" value={sourceReading.arah?.sandang || '—'} />
+                <Metric label="Pangan" value={sourceReading.arah?.pangan || '—'} />
+              </div>
+              <p className="mt-3 text-xs leading-5 text-[#7896A8]">Arah yang dibaca untuk sandang dan pangan pada weton ini.</p>
             </WorkspaceCard>
-            <WorkspaceCard title="Pal Laduni" eyebrow="Pembacaan" description="Pal Laduni tetap dipisahkan dari petungan Jawa yang sudah tervalidasi agar formula tidak tercampur.">
-              <div className="text-sm font-semibold text-[#BFD8E7]">Menunggu formula sumber</div>
-              <div className="mt-1 text-[11px] leading-5 text-[#7896A8]">Tidak membuat hasil sintetis tanpa formula dan provenance yang dapat diverifikasi.</div>
-              <div className="mt-2 text-[9px] uppercase tracking-[0.12em] text-[#587388]">Belum terhubung</div>
+            <WorkspaceCard title="Sakit · Pati" eyebrow="Arah Weton">
+              <div className="grid grid-cols-2 gap-2">
+                <Metric label="Sakit" value={sourceReading.arah?.sakit || '—'} />
+                <Metric label="Pati" value={sourceReading.arah?.pati || '—'} />
+              </div>
+              <p className="mt-3 text-xs leading-5 text-[#7896A8]">Arah yang dibaca untuk kategori sakit dan pati pada weton ini.</p>
+            </WorkspaceCard>
+            <WorkspaceCard title="Inti Pembacaan" eyebrow="Senen Wage">
+              <div className="text-sm font-semibold text-[#D8F3FF]">Tunggak Semi · Sanggar Waringin · Lakuning Geni</div>
+              <p className="mt-2 text-xs leading-5 text-[#7896A8]">Rezeki kembali tumbuh, hati teduh dan suka melindungi, dengan dorongan kuat untuk bergerak dan mencapai tujuan.</p>
             </WorkspaceCard>
           </div>
         </Section>
 
         <div className="rounded-[18px] border border-[#1A3448] bg-[linear-gradient(135deg,rgba(9,24,36,0.98),rgba(5,15,24,0.98))] px-5 py-4 text-xs leading-5 text-[#718FA2] shadow-[0_10px_35px_rgba(0,0,0,0.12)]">
-          Struktur ini memisahkan <span className="font-semibold text-[#B9D2E2]">hasil kalender</span>, <span className="font-semibold text-[#B9D2E2]">petungan</span>, dan <span className="font-semibold text-[#B9D2E2]">tafsir</span>. Hasil hanya ditampilkan ketika metode dan sumbernya tersedia; engine Jawa existing tetap menjadi sumber perhitungan.
+          Weton {wetonKey || '—'} · Neptu {Number.isFinite(total) ? total : '—'} · Pembacaan lengkap berdasarkan tanggal kelahiran.
         </div>
       </div>
     </section>
