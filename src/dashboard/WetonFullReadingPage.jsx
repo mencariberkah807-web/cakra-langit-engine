@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useTodayContext } from '../core/TodayContext'
+import CalculationNavCards from './CalculationNavCards'
 
 const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://127.0.0.1:8000'
 const TOKEN_KEY = 'cakra-langit:access-token'
@@ -433,6 +434,8 @@ export default function WetonFullReadingPage() {
             </WorkspaceCard>
           </div>
         </Section>
+
+        <CalculationNavCards current="/dashboard/weton" />
 
         <div className="rounded-[18px] border border-[#1A3448] bg-[linear-gradient(135deg,rgba(9,24,36,0.98),rgba(5,15,24,0.98))] px-5 py-4 text-xs leading-5 text-[#718FA2] shadow-[0_10px_35px_rgba(0,0,0,0.12)]">
           Weton {wetonKey || '—'} · Neptu {Number.isFinite(total) ? total : '—'} · Pembacaan lengkap berdasarkan tanggal kelahiran.
