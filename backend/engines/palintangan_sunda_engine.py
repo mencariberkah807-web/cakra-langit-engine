@@ -37,6 +37,14 @@ WATEK_PATOKAN = {
     "Rayagung": {"ordinal": 12, "watek": "Alas Kobar"},
 }
 
+GAGALANG_PASARAN = {
+    "Kliwon": {"next_pasaran": "Manis", "direction": "Timur"},
+    "Manis": {"next_pasaran": "Pahing", "direction": "Selatan"},
+    "Pahing": {"next_pasaran": "Pon", "direction": "Barat"},
+    "Pon": {"next_pasaran": "Wage", "direction": "Utara"},
+    "Wage": {"next_pasaran": "Kliwon", "direction": "Tengah"},
+}
+
 PERNAASAN = {
     "Muharam": [3, 12, 20],
     "Sapar": [1, 10, 20],
@@ -155,6 +163,7 @@ def get_palintangan_sunda_data(target_date: date) -> dict:
     hijri_month = normalize_hijri_month(hijri["month_name"])
     month_rule = MONTH_RULES.get(hijri_month)
     watek_patokan = WATEK_PATOKAN.get(hijri_month)
+    gagalang = GAGALANG_PASARAN.get(pasaran_name)
     pernaasan_dates = PERNAASAN.get(hijri_month, [])
     is_pernaasan = hijri["day"] in pernaasan_dates
     is_forbidden = bool(month_rule and day_name in month_rule["forbidden_days"])
@@ -188,6 +197,17 @@ def get_palintangan_sunda_data(target_date: date) -> dict:
             "pasaran": pasaran_naktu,
             "wedal": naktu_wedal,
             "formula": f"{day_naktu} + {pasaran_naktu} = {naktu_wedal}",
+        },
+        "gagalang": {
+            "pasaran": pasaran_name,
+            "next_pasaran": gagalang["next_pasaran"] if gagalang else None,
+            "direction": gagalang["direction"] if gagalang else None,
+            "status": "VERIFIED" if gagalang else "UNKNOWN",
+            "source": {
+                "name": "PARIRIMBON SUNDA (JAWA BARAT)",
+                "section": "Gagalang poe dan gagalang manis pahing",
+                "note": "Arah keberuntungan pasaran mengikuti rotasi Timur, Selatan, Barat, Utara, Tengah.",
+            },
         },
         "watek_patokan": {
             "month": hijri_month,
@@ -236,8 +256,9 @@ def get_palintangan_sunda_data(target_date: date) -> dict:
             {"step": 1, "rule": "calendar_context", "input": target_date.isoformat(), "result": {"hari": day_name, "pasaran": pasaran_name}},
             {"step": 2, "rule": "naktu_wedal", "input": {"hari": day_name, "pasaran": pasaran_name}, "result": naktu_wedal},
             {"step": 3, "rule": "pernaasan", "input": {"bulan_hijriah": hijri_month, "tanggal": hijri["day"]}, "result": {"dates": pernaasan_dates, "is_today": is_pernaasan}},
-            {"step": 4, "rule": "watek_patokan", "input": {"bulan_hijriah": hijri_month}, "result": {"ordinal": watek_patokan["ordinal"] if watek_patokan else None, "watek": watek_patokan["watek"] if watek_patokan else None}},
-            {"step": 5, "rule": "jaya_apes", "input": {"hari": day_name, "pasaran": pasaran_name, "wedal": naktu_wedal}, "result": {"status": jaya_apes["status"] if jaya_apes else "PARTIAL_DATASET", "jaya": jaya_apes["jaya"] if jaya_apes else None, "apes": jaya_apes["apes"] if jaya_apes else None}},
-            {"step": 6, "rule": "kala_navigation", "input": {"bulan_hijriah": hijri_month, "hari": day_name}, "result": {"pantangan": is_forbidden, "keselamatan": is_safe_day, "arah_rizki": month_rule["rizki_direction"] if month_rule else None}},
+            {"step": 4, "rule": "gagalang_pasaran", "input": pasaran_name, "result": {"next_pasaran": gagalang["next_pasaran"] if gagalang else None, "direction": gagalang["direction"] if gagalang else None}},
+            {"step": 5, "rule": "watek_patokan", "input": {"bulan_hijriah": hijri_month}, "result": {"ordinal": watek_patokan["ordinal"] if watek_patokan else None, "watek": watek_patokan["watek"] if watek_patokan else None}},
+            {"step": 6, "rule": "jaya_apes", "input": {"hari": day_name, "pasaran": pasaran_name, "wedal": naktu_wedal}, "result": {"status": jaya_apes["status"] if jaya_apes else "PARTIAL_DATASET", "jaya": jaya_apes["jaya"] if jaya_apes else None, "apes": jaya_apes["apes"] if jaya_apes else None}},
+            {"step": 7, "rule": "kala_navigation", "input": {"bulan_hijriah": hijri_month, "hari": day_name}, "result": {"pantangan": is_forbidden, "keselamatan": is_safe_day, "arah_rizki": month_rule["rizki_direction"] if month_rule else None}},
         ],
     }
