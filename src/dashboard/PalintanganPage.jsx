@@ -72,6 +72,7 @@ export default function PalintanganPage() {
   const pernaasan = data?.pernaasan
   const watekPatokan = data?.watek_patokan
   const gagalang = data?.gagalang
+  const gagalangPoe = data?.gagalang_poe
   const navigation = data?.navigation
 
   return (
@@ -151,6 +152,22 @@ export default function PalintanganPage() {
           </div>
           <p className="mt-4 text-[11px] leading-5 text-[#536A7D]">
             Rule Gagalang pasaran dari Paririmbon Sunda. Status data: {gagalang?.status || '—'}.
+          </p>
+        </Section>
+      </div>
+
+      <div className="mt-5">
+        <Section eyebrow="Gagalang Poe" title="Watek Menurut Hari">
+          <div className="grid gap-3 sm:grid-cols-2">
+            <Value label="Hari" value={gagalangPoe?.hari} />
+            <Value label="Status" value={gagalangPoe?.status} />
+          </div>
+          <div className="mt-4">
+            <div className="mb-2 text-[10px] font-bold uppercase tracking-[0.1em] text-[#536A7D]">Patokan Watek</div>
+            <DayList items={gagalangPoe?.watek} />
+          </div>
+          <p className="mt-4 text-[11px] leading-5 text-[#536A7D]">
+            Jika sumber memuat dua patokan untuk satu hari, keduanya ditampilkan sebagai data sumber; sistem tidak memilih salah satunya secara inferensial.
           </p>
         </Section>
       </div>
