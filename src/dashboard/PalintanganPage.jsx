@@ -70,6 +70,7 @@ export default function PalintanganPage() {
   const calendar = data?.calendar_context
   const naktu = data?.naktu
   const pernaasan = data?.pernaasan
+  const watekPatokan = data?.watek_patokan
   const navigation = data?.navigation
 
   return (
@@ -124,6 +125,19 @@ export default function PalintanganPage() {
             <div className="rounded-xl border border-cyan-300/15 bg-[#12324A] px-6 py-5 text-2xl font-semibold text-white">{naktu?.wedal ?? '—'}</div>
           </div>
           {naktu?.formula && <div className="mt-4 text-[11px] text-[#536A7D]">Trace: {naktu.formula}</div>}
+        </Section>
+      </div>
+
+      <div className="mt-5">
+        <Section eyebrow="Watek" title="Watek Patokan Bulan">
+          <div className="grid gap-3 sm:grid-cols-3">
+            <Value label="Bulan" value={watekPatokan?.month} />
+            <Value label="Patokan" value={watekPatokan?.ordinal ? `Patokan ${watekPatokan.ordinal}` : null} />
+            <Value label="Watek" value={watekPatokan?.watek} />
+          </div>
+          <p className="mt-4 text-[11px] leading-5 text-[#536A7D]">
+            Dua belas Watek Patokan mengikuti urutan 12 bulan dalam sumber Paririmbon Sunda. Status data: {watekPatokan?.status || '—'}.
+          </p>
         </Section>
       </div>
 
