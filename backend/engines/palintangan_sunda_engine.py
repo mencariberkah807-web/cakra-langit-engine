@@ -37,6 +37,16 @@ WATEK_PATOKAN = {
     "Rayagung": {"ordinal": 12, "watek": "Alas Kobar"},
 }
 
+GAGALANG_POE = {
+    "Jemuwah": ["Wani", "Karang Piwulang"],
+    "Setu": ["Sumur Pinungkeb", "Karang Tinangtang"],
+    "Ngahad": ["Macan Katawang", "Nuju Pati"],
+    "Senen": ["Nuju Padu"],
+    "Selasa": ["Mantri Sinareja"],
+    "Rebo": ["Demang Kanduruan", "Putri Tinuting"],
+    "Kemis": ["Demang Palasah", "Alas Kobar"],
+}
+
 GAGALANG_PASARAN = {
     "Kliwon": {"next_pasaran": "Manis", "direction": "Timur"},
     "Manis": {"next_pasaran": "Pahing", "direction": "Selatan"},
@@ -164,6 +174,7 @@ def get_palintangan_sunda_data(target_date: date) -> dict:
     month_rule = MONTH_RULES.get(hijri_month)
     watek_patokan = WATEK_PATOKAN.get(hijri_month)
     gagalang = GAGALANG_PASARAN.get(pasaran_name)
+    gagalang_poe = GAGALANG_POE.get(day_name, [])
     pernaasan_dates = PERNAASAN.get(hijri_month, [])
     is_pernaasan = hijri["day"] in pernaasan_dates
     is_forbidden = bool(month_rule and day_name in month_rule["forbidden_days"])
@@ -197,6 +208,16 @@ def get_palintangan_sunda_data(target_date: date) -> dict:
             "pasaran": pasaran_naktu,
             "wedal": naktu_wedal,
             "formula": f"{day_naktu} + {pasaran_naktu} = {naktu_wedal}",
+        },
+        "gagalang_poe": {
+            "hari": day_name,
+            "watek": gagalang_poe,
+            "status": "SOURCE_DATA" if gagalang_poe else "UNKNOWN",
+            "source": {
+                "name": "PARIRIMBON SUNDA (JAWA BARAT)",
+                "section": "Gagalang poe / 12 Watek Patokan",
+                "note": "Sumber mengaitkan 12 patokan Watek dengan hari; bila satu hari memiliki dua patokan, keduanya ditampilkan tanpa memilih salah satunya.",
+            },
         },
         "gagalang": {
             "pasaran": pasaran_name,
@@ -256,9 +277,10 @@ def get_palintangan_sunda_data(target_date: date) -> dict:
             {"step": 1, "rule": "calendar_context", "input": target_date.isoformat(), "result": {"hari": day_name, "pasaran": pasaran_name}},
             {"step": 2, "rule": "naktu_wedal", "input": {"hari": day_name, "pasaran": pasaran_name}, "result": naktu_wedal},
             {"step": 3, "rule": "pernaasan", "input": {"bulan_hijriah": hijri_month, "tanggal": hijri["day"]}, "result": {"dates": pernaasan_dates, "is_today": is_pernaasan}},
-            {"step": 4, "rule": "gagalang_pasaran", "input": pasaran_name, "result": {"next_pasaran": gagalang["next_pasaran"] if gagalang else None, "direction": gagalang["direction"] if gagalang else None}},
-            {"step": 5, "rule": "watek_patokan", "input": {"bulan_hijriah": hijri_month}, "result": {"ordinal": watek_patokan["ordinal"] if watek_patokan else None, "watek": watek_patokan["watek"] if watek_patokan else None}},
-            {"step": 6, "rule": "jaya_apes", "input": {"hari": day_name, "pasaran": pasaran_name, "wedal": naktu_wedal}, "result": {"status": jaya_apes["status"] if jaya_apes else "PARTIAL_DATASET", "jaya": jaya_apes["jaya"] if jaya_apes else None, "apes": jaya_apes["apes"] if jaya_apes else None}},
-            {"step": 7, "rule": "kala_navigation", "input": {"bulan_hijriah": hijri_month, "hari": day_name}, "result": {"pantangan": is_forbidden, "keselamatan": is_safe_day, "arah_rizki": month_rule["rizki_direction"] if month_rule else None}},
+            {"step": 4, "rule": "gagalang_poe", "input": day_name, "result": {"watek": gagalang_poe}},
+            {"step": 5, "rule": "gagalang_pasaran", "input": pasaran_name, "result": {"next_pasaran": gagalang["next_pasaran"] if gagalang else None, "direction": gagalang["direction"] if gagalang else None}},
+            {"step": 6, "rule": "watek_patokan", "input": {"bulan_hijriah": hijri_month}, "result": {"ordinal": watek_patokan["ordinal"] if watek_patokan else None, "watek": watek_patokan["watek"] if watek_patokan else None}},
+            {"step": 7, "rule": "jaya_apes", "input": {"hari": day_name, "pasaran": pasaran_name, "wedal": naktu_wedal}, "result": {"status": jaya_apes["status"] if jaya_apes else "PARTIAL_DATASET", "jaya": jaya_apes["jaya"] if jaya_apes else None, "apes": jaya_apes["apes"] if jaya_apes else None}},
+            {"step": 8, "rule": "kala_navigation", "input": {"bulan_hijriah": hijri_month, "hari": day_name}, "result": {"pantangan": is_forbidden, "keselamatan": is_safe_day, "arah_rizki": month_rule["rizki_direction"] if month_rule else None}},
         ],
     }
