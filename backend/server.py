@@ -26,6 +26,7 @@ from engines.sky_engine import get_sky_data
 from engines.solar_engine import get_solar_data
 from engines.tide_engine import get_tide_data
 from routes.auth import router as auth_router
+from routes.palintangan import router as palintangan_router
 from routes.site_assets import admin_router as admin_site_assets_router
 from routes.site_assets import router as site_assets_router
 from routes.site_settings import admin_router as admin_site_settings_router
@@ -37,6 +38,7 @@ from services.user_service import create_user, get_user_by_email, serialize_user
 
 app = FastAPI(title="Personal Almanac V1 API")
 app.include_router(auth_router)
+app.include_router(palintangan_router)
 app.include_router(site_settings_router)
 app.include_router(admin_site_settings_router)
 app.include_router(site_assets_router)
