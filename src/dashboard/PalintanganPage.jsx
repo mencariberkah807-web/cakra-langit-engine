@@ -71,6 +71,7 @@ export default function PalintanganPage() {
   const naktu = data?.naktu
   const pernaasan = data?.pernaasan
   const watekPatokan = data?.watek_patokan
+  const gagalang = data?.gagalang
   const navigation = data?.navigation
 
   return (
@@ -137,6 +138,19 @@ export default function PalintanganPage() {
           </div>
           <p className="mt-4 text-[11px] leading-5 text-[#536A7D]">
             Dua belas Watek Patokan mengikuti urutan 12 bulan dalam sumber Paririmbon Sunda. Status data: {watekPatokan?.status || '—'}.
+          </p>
+        </Section>
+      </div>
+
+      <div className="mt-5">
+        <Section eyebrow="Gagalang" title="Arah Keberuntungan Pasaran">
+          <div className="grid gap-3 sm:grid-cols-3">
+            <Value label="Pasaran" value={gagalang?.pasaran} />
+            <Value label="Pasaran Berikutnya" value={gagalang?.next_pasaran} />
+            <Value label="Arah" value={gagalang?.direction} />
+          </div>
+          <p className="mt-4 text-[11px] leading-5 text-[#536A7D]">
+            Rule Gagalang pasaran dari Paririmbon Sunda. Status data: {gagalang?.status || '—'}.
           </p>
         </Section>
       </div>
