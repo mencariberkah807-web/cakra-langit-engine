@@ -37,6 +37,8 @@ WATEK_PATOKAN = {
     "Rayagung": {"ordinal": 12, "watek": "Alas Kobar"},
 }
 
+# Source table: Gagalang Poe / Babalang Dua.
+# Each fixed weekday carries the Watek Patokan(s) for the months shown in that row.
 GAGALANG_POE = {
     "Jemuwah": ["Wani", "Karang Piwulang"],
     "Setu": ["Sumur Pinungkeb", "Karang Tinangtang"],
@@ -45,6 +47,21 @@ GAGALANG_POE = {
     "Selasa": ["Mantri Sinareja"],
     "Rebo": ["Demang Kanduruan", "Putri Tinuting"],
     "Kemis": ["Demang Palasah", "Alas Kobar"],
+}
+
+GAGALANG_POE_MONTHS = {
+    "Muharam": {"hari": "Jemuwah", "ordinal": 1, "watek": "Wani"},
+    "Sapar": {"hari": "Jemuwah", "ordinal": 2, "watek": "Karang Piwulang"},
+    "Rabiulawal": {"hari": "Setu", "ordinal": 3, "watek": "Sumur Pinungkeb"},
+    "Rabiulakhir": {"hari": "Setu", "ordinal": 4, "watek": "Karang Tinangtang"},
+    "Jumadilawal": {"hari": "Ngahad", "ordinal": 5, "watek": "Macan Katawang"},
+    "Jumadilakhir": {"hari": "Ngahad", "ordinal": 6, "watek": "Nuju Pati"},
+    "Rajab": {"hari": "Senen", "ordinal": 7, "watek": "Nuju Padu"},
+    "Rewah": {"hari": "Selasa", "ordinal": 8, "watek": "Mantri Sinareja"},
+    "Puasa": {"hari": "Rebo", "ordinal": 9, "watek": "Demang Kanduruan"},
+    "Sawal": {"hari": "Rebo", "ordinal": 10, "watek": "Putri Tinuting"},
+    "Dulkaidah": {"hari": "Kemis", "ordinal": 11, "watek": "Demang Palasah"},
+    "Rayagung": {"hari": "Kemis", "ordinal": 12, "watek": "Alas Kobar"},
 }
 
 GAGALANG_PASARAN = {
@@ -71,7 +88,6 @@ PERNAASAN = {
 }
 
 JAYA_APES = {
-    # Validated source example only; the complete matrix remains unrecovered.
     ("Senen", "Pahing"): {
         "jaya": "Setu",
         "apes": "Kemis",
@@ -81,54 +97,18 @@ JAYA_APES = {
 }
 
 MONTH_RULES = {
-    "Muharam": {
-        "group": 1, "forbidden_days": ["Setu", "Ngahad"],
-        "safe_days": ["Rebo", "Kemis"], "rizki_direction": "Tenggara",
-    },
-    "Sapar": {
-        "group": 1, "forbidden_days": ["Setu", "Ngahad"],
-        "safe_days": ["Rebo", "Kemis"], "rizki_direction": "Tenggara",
-    },
-    "Rabiulawal": {
-        "group": 1, "forbidden_days": ["Setu", "Ngahad"],
-        "safe_days": ["Rebo", "Kemis"], "rizki_direction": "Tenggara",
-    },
-    "Rabiulakhir": {
-        "group": 2, "forbidden_days": ["Senen", "Selasa"],
-        "safe_days": ["Jemuwah"], "rizki_direction": "Barat Laut",
-    },
-    "Jumadilawal": {
-        "group": 2, "forbidden_days": ["Senen", "Selasa"],
-        "safe_days": ["Jemuwah"], "rizki_direction": "Barat Laut",
-    },
-    "Jumadilakhir": {
-        "group": 2, "forbidden_days": ["Senen", "Selasa"],
-        "safe_days": ["Jemuwah"], "rizki_direction": "Barat Laut",
-    },
-    "Rajab": {
-        "group": 3, "forbidden_days": ["Rebo", "Kemis"],
-        "safe_days": ["Setu", "Ngahad"], "rizki_direction": "Barat Daya",
-    },
-    "Rewah": {
-        "group": 3, "forbidden_days": ["Rebo", "Kemis"],
-        "safe_days": ["Setu", "Ngahad"], "rizki_direction": "Barat Daya",
-    },
-    "Puasa": {
-        "group": 3, "forbidden_days": ["Rebo", "Kemis"],
-        "safe_days": ["Setu", "Ngahad"], "rizki_direction": "Barat Daya",
-    },
-    "Sawal": {
-        "group": 4, "forbidden_days": ["Jemuwah"],
-        "safe_days": ["Senen"], "rizki_direction": "Timur Laut",
-    },
-    "Dulkaidah": {
-        "group": 4, "forbidden_days": ["Jemuwah"],
-        "safe_days": ["Senen"], "rizki_direction": "Timur Laut",
-    },
-    "Rayagung": {
-        "group": 4, "forbidden_days": ["Jemuwah"],
-        "safe_days": ["Senen"], "rizki_direction": "Timur Laut",
-    },
+    "Muharam": {"group": 1, "forbidden_days": ["Setu", "Ngahad"], "safe_days": ["Rebo", "Kemis"], "rizki_direction": "Tenggara"},
+    "Sapar": {"group": 1, "forbidden_days": ["Setu", "Ngahad"], "safe_days": ["Rebo", "Kemis"], "rizki_direction": "Tenggara"},
+    "Rabiulawal": {"group": 1, "forbidden_days": ["Setu", "Ngahad"], "safe_days": ["Rebo", "Kemis"], "rizki_direction": "Tenggara"},
+    "Rabiulakhir": {"group": 2, "forbidden_days": ["Senen", "Selasa"], "safe_days": ["Jemuwah"], "rizki_direction": "Barat Laut"},
+    "Jumadilawal": {"group": 2, "forbidden_days": ["Senen", "Selasa"], "safe_days": ["Jemuwah"], "rizki_direction": "Barat Laut"},
+    "Jumadilakhir": {"group": 2, "forbidden_days": ["Senen", "Selasa"], "safe_days": ["Jemuwah"], "rizki_direction": "Barat Laut"},
+    "Rajab": {"group": 3, "forbidden_days": ["Rebo", "Kemis"], "safe_days": ["Setu", "Ngahad"], "rizki_direction": "Barat Daya"},
+    "Rewah": {"group": 3, "forbidden_days": ["Rebo", "Kemis"], "safe_days": ["Setu", "Ngahad"], "rizki_direction": "Barat Daya"},
+    "Puasa": {"group": 3, "forbidden_days": ["Rebo", "Kemis"], "safe_days": ["Setu", "Ngahad"], "rizki_direction": "Barat Daya"},
+    "Sawal": {"group": 4, "forbidden_days": ["Jemuwah"], "safe_days": ["Senen"], "rizki_direction": "Timur Laut"},
+    "Dulkaidah": {"group": 4, "forbidden_days": ["Jemuwah"], "safe_days": ["Senen"], "rizki_direction": "Timur Laut"},
+    "Rayagung": {"group": 4, "forbidden_days": ["Jemuwah"], "safe_days": ["Senen"], "rizki_direction": "Timur Laut"},
 }
 
 HIJRI_ALIASES = {
@@ -175,6 +155,7 @@ def get_palintangan_sunda_data(target_date: date) -> dict:
     watek_patokan = WATEK_PATOKAN.get(hijri_month)
     gagalang = GAGALANG_PASARAN.get(pasaran_name)
     gagalang_poe = GAGALANG_POE.get(day_name, [])
+    gagalang_poe_month = GAGALANG_POE_MONTHS.get(hijri_month)
     pernaasan_dates = PERNAASAN.get(hijri_month, [])
     is_pernaasan = hijri["day"] in pernaasan_dates
     is_forbidden = bool(month_rule and day_name in month_rule["forbidden_days"])
@@ -196,11 +177,7 @@ def get_palintangan_sunda_data(target_date: date) -> dict:
         "calendar_context": {
             "hari": day_name,
             "pasaran": pasaran_name,
-            "hijri": {
-                "day": hijri["day"],
-                "month": hijri["month_name"],
-                "year": hijri["year"],
-            },
+            "hijri": {"day": hijri["day"], "month": hijri["month_name"], "year": hijri["year"]},
             "wuku": jawa["wuku"],
         },
         "naktu": {
@@ -212,11 +189,12 @@ def get_palintangan_sunda_data(target_date: date) -> dict:
         "gagalang_poe": {
             "hari": day_name,
             "watek": gagalang_poe,
-            "status": "SOURCE_DATA" if gagalang_poe else "UNKNOWN",
+            "month_patokan": gagalang_poe_month,
+            "status": "VERIFIED" if gagalang_poe_month else ("SOURCE_DATA" if gagalang_poe else "UNKNOWN"),
             "source": {
                 "name": "PARIRIMBON SUNDA (JAWA BARAT)",
-                "section": "Gagalang poe / 12 Watek Patokan",
-                "note": "Sumber mengaitkan 12 patokan Watek dengan hari; bila satu hari memiliki dua patokan, keduanya ditampilkan tanpa memilih salah satunya.",
+                "section": "Gagalang poe / Babalang Dua / 12 Watek Patokan",
+                "note": "The source table pairs each of the 12 month patokan with a fixed weekday and Watek. The current calendar weekday is retained separately; the month patokan is the source-backed Gagalang Poe result.",
             },
         },
         "gagalang": {
@@ -277,7 +255,7 @@ def get_palintangan_sunda_data(target_date: date) -> dict:
             {"step": 1, "rule": "calendar_context", "input": target_date.isoformat(), "result": {"hari": day_name, "pasaran": pasaran_name}},
             {"step": 2, "rule": "naktu_wedal", "input": {"hari": day_name, "pasaran": pasaran_name}, "result": naktu_wedal},
             {"step": 3, "rule": "pernaasan", "input": {"bulan_hijriah": hijri_month, "tanggal": hijri["day"]}, "result": {"dates": pernaasan_dates, "is_today": is_pernaasan}},
-            {"step": 4, "rule": "gagalang_poe", "input": day_name, "result": {"watek": gagalang_poe}},
+            {"step": 4, "rule": "gagalang_poe", "input": {"hari": day_name, "bulan": hijri_month}, "result": gagalang_poe_month},
             {"step": 5, "rule": "gagalang_pasaran", "input": pasaran_name, "result": {"next_pasaran": gagalang["next_pasaran"] if gagalang else None, "direction": gagalang["direction"] if gagalang else None}},
             {"step": 6, "rule": "watek_patokan", "input": {"bulan_hijriah": hijri_month}, "result": {"ordinal": watek_patokan["ordinal"] if watek_patokan else None, "watek": watek_patokan["watek"] if watek_patokan else None}},
             {"step": 7, "rule": "jaya_apes", "input": {"hari": day_name, "pasaran": pasaran_name, "wedal": naktu_wedal}, "result": {"status": jaya_apes["status"] if jaya_apes else "PARTIAL_DATASET", "jaya": jaya_apes["jaya"] if jaya_apes else None, "apes": jaya_apes["apes"] if jaya_apes else None}},
