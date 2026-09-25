@@ -37,6 +37,16 @@ PERNAASAN = {
     "Rayagung": [2, 6, 20],
 }
 
+JAYA_APES = {
+    # Validated source example only; the complete matrix remains unrecovered.
+    ("Senen", "Pahing"): {
+        "jaya": "Setu",
+        "apes": "Kemis",
+        "status": "SOURCE_EXAMPLE",
+        "source_note": "Validated baseline/example; not yet sufficient to declare the full matrix locked.",
+    },
+}
+
 MONTH_RULES = {
     "Muharam": {
         "group": 1, "forbidden_days": ["Setu", "Ngahad"],
@@ -170,6 +180,19 @@ def get_palintangan_sunda_data(target_date: date) -> dict:
             "status": "SOURCE_COMPILED",
             "note": "Some published transcriptions contain OCR/variant discrepancies; values are preserved as transcribed.",
         },
+        "jaya_apes": {
+            "status": jaya_apes["status"] if jaya_apes else "PARTIAL_DATASET",
+            "hari": day_name,
+            "pasaran": pasaran_name,
+            "wedal": naktu_wedal,
+            "jaya": jaya_apes["jaya"] if jaya_apes else None,
+            "apes": jaya_apes["apes"] if jaya_apes else None,
+            "source": {
+                "name": "PARIRIMBON SUNDA (JAWA BARAT)",
+                "status": jaya_apes["status"] if jaya_apes else "PARTIAL_DATASET",
+                "note": jaya_apes["source_note"] if jaya_apes else "Complete Jaya/Apes lookup matrix has not yet been recovered. No value is inferred.",
+            },
+        },
         "navigation": {
             "month_group": month_rule["group"] if month_rule else None,
             "pantangan_hari": month_rule["forbidden_days"] if month_rule else [],
@@ -186,6 +209,7 @@ def get_palintangan_sunda_data(target_date: date) -> dict:
             {"step": 1, "rule": "calendar_context", "input": target_date.isoformat(), "result": {"hari": day_name, "pasaran": pasaran_name}},
             {"step": 2, "rule": "naktu_wedal", "input": {"hari": day_name, "pasaran": pasaran_name}, "result": naktu_wedal},
             {"step": 3, "rule": "pernaasan", "input": {"bulan_hijriah": hijri_month, "tanggal": hijri["day"]}, "result": {"dates": pernaasan_dates, "is_today": is_pernaasan}},
-            {"step": 4, "rule": "kala_navigation", "input": {"bulan_hijriah": hijri_month, "hari": day_name}, "result": {"pantangan": is_forbidden, "keselamatan": is_safe_day, "arah_rizki": month_rule["rizki_direction"] if month_rule else None}},
+            {"step": 4, "rule": "jaya_apes", "input": {"hari": day_name, "pasaran": pasaran_name, "wedal": naktu_wedal}, "result": {"status": jaya_apes["status"] if jaya_apes else "PARTIAL_DATASET", "jaya": jaya_apes["jaya"] if jaya_apes else None, "apes": jaya_apes["apes"] if jaya_apes else None}},
+            {"step": 5, "rule": "kala_navigation", "input": {"bulan_hijriah": hijri_month, "hari": day_name}, "result": {"pantangan": is_forbidden, "keselamatan": is_safe_day, "arah_rizki": month_rule["rizki_direction"] if month_rule else None}},
         ],
     }
