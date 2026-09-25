@@ -22,6 +22,21 @@ PASARAN_NAKTU = {
     "Wage": 4,
 }
 
+WATEK_PATOKAN = {
+    "Muharam": {"ordinal": 1, "watek": "Wani"},
+    "Sapar": {"ordinal": 2, "watek": "Karang Piwulang"},
+    "Rabiulawal": {"ordinal": 3, "watek": "Sumur Pinungkeb"},
+    "Rabiulakhir": {"ordinal": 4, "watek": "Karang Tinangtang"},
+    "Jumadilawal": {"ordinal": 5, "watek": "Macan Katawang"},
+    "Jumadilakhir": {"ordinal": 6, "watek": "Nuju Pati"},
+    "Rajab": {"ordinal": 7, "watek": "Nuju Padu"},
+    "Rewah": {"ordinal": 8, "watek": "Mantri Sinareja"},
+    "Puasa": {"ordinal": 9, "watek": "Demang Kanduruan"},
+    "Sawal": {"ordinal": 10, "watek": "Putri Tinuting"},
+    "Dulkaidah": {"ordinal": 11, "watek": "Demang Palasah"},
+    "Rayagung": {"ordinal": 12, "watek": "Alas Kobar"},
+}
+
 PERNAASAN = {
     "Muharam": [3, 12, 20],
     "Sapar": [1, 10, 20],
@@ -139,6 +154,7 @@ def get_palintangan_sunda_data(target_date: date) -> dict:
 
     hijri_month = normalize_hijri_month(hijri["month_name"])
     month_rule = MONTH_RULES.get(hijri_month)
+    watek_patokan = WATEK_PATOKAN.get(hijri_month)
     pernaasan_dates = PERNAASAN.get(hijri_month, [])
     is_pernaasan = hijri["day"] in pernaasan_dates
     is_forbidden = bool(month_rule and day_name in month_rule["forbidden_days"])
@@ -172,6 +188,17 @@ def get_palintangan_sunda_data(target_date: date) -> dict:
             "pasaran": pasaran_naktu,
             "wedal": naktu_wedal,
             "formula": f"{day_naktu} + {pasaran_naktu} = {naktu_wedal}",
+        },
+        "watek_patokan": {
+            "month": hijri_month,
+            "ordinal": watek_patokan["ordinal"] if watek_patokan else None,
+            "watek": watek_patokan["watek"] if watek_patokan else None,
+            "status": "VERIFIED" if watek_patokan else "UNKNOWN",
+            "source": {
+                "name": "PARIRIMBON SUNDA (JAWA BARAT)",
+                "section": "Gagalang poe / 12 Watek Patokan",
+                "note": "Dua belas patokan menunjukkan nama bulan selama satu tahun secara beraturan.",
+            },
         },
         "pernaasan": {
             "month": hijri_month,
@@ -209,7 +236,8 @@ def get_palintangan_sunda_data(target_date: date) -> dict:
             {"step": 1, "rule": "calendar_context", "input": target_date.isoformat(), "result": {"hari": day_name, "pasaran": pasaran_name}},
             {"step": 2, "rule": "naktu_wedal", "input": {"hari": day_name, "pasaran": pasaran_name}, "result": naktu_wedal},
             {"step": 3, "rule": "pernaasan", "input": {"bulan_hijriah": hijri_month, "tanggal": hijri["day"]}, "result": {"dates": pernaasan_dates, "is_today": is_pernaasan}},
-            {"step": 4, "rule": "jaya_apes", "input": {"hari": day_name, "pasaran": pasaran_name, "wedal": naktu_wedal}, "result": {"status": jaya_apes["status"] if jaya_apes else "PARTIAL_DATASET", "jaya": jaya_apes["jaya"] if jaya_apes else None, "apes": jaya_apes["apes"] if jaya_apes else None}},
-            {"step": 5, "rule": "kala_navigation", "input": {"bulan_hijriah": hijri_month, "hari": day_name}, "result": {"pantangan": is_forbidden, "keselamatan": is_safe_day, "arah_rizki": month_rule["rizki_direction"] if month_rule else None}},
+            {"step": 4, "rule": "watek_patokan", "input": {"bulan_hijriah": hijri_month}, "result": {"ordinal": watek_patokan["ordinal"] if watek_patokan else None, "watek": watek_patokan["watek"] if watek_patokan else None}},
+            {"step": 5, "rule": "jaya_apes", "input": {"hari": day_name, "pasaran": pasaran_name, "wedal": naktu_wedal}, "result": {"status": jaya_apes["status"] if jaya_apes else "PARTIAL_DATASET", "jaya": jaya_apes["jaya"] if jaya_apes else None, "apes": jaya_apes["apes"] if jaya_apes else None}},
+            {"step": 6, "rule": "kala_navigation", "input": {"bulan_hijriah": hijri_month, "hari": day_name}, "result": {"pantangan": is_forbidden, "keselamatan": is_safe_day, "arah_rizki": month_rule["rizki_direction"] if month_rule else None}},
         ],
     }
