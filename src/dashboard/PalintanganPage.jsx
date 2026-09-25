@@ -157,17 +157,20 @@ export default function PalintanganPage() {
       </div>
 
       <div className="mt-5">
-        <Section eyebrow="Gagalang Poe" title="Watek Menurut Hari">
-          <div className="grid gap-3 sm:grid-cols-2">
-            <Value label="Hari" value={gagalangPoe?.hari} />
-            <Value label="Status" value={gagalangPoe?.status} />
+        <Section eyebrow="Gagalang Poe" title="Babalang Dua · Watek Patokan">
+          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+            <Value label="Bulan" value={calendar?.hijri?.month} />
+            <Value label="Hari Patokan" value={gagalangPoe?.month_patokan?.hari} />
+            <Value label="Patokan" value={gagalangPoe?.month_patokan?.ordinal ? `Patokan ${gagalangPoe.month_patokan.ordinal}` : null} />
+            <Value label="Watek" value={gagalangPoe?.month_patokan?.watek} />
           </div>
-          <div className="mt-4">
-            <div className="mb-2 text-[10px] font-bold uppercase tracking-[0.1em] text-[#536A7D]">Patokan Watek</div>
-            <DayList items={gagalangPoe?.watek} />
+          <div className="mt-4 rounded-xl border border-white/[0.06] bg-[#07111C] p-4">
+            <div className="text-[10px] font-bold uppercase tracking-[0.1em] text-[#536A7D]">Hari Kalender Saat Ini</div>
+            <div className="mt-2 text-sm font-semibold text-white">{gagalangPoe?.hari || '—'}</div>
+            <div className="mt-1 text-[11px] text-[#71869A]">Ditampilkan terpisah dari Hari Patokan Babalang Dua.</div>
           </div>
           <p className="mt-4 text-[11px] leading-5 text-[#536A7D]">
-            Jika sumber memuat dua patokan untuk satu hari, keduanya ditampilkan sebagai data sumber; sistem tidak memilih salah satunya secara inferensial.
+            Source mengaitkan Gagalang Poe dengan Babalang Dua dan 12 patokan tetap. Untuk bulan yang dipilih, hasil source-backed adalah pasangan Hari Patokan + Watek di atas.
           </p>
         </Section>
       </div>
