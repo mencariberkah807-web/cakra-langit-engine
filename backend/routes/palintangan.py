@@ -2,9 +2,17 @@ from datetime import date
 
 from fastapi import APIRouter, HTTPException
 
-from engines.palintangan_sunda_engine import get_palintangan_sunda_data
+from engines.palintangan_sunda_engine import calculate_pancaka, get_palintangan_sunda_data
 
 router = APIRouter(prefix="/api/palintangan", tags=["palintangan"])
+
+
+@router.get("/pancaka")
+def palintangan_pancaka(value: int, divisor: int):
+    result = calculate_pancaka(value, divisor)
+    if result["status"] == "UNKNOWN":
+        raise HTTPException(status_code=400, detail="Pancaka divisor is not available.")
+    return result
 
 
 @router.get("/sunda")
