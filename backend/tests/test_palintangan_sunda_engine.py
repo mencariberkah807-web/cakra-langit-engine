@@ -56,7 +56,10 @@ class PalintanganJayaApesTests(unittest.TestCase):
     def test_hijri_aliases_normalize_to_sunda_months(self):
         self.assertEqual(normalize_hijri_month("Muharram"), "Muharam")
         self.assertEqual(normalize_hijri_month("Sha'ban"), "Rewah")
+        self.assertEqual(normalize_hijri_month("Sya'ban"), "Rewah")
         self.assertEqual(normalize_hijri_month("Ramadan"), "Puasa")
+        self.assertEqual(normalize_hijri_month("Zulkaidah"), "Dulkaidah")
+        self.assertEqual(normalize_hijri_month("Zulhijah"), "Rayagung")
         self.assertEqual(normalize_hijri_month("Dzulhijah"), "Rayagung")
 
     def test_apes_is_two_steps_before_jaya(self):
