@@ -104,19 +104,25 @@ export default function PalintanganPage() {
       return
     }
 
+    let cancelled = false
+
     fetch(`${getApiBase()}/api/palintangan/pancaka?value=${value}&divisor=${divisor}`)
       .then((response) => {
         if (!response.ok) throw new Error('Pancaka tidak tersedia.')
         return response.json()
       })
       .then((result) => {
+        if (cancelled) return
         setPancaka(result)
         setPancakaError('')
       })
       .catch((err) => {
+        if (cancelled) return
         setPancaka(null)
         setPancakaError(err.message || 'Gagal menghitung Pancaka.')
       })
+
+    return () => { cancelled = true }
   }, [pancakaValue, pancakaDivisor])
 
   return (
