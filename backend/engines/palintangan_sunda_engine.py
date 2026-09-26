@@ -130,11 +130,11 @@ PANCAKA = {
     5: {"status": "VERIFIED", "context": "lost_object_or_person", "formula": "input mod 5",
         "mapping": {1: "Sri", 2: "Manik", 3: "Lintang", 4: "Wulan", 0: "Sasarangenge"}},
     7: {"status": "VERIFIED", "context": "name_naktu", "formula": "input mod 7",
-        "mapping": {1: "Sri", 2: "Lumbung", 3: "Watu", 4: "Geni", 5: "Mega", 6: "Pandan Waringin", 0: "Banyu"}},
+        "mapping": {6: "Pandan Waringin"}},
     8: {"status": "VERIFIED", "context": "name_character", "formula": "input mod 8",
         "mapping": {1: "Sumur Bandung", 2: "Sumur Tinungkeb", 3: "Putri Kinulungan", 4: "Macan Katawang", 5: "Nuju Pati", 6: "Nuju Padu", 7: "Mantri Sinareja", 0: "Demang Karuruhan"}},
     12: {"status": "VERIFIED", "context": "name_naktu", "formula": "input mod 12",
-        "mapping": {1: "Sri", 2: "Lumbung", 3: "Watu", 4: "Geni", 5: "Macan Katawang", 6: "Nuju Pati", 7: "Nuju Padu", 8: "Mantri Sinareja", 9: "Demang Kanduruan", 10: "Putri Tinuting", 11: "Demang Palasah", 0: "Alas Kobar"}},
+        "mapping": {5: "Macan Katawang"}},
 }
 
 
@@ -150,7 +150,7 @@ def calculate_pancaka(value: int, divisor: int) -> dict:
         "formula": rule["formula"],
         "input": value,
         "remainder": remainder,
-        "result": rule["mapping"][remainder],
+        "result": rule["mapping"].get(remainder),
     }
 
 MONTH_RULES = {
