@@ -44,6 +44,17 @@ class PalintanganJayaApesTests(unittest.TestCase):
         self.assertEqual(GAGALANG_POE_MONTHS["Puasa"]["watek"], "Demang Kanduruan")
         self.assertEqual(GAGALANG_PASARAN["Pahing"]["direction"], "Barat")
 
+    def test_all_twelve_sunda_months_have_complete_registry(self):
+        expected_months = [
+            "Muharam", "Sapar", "Rabiulawal", "Rabiulakhir",
+            "Jumadilawal", "Jumadilakhir", "Rajab", "Rewah",
+            "Puasa", "Sawal", "Dulkaidah", "Rayagung",
+        ]
+        self.assertEqual(list(WATEK_PATOKAN.keys()), expected_months)
+        self.assertEqual(list(GAGALANG_POE_MONTHS.keys()), expected_months)
+        self.assertEqual(list(PERNAASAN.keys()), expected_months)
+        self.assertEqual(list(MONTH_RULES.keys()), expected_months)
+
     def test_locked_pernaasan_and_navigation_groups(self):
         self.assertEqual(PERNAASAN["Muharam"], [3, 12, 20])
         self.assertEqual(PERNAASAN["Puasa"], [9, 20, 29])
