@@ -1,7 +1,23 @@
 import { useEffect, useState } from 'react'
 import { useTodayContext } from '../core/TodayContext'
 
-const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://127.0.0.1:8000'
+const ENV_API_BASE = import.meta.env.VITE_API_BASE_URL || ''
+
+function getApiBase() {
+  if (typeof window !== 'undefined' && window.location.hostname.includes('-5173.app.github.dev')) {
+    return ''
+  }
+  if (ENV_API_BASE) return ENV_API_BASE
+  return 'http://127.0.0.1:8000'
+}
+
+function toDateISO(date) {
+  if (!date) return ''
+  const year = date.getFullYear()
+  const month = String(date.getMonth() + 1).padStart(2, '0')
+  const day = String(date.getDate()).padStart(2, '0')
+  return `${year}-${month}-${day}`
+}
 
 function Section({ eyebrow, title, children }) {
   return (
@@ -37,7 +53,7 @@ function DayList({ items }) {
 
 export default function PalintanganPage() {
   const { selectedDate, setSelectedDate } = useTodayContext()
-  const isoDate = selectedDate?.toISOString().slice(0, 10) || ''
+  const isoDate = toDateISO(selectedDate)
   const [data, setData] = useState(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
@@ -49,7 +65,7 @@ export default function PalintanganPage() {
     setLoading(true)
     setError('')
 
-    fetch(`${API_BASE}/api/palintangan/sunda?date_value=${isoDate}`)
+    fetch(`${getApiBase()}/api/palintangan/sunda?date_value=${isoDate}`)
       .then((response) => {
         if (!response.ok) throw new Error(`Palintangan API error: ${response.status}`)
         return response.json()
