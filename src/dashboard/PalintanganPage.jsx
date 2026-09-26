@@ -57,6 +57,10 @@ export default function PalintanganPage() {
   const [data, setData] = useState(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+  const [pancakaValue, setPancakaValue] = useState('23')
+  const [pancakaDivisor, setPancakaDivisor] = useState('8')
+  const [pancaka, setPancaka] = useState(null)
+  const [pancakaError, setPancakaError] = useState('')
 
   useEffect(() => {
     if (!isoDate) return
@@ -91,6 +95,29 @@ export default function PalintanganPage() {
   const gagalangPoe = data?.gagalang_poe
   const navigation = data?.navigation
   const jayaApes = data?.jaya_apes
+
+  useEffect(() => {
+    const value = Number(pancakaValue)
+    const divisor = Number(pancakaDivisor)
+    if (!Number.isInteger(value) || value < 0 || ![4, 5, 7, 8, 12].includes(divisor)) {
+      setPancaka(null)
+      return
+    }
+
+    fetch(`${getApiBase()}/api/palintangan/pancaka?value=${value}&divisor=${divisor}`)
+      .then((response) => {
+        if (!response.ok) throw new Error('Pancaka tidak tersedia.')
+        return response.json()
+      })
+      .then((result) => {
+        setPancaka(result)
+        setPancakaError('')
+      })
+      .catch((err) => {
+        setPancaka(null)
+        setPancakaError(err.message || 'Gagal menghitung Pancaka.')
+      })
+  }, [pancakaValue, pancakaDivisor])
 
   return (
     <section className="mx-auto max-w-[1180px] px-5 py-7 sm:px-7 lg:py-9">
@@ -218,6 +245,48 @@ export default function PalintanganPage() {
               <div className="mt-1 text-[11px] text-[#71869A]">Kelompok bulan {navigation?.month_group ?? '—'}</div>
             </div>
           </div>
+        </Section>
+      </div>
+
+      <div className="mt-5">
+        <Section eyebrow="Pancaka" title="Calculation Tool">
+          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-[1fr_180px_1.2fr]">
+            <label>
+              <span className="mb-2 block text-xs font-semibold text-[#A9BDCF]">Nilai input</span>
+              <input
+                type="number"
+                min="0"
+                value={pancakaValue}
+                onChange={(event) => setPancakaValue(event.target.value)}
+                className="w-full rounded-xl border border-white/[0.09] bg-[#07111C] px-3 py-3 text-sm text-white outline-none focus:border-cyan-300/40"
+              />
+            </label>
+            <label>
+              <span className="mb-2 block text-xs font-semibold text-[#A9BDCF]">Pancaka</span>
+              <select
+                value={pancakaDivisor}
+                onChange={(event) => setPancakaDivisor(event.target.value)}
+                className="w-full rounded-xl border border-white/[0.09] bg-[#07111C] px-3 py-3 text-sm text-white outline-none"
+              >
+                <option value="4">Pancaka 4</option>
+                <option value="5">Pancaka 5</option>
+                <option value="7">Pancaka 7</option>
+                <option value="8">Pancaka 8</option>
+                <option value="12">Pancaka 12</option>
+              </select>
+            </label>
+            <div className="rounded-xl border border-cyan-300/10 bg-[#07111C] p-4">
+              <div className="text-[10px] font-bold uppercase tracking-[0.1em] text-[#536A7D]">Hasil</div>
+              <div className="mt-2 text-lg font-semibold text-white">{pancaka?.result || '—'}</div>
+              <div className="mt-1 text-[11px] text-[#71869A]">
+                {pancaka ? `${pancaka.input} mod ${pancaka.divisor} = ${pancaka.remainder} · ${pancaka.context}` : 'Masukkan nilai untuk menghitung.'}
+              </div>
+            </div>
+          </div>
+          {pancakaError && <div className="mt-3 text-xs text-red-200">{pancakaError}</div>}
+          <p className="mt-4 text-[11px] leading-5 text-[#536A7D]">
+            Hanya mapping Pancaka yang sudah terverifikasi yang tersedia. Pancaka 3, 6, dan 9 belum diaktifkan karena mapping sumber belum lengkap.
+          </p>
         </Section>
       </div>
 
