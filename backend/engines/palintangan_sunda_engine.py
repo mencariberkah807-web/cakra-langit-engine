@@ -87,14 +87,39 @@ PERNAASAN = {
     "Rayagung": [2, 6, 20],
 }
 
-JAYA_APES = {
-    ("Senen", "Pahing"): {
-        "jaya": "Setu",
-        "apes": "Kemis",
-        "status": "SOURCE_EXAMPLE",
-        "source_note": "Validated baseline/example; not yet sufficient to declare the full matrix locked.",
-    },
+JAYA_APES_DAY_INDEX = {
+    "Ngahad": 0,
+    "Senen": 1,
+    "Selasa": 2,
+    "Rebo": 3,
+    "Kemis": 4,
+    "Jemuwah": 5,
+    "Setu": 6,
 }
+
+DAY_INDEX_TO_NAME = {index: name for name, index in JAYA_APES_DAY_INDEX.items()}
+
+# Cakra Langit personal reconstruction:
+# The recovered Sunda example Senen + Pahing (Naktu 13) -> Jaya Setu / Apes Kemis
+# is reproduced by a 7-day cyclic index:
+#   Jaya = Naktu Wedal mod 7
+#   Apes = (Naktu Wedal - 2) mod 7
+# This is intentionally labeled RECONSTRUCTED, not presented as a manuscript formula.
+def calculate_jaya_apes(day_name: str, naktu_wedal: int) -> dict:
+    jaya_index = naktu_wedal % 7
+    apes_index = (naktu_wedal - 2) % 7
+    return {
+        "jaya": DAY_INDEX_TO_NAME[jaya_index],
+        "apes": DAY_INDEX_TO_NAME[apes_index],
+        "jaya_index": jaya_index,
+        "apes_index": apes_index,
+        "status": "CAKRA_LANGIT_RECONSTRUCTED",
+        "source_note": (
+            "Rekonstruksi personal Cakra Langit dari grammar siklus naktu Palintangan Sunda, "
+            "dikunci untuk menghasilkan contoh sumber Senen + Pahing (Naktu 13) -> Jaya Setu / Apes Kemis. "
+            "Bukan klaim sebagai formula manuskrip tunggal."
+        ),
+    }
 
 MONTH_RULES = {
     "Muharam": {"group": 1, "forbidden_days": ["Setu", "Ngahad"], "safe_days": ["Rebo", "Kemis"], "rizki_direction": "Tenggara"},
@@ -167,6 +192,8 @@ def get_palintangan_sunda_data(target_date: date) -> dict:
     elif is_safe_day:
         status = "SELAMET"
 
+    jaya_apes = calculate_jaya_apes(day_name, naktu_wedal)
+
     return {
         "source": {
             "name": "PARIRIMBON SUNDA (JAWA BARAT)",
@@ -227,16 +254,18 @@ def get_palintangan_sunda_data(target_date: date) -> dict:
             "note": "Some published transcriptions contain OCR/variant discrepancies; values are preserved as transcribed.",
         },
         "jaya_apes": {
-            "status": jaya_apes["status"] if jaya_apes else "PARTIAL_DATASET",
+            "status": jaya_apes["status"],
             "hari": day_name,
             "pasaran": pasaran_name,
             "wedal": naktu_wedal,
-            "jaya": jaya_apes["jaya"] if jaya_apes else None,
-            "apes": jaya_apes["apes"] if jaya_apes else None,
+            "jaya": jaya_apes["jaya"],
+            "apes": jaya_apes["apes"],
+            "jaya_index": jaya_apes["jaya_index"],
+            "apes_index": jaya_apes["apes_index"],
             "source": {
-                "name": "PARIRIMBON SUNDA (JAWA BARAT)",
-                "status": jaya_apes["status"] if jaya_apes else "PARTIAL_DATASET",
-                "note": jaya_apes["source_note"] if jaya_apes else "Complete Jaya/Apes lookup matrix has not yet been recovered. No value is inferred.",
+                "name": "CAKRA LANGIT · PALINTANGAN SUNDA",
+                "status": jaya_apes["status"],
+                "note": jaya_apes["source_note"],
             },
         },
         "navigation": {
@@ -258,7 +287,7 @@ def get_palintangan_sunda_data(target_date: date) -> dict:
             {"step": 4, "rule": "gagalang_poe", "input": {"hari": day_name, "bulan": hijri_month}, "result": gagalang_poe_month},
             {"step": 5, "rule": "gagalang_pasaran", "input": pasaran_name, "result": {"next_pasaran": gagalang["next_pasaran"] if gagalang else None, "direction": gagalang["direction"] if gagalang else None}},
             {"step": 6, "rule": "watek_patokan", "input": {"bulan_hijriah": hijri_month}, "result": {"ordinal": watek_patokan["ordinal"] if watek_patokan else None, "watek": watek_patokan["watek"] if watek_patokan else None}},
-            {"step": 7, "rule": "jaya_apes", "input": {"hari": day_name, "pasaran": pasaran_name, "wedal": naktu_wedal}, "result": {"status": jaya_apes["status"] if jaya_apes else "PARTIAL_DATASET", "jaya": jaya_apes["jaya"] if jaya_apes else None, "apes": jaya_apes["apes"] if jaya_apes else None}},
+            {"step": 7, "rule": "jaya_apes_cakra_langit", "input": {"hari": day_name, "pasaran": pasaran_name, "wedal": naktu_wedal}, "result": {"formula_jaya": f"{naktu_wedal} mod 7", "formula_apes": f"({naktu_wedal} - 2) mod 7", "jaya": jaya_apes["jaya"], "apes": jaya_apes["apes"], "status": jaya_apes["status"]}},
             {"step": 8, "rule": "kala_navigation", "input": {"bulan_hijriah": hijri_month, "hari": day_name}, "result": {"pantangan": is_forbidden, "keselamatan": is_safe_day, "arah_rizki": month_rule["rizki_direction"] if month_rule else None}},
         ],
     }
