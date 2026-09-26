@@ -44,6 +44,19 @@ class PalintanganJayaApesTests(unittest.TestCase):
         self.assertEqual(GAGALANG_POE_MONTHS["Puasa"]["watek"], "Demang Kanduruan")
         self.assertEqual(GAGALANG_PASARAN["Pahing"]["direction"], "Barat")
 
+    def test_verified_pancaka_mappings(self):
+        from engines.palintangan_sunda_engine import PANCAKA, calculate_pancaka
+
+        self.assertEqual(calculate_pancaka(23, 4)["result"], "Naga")
+        self.assertEqual(calculate_pancaka(23, 5)["result"], "Lintang")
+        self.assertEqual(calculate_pancaka(76, 7)["result"], "Pandan Waringin")
+        self.assertEqual(calculate_pancaka(23, 8)["result"], "Macan Katawang")
+        self.assertEqual(calculate_pancaka(41, 12)["result"], "Macan Katawang")
+        self.assertIsNone(calculate_pancaka(1, 7)["result"])
+        self.assertIsNone(calculate_pancaka(1, 12)["result"])
+        self.assertEqual(PANCAKA[7]["status"], "VERIFIED")
+        self.assertEqual(PANCAKA[12]["status"], "VERIFIED")
+
     def test_all_twelve_sunda_months_have_complete_registry(self):
         expected_months = [
             "Muharam", "Sapar", "Rabiulawal", "Rabiulakhir",
