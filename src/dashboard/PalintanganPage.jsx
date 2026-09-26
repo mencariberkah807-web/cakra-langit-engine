@@ -74,6 +74,7 @@ export default function PalintanganPage() {
   const gagalang = data?.gagalang
   const gagalangPoe = data?.gagalang_poe
   const navigation = data?.navigation
+  const jayaApes = data?.jaya_apes
 
   return (
     <section className="mx-auto max-w-[1180px] px-5 py-7 sm:px-7 lg:py-9">
@@ -201,6 +202,18 @@ export default function PalintanganPage() {
               <div className="mt-1 text-[11px] text-[#71869A]">Kelompok bulan {navigation?.month_group ?? '—'}</div>
             </div>
           </div>
+        </Section>
+      </div>
+
+      <div className="mt-5">
+        <Section eyebrow="Jaya / Apes" title="Siklus Jaya · Apes">
+          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+            <Value label="Naktu Wedal" value={jayaApes?.wedal} sub={jayaApes?.hari && jayaApes?.pasaran ? `${jayaApes.hari} · ${jayaApes.pasaran}` : null} />
+            <Value label="Jaya" value={jayaApes?.jaya} sub={jayaApes?.jaya_index != null ? `Index ${jayaApes.jaya_index}` : null} />
+            <Value label="Apes" value={jayaApes?.apes} sub={jayaApes?.apes_index != null ? `Index ${jayaApes.apes_index}` : null} />
+            <Value label="Status" value={jayaApes?.status} />
+          </div>
+          <p className="mt-4 text-[11px] leading-5 text-[#536A7D]">{jayaApes?.source?.note || '—'}</p>
         </Section>
       </div>
 
