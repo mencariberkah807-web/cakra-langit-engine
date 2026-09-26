@@ -211,7 +211,17 @@ export default function PalintanganPage() {
             <Value label="Naktu Wedal" value={jayaApes?.wedal} sub={jayaApes?.hari && jayaApes?.pasaran ? `${jayaApes.hari} · ${jayaApes.pasaran}` : null} />
             <Value label="Jaya" value={jayaApes?.jaya} sub={jayaApes?.jaya_index != null ? `Index ${jayaApes.jaya_index}` : null} />
             <Value label="Apes" value={jayaApes?.apes} sub={jayaApes?.apes_index != null ? `Index ${jayaApes.apes_index}` : null} />
-            <Value label="Status" value={jayaApes?.status} />
+            <Value label="Status" value={jayaApes?.status === 'CAKRA_LANGIT_RECONSTRUCTED' ? 'REKONSTRUKSI' : jayaApes?.status} />
+          </div>
+          <div className="mt-4 grid gap-3 sm:grid-cols-2">
+            <div className="rounded-xl border border-white/[0.06] bg-[#07111C] p-4">
+              <div className="text-[10px] font-bold uppercase tracking-[0.1em] text-[#536A7D]">Formula Jaya</div>
+              <div className="mt-2 font-mono text-sm text-[#A9BDCF]">{jayaApes?.wedal != null ? `${jayaApes.wedal} mod 7 = ${jayaApes.jaya_index}` : '—'}</div>
+            </div>
+            <div className="rounded-xl border border-white/[0.06] bg-[#07111C] p-4">
+              <div className="text-[10px] font-bold uppercase tracking-[0.1em] text-[#536A7D]">Formula Apes</div>
+              <div className="mt-2 font-mono text-sm text-[#A9BDCF]">{jayaApes?.wedal != null ? `(${jayaApes.wedal} - 2) mod 7 = ${jayaApes.apes_index}` : '—'}</div>
+            </div>
           </div>
           <p className="mt-4 text-[11px] leading-5 text-[#536A7D]">{jayaApes?.source?.note || '—'}</p>
         </Section>
