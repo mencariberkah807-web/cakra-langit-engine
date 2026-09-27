@@ -51,29 +51,33 @@ export default function AppSidebar({ user, onLogout }) {
 
       <nav className="flex-1 px-2 py-5 lg:px-3">
         <div className="hidden px-2 pb-2 text-[10px] font-bold uppercase tracking-[0.14em] text-[#536A7D] lg:block">Workspace</div>
-        {primaryNav.map(renderItem)}
-        {currentPath === '/dashboard/palintangan' && (
-          <div className="mb-3 ml-4 border-l border-cyan-300/10 pl-2">
-            {palintanganNav.map(([Icon, label, href]) => {
-              const active = new URLSearchParams(window.location.search).get('view') === new URL(href, window.location.origin).searchParams.get('view')
-              return (
-                <a
-                  key={href}
-                  href={href}
-                  title={label}
-                  className={`group mb-1 flex items-center gap-2 rounded-lg px-2.5 py-2 text-xs transition-colors ${
-                    active
-                      ? 'bg-[#12324A] font-semibold text-white'
-                      : 'text-[#71869A] hover:bg-white/[0.04] hover:text-[#A9BDCF]'
-                  }`}
-                >
-                  <Icon size={14} strokeWidth={1.7} className={active ? 'text-[#22D3EE]' : 'text-[#536A7D] group-hover:text-[#A9BDCF]'} />
-                  <span className="truncate">{label}</span>
-                </a>
-              )
-            })}
+        {primaryNav.map((item) => (
+          <div key={item[1]}>
+            {renderItem(item)}
+            {item[1] === 'Palintangan' && currentPath === '/dashboard/palintangan' && (
+              <div className="mb-3 ml-4 border-l border-cyan-300/10 pl-2">
+                {palintanganNav.map(([Icon, label, href]) => {
+                  const active = new URLSearchParams(window.location.search).get('view') === new URL(href, window.location.origin).searchParams.get('view')
+                  return (
+                    <a
+                      key={href}
+                      href={href}
+                      title={label}
+                      className={`group mb-1 flex items-center gap-2 rounded-lg px-2.5 py-2 text-xs transition-colors ${
+                        active
+                          ? 'bg-[#12324A] font-semibold text-white'
+                          : 'text-[#71869A] hover:bg-white/[0.04] hover:text-[#A9BDCF]'
+                      }`}
+                    >
+                      <Icon size={14} strokeWidth={1.7} className={active ? 'text-[#22D3EE]' : 'text-[#536A7D] group-hover:text-[#A9BDCF]'} />
+                      <span className="truncate">{label}</span>
+                    </a>
+                  )
+                })}
+              </div>
+            )}
           </div>
-        )}
+        ))}
         <div className="my-4 border-t border-white/[0.07]" />
         <div className="hidden px-2 pb-2 text-[10px] font-bold uppercase tracking-[0.14em] text-[#536A7D] lg:block">Personal</div>
         {personalNav.map(renderItem)}
