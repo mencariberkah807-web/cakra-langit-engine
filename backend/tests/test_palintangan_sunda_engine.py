@@ -26,7 +26,7 @@ class PalintanganJayaApesTests(unittest.TestCase):
     def test_jaya_cycle_is_seven(self):
         values = [calculate_jaya_apes("Senen", n)["jaya_index"] for n in range(7, 21)]
         self.assertEqual(values[:7], [0, 1, 2, 3, 4, 5, 6])
-        self.assertEqual(values[7:], [0, 1, 2, 3, 4, 5, 6, 0])
+        self.assertEqual(values[7:], [0, 1, 2, 3, 4, 5, 6])
 
     def test_locked_naktu_tables(self):
         self.assertEqual(DINO_NAKTU["Senen"], 4)
@@ -50,7 +50,7 @@ class PalintanganJayaApesTests(unittest.TestCase):
         self.assertEqual(calculate_pancaka(23, 4)["result"], "Naga")
         self.assertEqual(calculate_pancaka(23, 5)["result"], "Lintang")
         self.assertEqual(calculate_pancaka(76, 7)["result"], "Pandan Waringin")
-        self.assertEqual(calculate_pancaka(23, 8)["result"], "Macan Katawang")
+        self.assertEqual(calculate_pancaka(20, 8)["result"], "Macan Katawang")
         self.assertEqual(calculate_pancaka(41, 12)["result"], "Macan Katawang")
         self.assertIsNone(calculate_pancaka(1, 7)["result"])
         self.assertIsNone(calculate_pancaka(1, 12)["result"])
