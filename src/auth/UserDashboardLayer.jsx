@@ -7,6 +7,7 @@ import BaZiPage from '../dashboard/BaZiPage'
 import ParirimbonPage from '../dashboard/ParirimbonPage'
 import PalelintanganPage from '../dashboard/PalelintanganPage'
 import PalintanganPage from '../dashboard/PalintanganPage'
+import ProfilePage from '../dashboard/ProfilePage'
 import { useAuth } from './AuthContext'
 
 const pageMap = {
@@ -55,6 +56,10 @@ function UserDashboardContent({ user }) {
 
   if (path === '/dashboard/palintangan') {
     return <PalintanganPage />
+  }
+
+  if (path === '/dashboard/profile') {
+    return <ProfilePage />
   }
 
   if (path === '/dashboard/palelintangan') {
