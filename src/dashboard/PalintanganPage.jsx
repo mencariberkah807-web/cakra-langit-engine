@@ -308,15 +308,39 @@ export default function PalintanganPage() {
       </header>
 
       <section className="rounded-2xl border border-cyan-300/10 bg-[#0A1723] p-5 shadow-[0_12px_40px_rgba(0,0,0,0.16)] sm:p-6">
-        <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
-          <div className="min-w-0">
-            <div className="text-[10px] font-bold uppercase tracking-[0.14em] text-[#536A7D]">Profil & konteks aktif</div>
-            <h2 className="mt-2 text-xl font-semibold text-white">{activeProfileName}</h2>
+        <div className="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex min-w-0 items-center gap-4">
+            <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl border border-cyan-300/20 bg-[#12324A] text-sm font-bold text-[#22D3EE] shadow-[0_0_24px_rgba(34,211,238,0.08)]">
+              {displayName.slice(0, 2).toUpperCase()}
+            </div>
+            <div className="min-w-0">
+              <div className="text-[10px] font-bold uppercase tracking-[0.14em] text-[#22D3EE]">Profil Pengguna</div>
+              <h2 className="mt-1 truncate text-xl font-semibold text-white">{displayName}</h2>
+              <div className="mt-1 flex flex-wrap gap-x-3 gap-y-1 text-xs text-[#71869A]">
+                <span>{user?.email || 'Email belum tersedia'}</span>
+                <span>{locationName}</span>
+              </div>
+            </div>
+          </div>
+          <a
+            href="/dashboard/profile"
+            className="inline-flex shrink-0 items-center justify-center rounded-xl border border-white/[0.08] bg-white/[0.03] px-4 py-2.5 text-xs font-semibold text-[#A9BDCF] transition hover:border-cyan-300/20 hover:bg-[#12324A] hover:text-white"
+          >
+            Lihat Profil
+          </a>
+        </div>
+      </section>
+
+      <section className="mt-5 rounded-2xl border border-cyan-300/10 bg-[#0A1723] p-5 shadow-[0_12px_40px_rgba(0,0,0,0.16)] sm:p-6">
+        <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+          <div>
+            <div className="text-[10px] font-bold uppercase tracking-[0.14em] text-[#22D3EE]">Peta Hari Ini</div>
+            <h2 className="mt-1 text-lg font-semibold text-white">Posisi tanggal menurut Palintangan Sunda</h2>
             <p className="mt-1 text-xs text-[#71869A]">{locationName} · {formatDate(inspectionDate)}</p>
           </div>
-          <div className="grid gap-3 sm:grid-cols-2">
+          <div className="grid gap-3 sm:grid-cols-2 lg:min-w-[430px]">
             <label className="block">
-              <span className="mb-1.5 block text-[10px] font-bold uppercase tracking-[0.1em] text-[#536A7D]">Nama / profil yang diperiksa</span>
+              <span className="mb-1.5 block text-[10px] font-bold uppercase tracking-[0.1em] text-[#536A7D]">Profil yang diperiksa</span>
               <input
                 value={profileLabel}
                 onChange={(event) => setProfileLabel(event.target.value)}
@@ -325,7 +349,7 @@ export default function PalintanganPage() {
               />
             </label>
             <label className="block">
-              <span className="mb-1.5 block text-[10px] font-bold uppercase tracking-[0.1em] text-[#536A7D]">Tanggal yang diperiksa</span>
+              <span className="mb-1.5 block text-[10px] font-bold uppercase tracking-[0.1em] text-[#536A7D]">Tanggal</span>
               <input
                 type="date"
                 value={isoDate}
