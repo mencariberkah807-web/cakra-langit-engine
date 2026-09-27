@@ -81,3 +81,23 @@ def login(payload: LoginRequest, db: DbSession):
 @router.get("/me")
 def me(current_user: CurrentUser):
     return serialize_user(current_user)
+
+
+class ProfileUpdateRequest(BaseModel):
+    display_name: str | None = None
+
+
+@router.put("/profile")
+def update_profile(payload: ProfileUpdateRequest, db: DbSession, current_user: CurrentUser):
+    value = payload.display_name.strip() if payload.display_name else None
+    if value and len(value) > 120:
+        raise HTTPException(status_code=400, detail="Display name must be 120 characters or fewer")
+    if current_user.profile is None:
+        from database.models import Profile
+        current_user.profile = Profile(display_name=value)
+    else:
+        current_user.profile.display_name = value
+    db.add(current_user)
+    db.commit()
+    db.refresh(current_user)
+    return serialize_user(current_user)
