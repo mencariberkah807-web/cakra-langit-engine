@@ -1,10 +1,14 @@
 import { useEffect, useMemo, useState } from 'react'
 import {
+  AlertTriangle,
+  CalendarDays,
   Compass,
   HeartHandshake,
   Leaf,
+  MapPin,
   Moon,
   Route,
+  ShieldCheck,
   UserRound,
 } from 'lucide-react'
 import { useTodayContext } from '../core/TodayContext'
@@ -279,6 +283,11 @@ export default function PalintanganPage() {
   const pernaasan = data?.pernaasan
   const jayaApes = data?.jaya_apes
   const watekMeaning = getWatekMeaning(watekPatokan?.watek)
+  const statusHariClass = navigation?.status_hari === 'SELAMET'
+    ? 'flex h-11 w-11 items-center justify-center rounded-xl border border-emerald-400/20 bg-emerald-950/20 text-emerald-300'
+    : navigation?.status_hari === 'NAAS'
+      ? 'flex h-11 w-11 items-center justify-center rounded-xl border border-red-400/20 bg-red-950/20 text-red-300'
+      : 'flex h-11 w-11 items-center justify-center rounded-xl border border-cyan-300/15 bg-cyan-950/10 text-cyan-200'
 
   const watekDetails = useMemo(
     () => (gagalangPoe?.watek || []).map((name) => ({ name, ...getWatekMeaning(name) })),
@@ -366,104 +375,139 @@ export default function PalintanganPage() {
         {error && <div className="mt-4 rounded-xl border border-red-400/10 bg-red-950/20 px-4 py-3 text-xs text-red-200">{error}</div>}
       </section>
 
-      <section className="mt-6 rounded-2xl border border-white/[0.07] bg-[#0A1723] p-5 sm:p-6">
-        <div className="text-[10px] font-bold uppercase tracking-[0.14em] text-[#22D3EE]">Peta Hari Ini</div>
-        <div className="mt-1 text-base font-semibold text-white">Bagaimana posisi tanggal ini menurut Palintangan?</div>
-        <p className="mt-2 max-w-3xl text-xs leading-5 text-[#71869A]">
-          Ini adalah ringkasan yang dibaca pengguna terlebih dahulu. Nama simbol selalu disertai arti dari sumber agar hasil tidak berhenti sebagai istilah tradisional saja.
-        </p>
-
-        <div className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-          <SummaryCard
-            label="Hari · Pasaran"
-            value={calendar ? `${calendar.hari} · ${calendar.pasaran}` : null}
-            sub={calendar?.wuku ? `Wuku ${calendar.wuku}` : null}
-            meaning="Identitas hari yang menjadi dasar pembacaan Palintangan."
-          />
-          <SummaryCard
-            label="Hijriah"
-            value={calendar?.hijri ? `${calendar.hijri.day} ${calendar.hijri.month}` : null}
-            sub={calendar?.hijri?.year ? `${calendar.hijri.year} H` : null}
-            meaning="Menentukan bulan dan kelompok aturan Palintangan yang berlaku."
-          />
-          <SummaryCard
-            label="Watek Patokan"
-            value={watekPatokan?.watek}
-            sub={watekPatokan?.month ? `Bulan ${watekPatokan.month}` : null}
-            meaning={watekMeaning.meaning}
-            detail={`Status: ${watekMeaning.tone}`}
-          />
-          <SummaryCard
-            label="Status Hari"
-            value={navigation?.status_hari}
-            sub={navigation?.interpretation}
-            meaning="Ringkasan rule bulan: apakah tanggal termasuk pantangan, keselamatan, atau kondisi normal."
-          />
-        </div>
-
-        <div className="mt-3 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-          <SummaryCard
-            label="Gagalang Pasaran"
-            value={gagalang?.direction}
-            sub={gagalang?.next_pasaran ? `Berikutnya: ${gagalang.next_pasaran}` : null}
-            meaning="Arah yang ditunjukkan oleh pasangan pasaran dalam rule Gagalang."
-          />
-          <div className="rounded-xl border border-white/[0.06] bg-[#07111C] p-4">
-            <div className="text-[10px] font-bold uppercase tracking-[0.1em] text-[#536A7D]">Gagalang Poe</div>
-            <div className="mt-2 space-y-2">
-              {watekDetails.length ? watekDetails.map((item) => (
-                <div key={item.name}>
-                  <div className="text-lg font-semibold text-white">{item.name}</div>
-                  <div className={`mt-1 inline-flex rounded-full border px-2 py-0.5 text-[10px] font-bold ${toneClass(item.tone)}`}>{item.tone}</div>
-                  <div className="mt-2 text-xs leading-5 text-[#A9BDCF]">{item.meaning}</div>
-                </div>
-              )) : <div className="text-lg font-semibold text-white">—</div>}
+<section className="mt-6">
+        <div className="overflow-hidden rounded-2xl border border-cyan-300/10 bg-[#0A1723] shadow-[0_12px_40px_rgba(0,0,0,0.16)]">
+          <div className="border-b border-white/[0.07] px-5 py-4 sm:px-7">
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+              <div>
+                <div className="text-[10px] font-bold uppercase tracking-[0.16em] text-[#22D3EE]">Peta Hari Ini</div>
+                <h2 className="mt-1 text-lg font-semibold text-white">Bagaimana posisi hari ini menurut Palintangan Sunda?</h2>
+              </div>
+              <div className="text-xs text-[#71869A]">{formatDate(inspectionDate)}</div>
             </div>
-            {gagalangPoe?.month_patokan?.watek && (
-              <div className="mt-3 border-t border-white/[0.06] pt-3 text-[11px] leading-4 text-[#71869A]">
-                Patokan bulan: <span className="text-[#A9BDCF]">{gagalangPoe.month_patokan.watek}</span>
+          </div>
+
+          <div className="p-5 sm:p-7">
+            <div className="grid gap-5 lg:grid-cols-[1.35fr_0.65fr]">
+              <div className="rounded-2xl border border-cyan-300/10 bg-[#07111C] p-5 sm:p-7">
+                <div className="flex items-start justify-between gap-4">
+                  <div>
+                    <div className="text-[10px] font-bold uppercase tracking-[0.16em] text-[#536A7D]">Identitas Hari</div>
+                    <div className="mt-3 text-3xl font-bold tracking-tight text-white sm:text-4xl">{calendar ? `${calendar.hari} ${calendar.pasaran}` : '—'}</div>
+                    <div className="mt-2 text-sm text-[#8FA4B8]">{calendar?.wuku ? `Wuku ${calendar.wuku}` : 'Konteks Wuku belum tersedia'}</div>
+                  </div>
+                  <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-cyan-300/15 bg-[#12324A] text-[#22D3EE]">
+                    <CalendarDays size={21} strokeWidth={1.7} />
+                  </div>
+                </div>
+
+                <div className="mt-6 grid gap-3 sm:grid-cols-3">
+                  <div className="rounded-xl border border-white/[0.06] bg-[#0A1723] p-4">
+                    <div className="text-[10px] font-bold uppercase tracking-[0.1em] text-[#536A7D]">Hijriah</div>
+                    <div className="mt-2 text-base font-semibold text-white">{calendar?.hijri ? `${calendar.hijri.day} ${calendar.hijri.month}` : '—'}</div>
+                    <div className="mt-1 text-[11px] text-[#71869A]">{calendar?.hijri?.year ? `${calendar.hijri.year} H` : ''}</div>
+                  </div>
+                  <div className="rounded-xl border border-white/[0.06] bg-[#0A1723] p-4">
+                    <div className="text-[10px] font-bold uppercase tracking-[0.1em] text-[#536A7D]">Naktu Wedal</div>
+                    <div className="mt-2 text-base font-semibold text-white">{naktu?.wedal ?? '—'}</div>
+                    <div className="mt-1 text-[11px] text-[#71869A]">{naktu?.formula || 'Naktu hari + pasaran'}</div>
+                  </div>
+                  <div className="rounded-xl border border-white/[0.06] bg-[#0A1723] p-4">
+                    <div className="text-[10px] font-bold uppercase tracking-[0.1em] text-[#536A7D]">Watek Patokan</div>
+                    <div className="mt-2 text-base font-semibold text-white">{watekPatokan?.watek || '—'}</div>
+                    <div className="mt-1 text-[11px] text-[#71869A]">{watekPatokan?.month || 'Bulan belum tersedia'}</div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="rounded-2xl border border-white/[0.06] bg-[#07111C] p-5 sm:p-6">
+                <div className="text-[10px] font-bold uppercase tracking-[0.16em] text-[#536A7D]">Status Hari</div>
+                <div className="mt-4 flex items-center gap-3">
+                  <div className={statusHariClass}>
+                    {navigation?.status_hari === 'NAAS' ? <AlertTriangle size={20} /> : <ShieldCheck size={20} />}
+                  </div>
+                  <div>
+                    <div className="text-xl font-bold text-white">{navigation?.status_hari || '—'}</div>
+                    <div className="mt-1 text-[11px] text-[#71869A]">{navigation?.interpretation || 'Status rule belum tersedia.'}</div>
+                  </div>
+                </div>
+
+                <div className="mt-6 border-t border-white/[0.06] pt-5">
+                  <div className="text-[10px] font-bold uppercase tracking-[0.12em] text-[#536A7D]">Watek</div>
+                  <div className="mt-2 text-lg font-semibold text-white">{watekPatokan?.watek || '—'}</div>
+                  <div className={`mt-2 inline-flex rounded-full border px-2 py-0.5 text-[10px] font-bold ${toneClass(watekMeaning.tone)}`}>{watekMeaning.tone}</div>
+                  <p className="mt-3 text-xs leading-5 text-[#A9BDCF]">{watekMeaning.meaning}</p>
+                </div>
+              </div>
+            </div>
+
+            <div className="mt-5">
+              <div className="mb-3">
+                <div className="text-[10px] font-bold uppercase tracking-[0.14em] text-[#536A7D]">Pembacaan Hari</div>
+                <p className="mt-1 text-xs leading-5 text-[#71869A]">Istilah Palintangan diterjemahkan menjadi informasi yang langsung bisa dibaca sebelum masuk ke perhitungan lanjutan.</p>
+              </div>
+
+              <div className="grid gap-3 md:grid-cols-3">
+                <div className="rounded-xl border border-white/[0.06] bg-[#07111C] p-5">
+                  <div className="flex items-center gap-2 text-[#22D3EE]"><MapPin size={17} strokeWidth={1.7} /><span className="text-[10px] font-bold uppercase tracking-[0.12em]">Arah Rizki</span></div>
+                  <div className="mt-3 text-xl font-semibold text-white">{navigation?.arah_rizki || '—'}</div>
+                  <p className="mt-2 text-xs leading-5 text-[#71869A]">Arah yang ditunjukkan oleh kelompok bulan {navigation?.month_group || 'aktif'} dalam rule Palintangan Sunda.</p>
+                </div>
+
+                <div className="rounded-xl border border-white/[0.06] bg-[#07111C] p-5">
+                  <div className="flex items-center gap-2 text-[#22D3EE]"><ShieldCheck size={17} strokeWidth={1.7} /><span className="text-[10px] font-bold uppercase tracking-[0.12em]">Keselamatan</span></div>
+                  <div className="mt-3 text-xl font-semibold text-white">{navigation?.hari_keselamatan?.join(' · ') || '—'}</div>
+                  <p className="mt-2 text-xs leading-5 text-[#71869A]">Hari yang ditandai sebagai hari keselamatan pada kelompok bulan ini.</p>
+                </div>
+
+                <div className="rounded-xl border border-white/[0.06] bg-[#07111C] p-5">
+                  <div className="flex items-center gap-2 text-[#22D3EE]"><AlertTriangle size={17} strokeWidth={1.7} /><span className="text-[10px] font-bold uppercase tracking-[0.12em]">Pantangan</span></div>
+                  <div className="mt-3 text-xl font-semibold text-white">{navigation?.pantangan_hari?.join(' · ') || '—'}</div>
+                  <p className="mt-2 text-xs leading-5 text-[#71869A]">Hari yang ditandai sebagai pantangan pada kelompok bulan ini.</p>
+                </div>
+              </div>
+            </div>
+
+            <div className="mt-5 grid gap-3 lg:grid-cols-3">
+              <div className="rounded-xl border border-white/[0.06] bg-[#07111C] p-5">
+                <div className="text-[10px] font-bold uppercase tracking-[0.12em] text-[#536A7D]">Gagalang Pasaran</div>
+                <div className="mt-2 text-xl font-semibold text-white">{gagalang?.direction || '—'}</div>
+                <div className="mt-1 text-xs text-[#71869A]">Pasaran berikutnya: {gagalang?.next_pasaran || '—'}</div>
+              </div>
+              <div className="rounded-xl border border-white/[0.06] bg-[#07111C] p-5">
+                <div className="text-[10px] font-bold uppercase tracking-[0.12em] text-[#536A7D]">Pernaasan</div>
+                <div className="mt-2 text-xl font-semibold text-white">{pernaasan?.is_today ? 'PERNAASAN' : 'Bukan pernaasan'}</div>
+                <div className="mt-1 text-xs text-[#71869A]">Tanggal bulan ini: {pernaasan?.dates?.join(' · ') || '—'}</div>
+              </div>
+              <div className="rounded-xl border border-white/[0.06] bg-[#07111C] p-5">
+                <div className="text-[10px] font-bold uppercase tracking-[0.12em] text-[#536A7D]">Jaya · Apes</div>
+                <div className="mt-2 text-xl font-semibold text-white">{jayaApes ? `${jayaApes.jaya} · ${jayaApes.apes}` : '—'}</div>
+                <div className="mt-1 text-xs text-[#71869A]">{jayaApes?.status === 'CAKRA_LANGIT_RECONSTRUCTED' ? 'Rekonstruksi Cakra Langit' : jayaApes?.status || 'Status belum tersedia'}</div>
+              </div>
+            </div>
+
+            {gagalangPoe?.watek?.length > 0 && (
+              <div className="mt-5 rounded-xl border border-white/[0.06] bg-[#07111C] p-5">
+                <div className="text-[10px] font-bold uppercase tracking-[0.12em] text-[#536A7D]">Gagalang Poe</div>
+                <div className="mt-3 grid gap-3 sm:grid-cols-2">
+                  {watekDetails.map((item) => (
+                    <div key={item.name} className="rounded-xl border border-white/[0.06] bg-[#0A1723] p-4">
+                      <div className="flex items-center justify-between gap-3">
+                        <div className="text-base font-semibold text-white">{item.name}</div>
+                        <span className={`inline-flex rounded-full border px-2 py-0.5 text-[10px] font-bold ${toneClass(item.tone)}`}>{item.tone}</span>
+                      </div>
+                      <div className="mt-2 text-xs leading-5 text-[#A9BDCF]">{item.meaning}</div>
+                    </div>
+                  ))}
+                </div>
+                {gagalangPoe?.month_patokan?.watek && (
+                  <div className="mt-3 text-[11px] text-[#71869A]">Patokan bulan: <span className="text-[#A9BDCF]">{gagalangPoe.month_patokan.watek}</span></div>
+                )}
               </div>
             )}
           </div>
-          <SummaryCard
-            label="Pernaasan"
-            value={pernaasan?.is_today ? 'PERNAASAN' : 'Bukan pernaasan'}
-            sub={pernaasan?.dates?.length ? `Tanggal: ${pernaasan.dates.join(' · ')}` : null}
-            meaning={pernaasan?.is_today
-              ? 'Tanggal ini termasuk tanggal Pernaasan yang ditandai sumber.'
-              : 'Tanggal ini tidak termasuk tanggal Pernaasan yang tercatat untuk bulan tersebut.'}
-          />
-          <SummaryCard
-            label="Jaya · Apes"
-            value={jayaApes ? `${jayaApes.jaya} · ${jayaApes.apes}` : null}
-            sub={jayaApes?.status === 'CAKRA_LANGIT_RECONSTRUCTED' ? 'Rekonstruksi Cakra Langit' : jayaApes?.status}
-            meaning="Menunjukkan posisi dua titik dalam siklus Jaya / Apes. Status rekonstruksi ditampilkan agar sumbernya tidak disalahartikan."
-          />
-        </div>
-
-        <div className="mt-3 rounded-xl border border-white/[0.06] bg-[#07111C] p-4">
-          <div className="text-[10px] font-bold uppercase tracking-[0.1em] text-[#536A7D]">Navigasi Hari Ini</div>
-          <div className="mt-3 grid gap-3 sm:grid-cols-3">
-            <SummaryCard
-              label="Pantangan"
-              value={navigation?.pantangan_hari?.join(' · ') || '—'}
-              meaning="Hari yang ditandai sebagai hari pantangan dalam kelompok bulan ini."
-            />
-            <SummaryCard
-              label="Keselamatan"
-              value={navigation?.hari_keselamatan?.join(' · ') || '—'}
-              meaning="Hari yang ditandai sebagai hari keselamatan dalam kelompok bulan ini."
-            />
-            <SummaryCard
-              label="Arah Rizki"
-              value={navigation?.arah_rizki}
-              sub={navigation?.month_group ? `Kelompok bulan ${navigation.month_group}` : null}
-              meaning="Arah yang ditunjukkan oleh rule kelompok bulan. Ini adalah informasi tradisional, bukan jaminan hasil."
-            />
-          </div>
         </div>
       </section>
-
       <section className="mt-6">
         <div className="mb-3">
           <div className="text-[10px] font-bold uppercase tracking-[0.14em] text-[#536A7D]">Navigasi Palintangan</div>
