@@ -192,6 +192,7 @@ HIJRI_ALIASES = {
     "Dhul Hijjah": "Rayagung",
     "Dhu al-Hijjah": "Rayagung",
     "Dzulhijah": "Rayagung",
+    "Zulhijah": "Rayagung",
     "Syawal": "Sawal",
 }
 
