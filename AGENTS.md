@@ -960,3 +960,46 @@ FINAL GLOBAL SNAPSHOT
         ↓
 REGRESSION / BUILD
 ```
+
+
+## 24. CURRENT EXECUTION CHECKPOINT
+
+Phase 2 — **LOCK GLOBAL SNAPSHOT** is now locked on GitHub `main`.
+
+Validated baseline:
+
+```text
+TodayContext
+    ↓
+Natural / Calendar context
+    ↓
+Engine
+    ↓
+Adapter
+    ↓
+Result Registry
+    ↓
+Global Snapshot / Dashboard
+```
+
+Protected conclusions:
+
+- `TodayContext` remains the temporal/live context boundary.
+- Personal birth/profile inputs remain conceptually separate from `TodayContext`.
+- Location remains shared context, not personal identity.
+- Calendar and natural calculations remain independent.
+- Natural Layer consumes normalized registry results and does not perform domain arithmetic.
+- Dashboard composition consumes normalized results rather than reproducing engine formulas.
+- New methods must integrate through the engine → adapter → registry path.
+- Missing providers/methods must degrade without corrupting unrelated snapshot sections.
+
+Current execution gate:
+
+```text
+[✓] Phase 0 — Baseline Lock
+[✓] Phase 1 — Restore Natural Layer
+[✓] Phase 2 — Lock Global Snapshot
+[ ] Phase 3 — Audit Paririmbon Source
+```
+
+This checkpoint is a lock, not permission for unrelated refactoring. The next approved scope is the Paririmbon source audit only.
