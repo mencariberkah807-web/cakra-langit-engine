@@ -1,12 +1,19 @@
 import { useEffect, useState } from 'react'
+import {
+  Compass,
+  HeartHandshake,
+  Leaf,
+  Moon,
+  Route,
+  UserRound,
+} from 'lucide-react'
 import { useTodayContext } from '../core/TodayContext'
+import { useAuth } from '../auth/AuthContext'
 
 const ENV_API_BASE = import.meta.env.VITE_API_BASE_URL || ''
 
 function getApiBase() {
-  if (typeof window !== 'undefined' && window.location.hostname.includes('-5173.app.github.dev')) {
-    return ''
-  }
+  if (typeof window !== 'undefined' && window.location.hostname.includes('-5173.app.github.dev')) return ''
   if (ENV_API_BASE) return ENV_API_BASE
   return 'http://127.0.0.1:8000'
 }
@@ -19,53 +26,57 @@ function toDateISO(date) {
   return `${year}-${month}-${day}`
 }
 
-function Section({ eyebrow, title, children }) {
+function formatDate(date) {
+  if (!date) return '—'
+  return new Intl.DateTimeFormat('id-ID', {
+    weekday: 'long',
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric',
+  }).format(date)
+}
+
+function Card({ icon: Icon, title, description, href }) {
   return (
-    <section className="rounded-2xl border border-white/[0.07] bg-[#0A1723] p-5 shadow-[0_12px_40px_rgba(0,0,0,0.16)] sm:p-6">
-      <div className="text-[10px] font-bold uppercase tracking-[0.14em] text-[#536A7D]">{eyebrow}</div>
-      <h2 className="mt-1 text-sm font-semibold text-white">{title}</h2>
-      <div className="mt-5">{children}</div>
-    </section>
+    <a
+      href={href}
+      className="group rounded-2xl border border-white/[0.07] bg-[#0A1723] p-5 transition-all hover:-translate-y-0.5 hover:border-cyan-300/20 hover:bg-[#0D1D2B] hover:shadow-[0_14px_40px_rgba(0,0,0,0.18)]"
+    >
+      <div className="flex h-11 w-11 items-center justify-center rounded-xl border border-cyan-300/15 bg-[#12324A] text-[#22D3EE]">
+        <Icon size={19} strokeWidth={1.7} />
+      </div>
+      <div className="mt-5 flex items-start justify-between gap-3">
+        <div>
+          <h2 className="text-sm font-semibold text-white">{title}</h2>
+          <p className="mt-2 text-xs leading-5 text-[#71869A]">{description}</p>
+        </div>
+        <span className="text-[#536A7D] transition-colors group-hover:text-[#22D3EE]">→</span>
+      </div>
+    </a>
   )
 }
 
-function Value({ label, value, sub }) {
+function SummaryCard({ label, value, sub }) {
   return (
     <div className="rounded-xl border border-white/[0.06] bg-[#07111C] p-4">
-      <div className="text-[10px] uppercase tracking-[0.1em] text-[#536A7D]">{label}</div>
-      <div className="mt-2 text-lg font-semibold text-white">{value ?? '—'}</div>
+      <div className="text-[10px] font-bold uppercase tracking-[0.1em] text-[#536A7D]">{label}</div>
+      <div className="mt-2 text-lg font-semibold text-white">{value || '—'}</div>
       {sub && <div className="mt-1 text-[11px] text-[#71869A]">{sub}</div>}
     </div>
   )
 }
 
-function DayList({ items }) {
-  return (
-    <div className="flex flex-wrap gap-2">
-      {(items || []).map((item) => (
-        <span key={item} className="rounded-full border border-white/[0.08] bg-[#07111C] px-3 py-1.5 text-xs font-semibold text-[#A9BDCF]">
-          {item}
-        </span>
-      ))}
-    </div>
-  )
-}
-
 export default function PalintanganPage() {
-  const { selectedDate, setSelectedDate } = useTodayContext()
+  const { user } = useAuth()
+  const { selectedDate, location, apiData } = useTodayContext()
   const isoDate = toDateISO(selectedDate)
   const [data, setData] = useState(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
-  const [pancakaValue, setPancakaValue] = useState('23')
-  const [pancakaDivisor, setPancakaDivisor] = useState('8')
-  const [pancaka, setPancaka] = useState(null)
-  const [pancakaError, setPancakaError] = useState('')
 
   useEffect(() => {
     if (!isoDate) return
     let cancelled = false
-
     setLoading(true)
     setError('')
 
@@ -89,259 +100,97 @@ export default function PalintanganPage() {
 
   const calendar = data?.calendar_context
   const naktu = data?.naktu
-  const pernaasan = data?.pernaasan
-  const watekPatokan = data?.watek_patokan
-  const gagalang = data?.gagalang
-  const gagalangPoe = data?.gagalang_poe
   const navigation = data?.navigation
-  const jayaApes = data?.jaya_apes
-
-  useEffect(() => {
-    const value = Number(pancakaValue)
-    const divisor = Number(pancakaDivisor)
-    if (!Number.isInteger(value) || value < 0 || ![4, 5, 7, 8, 12].includes(divisor)) {
-      setPancaka(null)
-      return
-    }
-
-    let cancelled = false
-
-    fetch(`${getApiBase()}/api/palintangan/pancaka?value=${value}&divisor=${divisor}`)
-      .then((response) => {
-        if (!response.ok) throw new Error('Pancaka tidak tersedia.')
-        return response.json()
-      })
-      .then((result) => {
-        if (cancelled) return
-        setPancaka(result)
-        setPancakaError('')
-      })
-      .catch((err) => {
-        if (cancelled) return
-        setPancaka(null)
-        setPancakaError(err.message || 'Gagal menghitung Pancaka.')
-      })
-
-    return () => { cancelled = true }
-  }, [pancakaValue, pancakaDivisor])
+  const gagalang = data?.gagalang
+  const displayName = user?.display_name || user?.email?.split('@')[0] || 'Pengguna'
+  const locationName = location?.name || apiData?.location?.name || 'Lokasi aktif'
 
   return (
     <section className="mx-auto max-w-[1180px] px-5 py-7 sm:px-7 lg:py-9">
-      <header className="mb-7">
+      <header className="mb-6">
         <div className="text-[10px] font-bold uppercase tracking-[0.16em] text-[#22D3EE]">Cakra Langit · Sunda</div>
         <h1 className="mt-2 text-2xl font-semibold tracking-tight text-white sm:text-3xl">Palintangan Sunda</h1>
-        <p className="mt-2 max-w-3xl text-sm leading-6 text-[#8FA4B8]">
-          Peta perhitungan Palintangan Sunda: waktu, naktu, pantangan, keselamatan, dan arah rizki. Peta memberi pituduh; nu nyetir tetep urang.
+        <p className="mt-2 max-w-2xl text-sm leading-6 text-[#8FA4B8]">
+          Peta navigasi Palintangan Sunda. Pilih tujuan perhitungan yang ingin Anda gunakan.
         </p>
       </header>
 
-      <div className="grid gap-5 lg:grid-cols-[minmax(0,0.82fr)_minmax(0,1.18fr)]">
-        <Section eyebrow="Input" title="Tanggal Perhitungan">
-          <label className="block">
-            <span className="mb-2 block text-xs font-semibold text-[#A9BDCF]">Tanggal</span>
-            <input
-              type="date"
-              value={isoDate}
-              onChange={(event) => {
-                if (!event.target.value) return
-                setSelectedDate(new Date(`${event.target.value}T12:00:00`))
-              }}
-              className="w-full rounded-xl border border-white/[0.09] bg-[#07111C] px-3 py-3 text-sm text-white outline-none focus:border-cyan-300/40 focus:ring-2 focus:ring-cyan-300/10"
-            />
-          </label>
-          <div className="mt-4 rounded-xl border border-white/[0.06] bg-[#07111C] px-4 py-3 text-xs text-[#71869A]">
-            SSOT tanggal: <span className="font-semibold text-[#A9BDCF]">{isoDate || '—'}</span>
+      <section className="rounded-2xl border border-cyan-300/10 bg-[#0A1723] p-5 shadow-[0_12px_40px_rgba(0,0,0,0.16)] sm:p-6">
+        <div className="flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
+          <div>
+            <div className="text-[10px] font-bold uppercase tracking-[0.14em] text-[#536A7D]">Profil & konteks aktif</div>
+            <h2 className="mt-2 text-xl font-semibold text-white">{displayName}</h2>
+            <p className="mt-1 text-xs text-[#71869A]">{locationName} · {formatDate(selectedDate)}</p>
           </div>
-          {loading && <div className="mt-3 text-xs text-[#71869A]">Menghitung Palintangan Sunda…</div>}
-          {error && <div className="mt-3 rounded-xl border border-red-400/10 bg-red-950/20 px-4 py-3 text-xs text-red-200">{error}</div>}
-        </Section>
-
-        <Section eyebrow="Calendar Context" title="Waktu Kelahiran / Perhitungan">
-          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-            <Value label="Hari" value={calendar?.hari} />
-            <Value label="Pasaran" value={calendar?.pasaran} />
-            <Value label="Hijriah" value={calendar?.hijri ? `${calendar.hijri.day} ${calendar.hijri.month} ${calendar.hijri.year} H` : null} />
-            <Value label="Wuku" value={calendar?.wuku} />
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+            <SummaryCard label="Hari" value={calendar?.hari} />
+            <SummaryCard label="Pasaran" value={calendar?.pasaran} />
+            <SummaryCard label="Naktu" value={naktu?.wedal} sub="Wedal" />
+            <SummaryCard label="Arah Rizki" value={navigation?.arah_rizki} />
           </div>
-        </Section>
-      </div>
-
-      <div className="mt-5">
-        <Section eyebrow="Naktu" title="Naktu Wedal">
-          <p className="text-xs leading-5 text-[#71869A]">Nilai hari + pasaran menjadi titik dasar perhitungan Palintangan. Nilai ini ditampilkan sebagai data kalkulasi, bukan sebagai keputusan otomatis.</p>
-          <div className="mt-5 flex flex-wrap items-center gap-3">
-            <Value label="Naktu Hari" value={naktu?.hari} sub={calendar?.hari} />
-            <span className="text-[#536A7D]">+</span>
-            <Value label="Naktu Pasaran" value={naktu?.pasaran} sub={calendar?.pasaran} />
-            <span className="text-[#536A7D]">=</span>
-            <div className="rounded-xl border border-cyan-300/15 bg-[#12324A] px-6 py-5 text-2xl font-semibold text-white">{naktu?.wedal ?? '—'}</div>
-          </div>
-          {naktu?.formula && <div className="mt-4 text-[11px] text-[#536A7D]">Trace: {naktu.formula}</div>}
-        </Section>
-      </div>
-
-      <div className="mt-5">
-        <Section eyebrow="Watek" title="Watek Patokan Bulan">
-          <div className="grid gap-3 sm:grid-cols-3">
-            <Value label="Bulan" value={watekPatokan?.month} />
-            <Value label="Patokan" value={watekPatokan?.ordinal ? `Patokan ${watekPatokan.ordinal}` : null} />
-            <Value label="Watek" value={watekPatokan?.watek} />
-          </div>
-          <p className="mt-4 text-[11px] leading-5 text-[#536A7D]">
-            Dua belas Watek Patokan mengikuti urutan 12 bulan dalam sumber Paririmbon Sunda. Status data: {watekPatokan?.status || '—'}.
-          </p>
-        </Section>
-      </div>
-
-      <div className="mt-5">
-        <Section eyebrow="Gagalang" title="Arah Keberuntungan Pasaran">
-          <div className="grid gap-3 sm:grid-cols-3">
-            <Value label="Pasaran" value={gagalang?.pasaran} />
-            <Value label="Pasaran Berikutnya" value={gagalang?.next_pasaran} />
-            <Value label="Arah" value={gagalang?.direction} />
-          </div>
-          <p className="mt-4 text-[11px] leading-5 text-[#536A7D]">
-            Rule Gagalang pasaran dari Paririmbon Sunda. Status data: {gagalang?.status || '—'}.
-          </p>
-        </Section>
-      </div>
-
-      <div className="mt-5">
-        <Section eyebrow="Gagalang Poe" title="Babalang Dua · Watek Patokan">
-          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-            <Value label="Bulan" value={calendar?.hijri?.month} />
-            <Value label="Hari Patokan" value={gagalangPoe?.month_patokan?.hari} />
-            <Value label="Patokan" value={gagalangPoe?.month_patokan?.ordinal ? `Patokan ${gagalangPoe.month_patokan.ordinal}` : null} />
-            <Value label="Watek" value={gagalangPoe?.month_patokan?.watek} />
-          </div>
-          <div className="mt-4 rounded-xl border border-white/[0.06] bg-[#07111C] p-4">
-            <div className="text-[10px] font-bold uppercase tracking-[0.1em] text-[#536A7D]">Hari Kalender Saat Ini</div>
-            <div className="mt-2 text-sm font-semibold text-white">{gagalangPoe?.hari || '—'}</div>
-            <div className="mt-1 text-[11px] text-[#71869A]">Ditampilkan terpisah dari Hari Patokan Babalang Dua.</div>
-          </div>
-          <p className="mt-4 text-[11px] leading-5 text-[#536A7D]">
-            Source mengaitkan Gagalang Poe dengan Babalang Dua dan 12 patokan tetap. Untuk bulan yang dipilih, hasil source-backed adalah pasangan Hari Patokan + Watek di atas.
-          </p>
-        </Section>
-      </div>
-
-      <div className="mt-5 grid gap-5 lg:grid-cols-2">
-        <Section eyebrow="Pernaasan" title="Hari Naas">
-          <div className="grid gap-3 sm:grid-cols-3">
-            <Value label="Bulan Hijriah" value={pernaasan?.month} />
-            <Value label="Tanggal Pernaasan" value={pernaasan?.dates?.join(' · ') || '—'} />
-            <Value label="Hari Ini" value={pernaasan?.is_today ? 'PERNAASAN' : 'Bukan pernaasan'} />
-          </div>
-          <p className="mt-4 text-[11px] leading-5 text-[#536A7D]">{pernaasan?.note}</p>
-        </Section>
-
-        <Section eyebrow="Navigation" title="Kala · Pantangan · Keselamatan · Rizki">
-          <div className="space-y-4">
-            <div>
-              <div className="mb-2 text-[10px] font-bold uppercase tracking-[0.1em] text-[#536A7D]">Pantangan</div>
-              <DayList items={navigation?.pantangan_hari} />
-            </div>
-            <div>
-              <div className="mb-2 text-[10px] font-bold uppercase tracking-[0.1em] text-[#536A7D]">Keselamatan</div>
-              <DayList items={navigation?.hari_keselamatan} />
-            </div>
-            <div className="rounded-xl border border-cyan-300/10 bg-[#07111C] p-4">
-              <div className="text-[10px] font-bold uppercase tracking-[0.1em] text-[#536A7D]">Arah Rizki</div>
-              <div className="mt-2 text-xl font-semibold text-white">{navigation?.arah_rizki || '—'}</div>
-              <div className="mt-1 text-[11px] text-[#71869A]">Kelompok bulan {navigation?.month_group ?? '—'}</div>
-            </div>
-          </div>
-        </Section>
-      </div>
-
-      <div className="mt-5">
-        <Section eyebrow="Pancaka" title="Calculation Tool">
-          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-[1fr_180px_1.2fr]">
-            <label>
-              <span className="mb-2 block text-xs font-semibold text-[#A9BDCF]">Nilai input</span>
-              <input
-                type="number"
-                min="0"
-                value={pancakaValue}
-                onChange={(event) => setPancakaValue(event.target.value)}
-                className="w-full rounded-xl border border-white/[0.09] bg-[#07111C] px-3 py-3 text-sm text-white outline-none focus:border-cyan-300/40"
-              />
-            </label>
-            <label>
-              <span className="mb-2 block text-xs font-semibold text-[#A9BDCF]">Pancaka</span>
-              <select
-                value={pancakaDivisor}
-                onChange={(event) => setPancakaDivisor(event.target.value)}
-                className="w-full rounded-xl border border-white/[0.09] bg-[#07111C] px-3 py-3 text-sm text-white outline-none"
-              >
-                <option value="4">Pancaka 4</option>
-                <option value="5">Pancaka 5</option>
-                <option value="7">Pancaka 7</option>
-                <option value="8">Pancaka 8</option>
-                <option value="12">Pancaka 12</option>
-              </select>
-            </label>
-            <div className="rounded-xl border border-cyan-300/10 bg-[#07111C] p-4">
-              <div className="text-[10px] font-bold uppercase tracking-[0.1em] text-[#536A7D]">Hasil</div>
-              <div className="mt-2 text-lg font-semibold text-white">{pancaka?.result || '—'}</div>
-              <div className="mt-1 text-[11px] text-[#71869A]">
-                {pancaka ? `${pancaka.input} mod ${pancaka.divisor} = ${pancaka.remainder} · ${pancaka.context}` : 'Masukkan nilai untuk menghitung.'}
-              </div>
-            </div>
-          </div>
-          {pancakaError && <div className="mt-3 text-xs text-red-200">{pancakaError}</div>}
-          <p className="mt-4 text-[11px] leading-5 text-[#536A7D]">
-            Hanya mapping Pancaka yang sudah terverifikasi yang tersedia. Pancaka 3, 6, dan 9 belum diaktifkan karena mapping sumber belum lengkap.
-          </p>
-        </Section>
-      </div>
-
-      <div className="mt-5">
-        <Section eyebrow="Jaya / Apes" title="Siklus Jaya · Apes">
-          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-            <Value label="Naktu Wedal" value={jayaApes?.wedal} sub={jayaApes?.hari && jayaApes?.pasaran ? `${jayaApes.hari} · ${jayaApes.pasaran}` : null} />
-            <Value label="Jaya" value={jayaApes?.jaya} sub={jayaApes?.jaya_index != null ? `Index ${jayaApes.jaya_index}` : null} />
-            <Value label="Apes" value={jayaApes?.apes} sub={jayaApes?.apes_index != null ? `Index ${jayaApes.apes_index}` : null} />
-            <Value label="Status" value={jayaApes?.status === 'CAKRA_LANGIT_RECONSTRUCTED' ? 'REKONSTRUKSI' : jayaApes?.status} />
-          </div>
-          <div className="mt-4 grid gap-3 sm:grid-cols-2">
-            <div className="rounded-xl border border-white/[0.06] bg-[#07111C] p-4">
-              <div className="text-[10px] font-bold uppercase tracking-[0.1em] text-[#536A7D]">Formula Jaya</div>
-              <div className="mt-2 font-mono text-sm text-[#A9BDCF]">{jayaApes?.wedal != null ? `${jayaApes.wedal} mod 7 = ${jayaApes.jaya_index}` : '—'}</div>
-            </div>
-            <div className="rounded-xl border border-white/[0.06] bg-[#07111C] p-4">
-              <div className="text-[10px] font-bold uppercase tracking-[0.1em] text-[#536A7D]">Formula Apes</div>
-              <div className="mt-2 font-mono text-sm text-[#A9BDCF]">{jayaApes?.wedal != null ? `(${jayaApes.wedal} - 2) mod 7 = ${jayaApes.apes_index}` : '—'}</div>
-            </div>
-          </div>
-          <p className="mt-4 text-[11px] leading-5 text-[#536A7D]">{jayaApes?.source?.note || '—'}</p>
-        </Section>
-      </div>
-
-      <div className="mt-5">
-        <Section eyebrow="Navigation Status" title={navigation?.status_hari || '—'}>
-          <p className="text-sm leading-6 text-[#A9BDCF]">{navigation?.interpretation || '—'}</p>
-          <div className="mt-4 rounded-xl border border-dashed border-white/[0.1] bg-[#07111C] p-4 text-xs leading-5 text-[#71869A]">
-            <strong className="text-[#A9BDCF]">Prinsip CAKRA LANGIT:</strong> hasil ini adalah informasi navigasi berdasarkan rule Palintangan yang dikompilasi dari sumber. Pengguna tetap menjadi pengemudi dan menentukan keputusan sendiri.
-          </div>
-        </Section>
-      </div>
-
-      {data?.trace?.length > 0 && (
-        <div className="mt-5">
-          <Section eyebrow="Calculation Trace" title="Jejak Perhitungan">
-            <div className="space-y-3">
-              {data.trace.map((item) => (
-                <div key={item.step} className="grid gap-2 rounded-xl border border-white/[0.06] bg-[#07111C] p-4 sm:grid-cols-[42px_180px_1fr]">
-                  <span className="text-xs font-bold text-[#536A7D]">#{item.step}</span>
-                  <span className="text-xs font-semibold text-[#A9BDCF]">{item.rule}</span>
-                  <pre className="overflow-x-auto whitespace-pre-wrap text-[11px] leading-5 text-[#71869A]">{JSON.stringify(item.result)}</pre>
-                </div>
-              ))}
-            </div>
-          </Section>
         </div>
-      )}
+        {loading && <div className="mt-4 text-xs text-[#71869A]">Memuat konteks Palintangan…</div>}
+        {error && <div className="mt-4 rounded-xl border border-red-400/10 bg-red-950/20 px-4 py-3 text-xs text-red-200">{error}</div>}
+      </section>
+
+      <section className="mt-6">
+        <div className="mb-3">
+          <div className="text-[10px] font-bold uppercase tracking-[0.14em] text-[#536A7D]">Navigasi Palintangan</div>
+          <h2 className="mt-1 text-base font-semibold text-white">Apa yang ingin Anda hitung?</h2>
+        </div>
+
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          <Card
+            icon={UserRound}
+            title="Kelahiran"
+            description="Baca konteks kelahiran, naktu, watek, Gagalang, Pernaasan, dan Jaya / Apes."
+            href="/dashboard/palintangan?view=kelahiran"
+          />
+          <Card
+            icon={Moon}
+            title="Hitung Nama"
+            description="Masuk ke perhitungan naktu nama dan Pancaka yang mapping-nya sudah terverifikasi."
+            href="/dashboard/palintangan?view=nama"
+          />
+          <Card
+            icon={HeartHandshake}
+            title="Repok / Jodoh"
+            description="Ruang untuk membandingkan dua konteks personal dalam perhitungan yang relevan."
+            href="/dashboard/palintangan?view=jodoh"
+          />
+          <Card
+            icon={Leaf}
+            title="Tanam / Panen"
+            description="Gunakan tanggal dan rule Palintangan yang berkaitan dengan tanam, panen, dan hasil."
+            href="/dashboard/palintangan?view=tanam-panen"
+          />
+          <Card
+            icon={Route}
+            title="Perjalanan / Arah"
+            description="Baca Gagalang, arah, pantangan, dan keselamatan untuk konteks perjalanan."
+            href="/dashboard/palintangan?view=perjalanan"
+          />
+          <Card
+            icon={Compass}
+            title="Waktu / Jam"
+            description="Masuk ke perhitungan berbasis waktu dan jam ketika rule sumber sudah tersedia."
+            href="/dashboard/palintangan?view=waktu"
+          />
+        </div>
+      </section>
+
+      <section className="mt-6 rounded-2xl border border-white/[0.07] bg-[#0A1723] p-5 sm:p-6">
+        <div className="text-[10px] font-bold uppercase tracking-[0.14em] text-[#536A7D]">Peta Hari Ini</div>
+        <div className="mt-1 text-base font-semibold text-white">Ringkasan navigasi</div>
+        <div className="mt-4 grid gap-3 sm:grid-cols-3">
+          <SummaryCard label="Hari / Pasaran" value={calendar ? `${calendar.hari} · ${calendar.pasaran}` : null} />
+          <SummaryCard label="Gagalang" value={gagalang?.direction} sub={gagalang?.next_pasaran ? `Pasaran berikutnya: ${gagalang.next_pasaran}` : null} />
+          <SummaryCard label="Status Hari" value={navigation?.status_hari} sub={navigation?.interpretation} />
+        </div>
+        <p className="mt-4 text-xs leading-5 text-[#71869A]">
+          Peta memberi pituduh; nu nyetir tetep urang. Detail formula dan jejak perhitungan ditempatkan di halaman perhitungan masing-masing, bukan di dashboard utama.
+        </p>
+      </section>
     </section>
   )
 }
