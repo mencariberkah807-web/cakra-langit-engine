@@ -431,7 +431,7 @@ export default function PalintanganPage() {
                     <div className="mt-1 text-[11px] leading-4 text-[#71869A]">Status ini berasal dari rule tanggal: Pernaasan dan pantangan/keselamatan berdasarkan kelompok bulan.</div>
                   </div>
                 </div>
-              </div></div>
+              </div>
             </div>
 
             <div className="mt-5">
