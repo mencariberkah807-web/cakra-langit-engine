@@ -66,10 +66,101 @@ function SummaryCard({ label, value, sub }) {
   )
 }
 
+function DetailView({ view, data, selectedDate, displayName, locationName }) {
+  const calendar = data?.calendar_context
+  const naktu = data?.naktu
+  const navigation = data?.navigation
+  const gagalang = data?.gagalang
+  const watek = data?.watek_patokan
+  const pernaasan = data?.pernaasan
+  const jayaApes = data?.jaya_apes
+
+  const titles = {
+    kelahiran: ['Kelahiran', 'Konteks kelahiran dan hasil Palintangan personal.'],
+    nama: ['Hitung Nama', 'Perhitungan naktu nama dan Pancaka yang tersedia.'],
+    jodoh: ['Repok / Jodoh', 'Ruang perbandingan dua konteks personal.'],
+    'tanam-panen': ['Tanam / Panen', 'Konteks tanggal untuk tanam dan panen.'],
+    perjalanan: ['Perjalanan / Arah', 'Gagalang, arah, pantangan, dan keselamatan.'],
+    waktu: ['Waktu / Jam', 'Perhitungan berbasis waktu dan jam.'],
+  }
+  const [title, description] = titles[view] || titles.kelahiran
+
+  const detail = {
+    kelahiran: [
+      ['Hari / Pasaran', calendar ? `${calendar.hari} · ${calendar.pasaran}` : '—', 'Kalender kelahiran'],
+      ['Naktu Wedal', naktu?.wedal, 'Hari + pasaran'],
+      ['Watek Patokan', watek?.watek, watek?.month],
+      ['Jaya / Apes', jayaApes ? `${jayaApes.jaya} / ${jayaApes.apes}` : '—', 'Status rekonstruksi Cakra Langit'],
+    ],
+    nama: [
+      ['Naktu Nama', 'Siap dihitung', 'Gunakan konteks nama pada modul Hitung Nama'],
+      ['Pancaka 4 / 5', 'Tersedia', 'Mapping terverifikasi'],
+      ['Pancaka 7 / 8 / 12', 'Tersedia', 'Mapping terverifikasi sesuai konteks'],
+    ],
+    jodoh: [
+      ['Profil pertama', displayName, 'Konteks aktif'],
+      ['Profil kedua', 'Belum dipilih', 'Perlu konteks orang kedua'],
+      ['Status', 'Siap untuk perbandingan', 'Rule detail belum ditampilkan di hub'],
+    ],
+    'tanam-panen': [
+      ['Tanggal', selectedDate ? formatDate(selectedDate) : '—', 'Tanggal aktif'],
+      ['Pernaasan', pernaasan?.is_today ? 'PERNAASAN' : 'Bukan pernaasan', pernaasan?.dates?.join(' · ') || '—'],
+      ['Status hari', navigation?.status_hari, navigation?.interpretation],
+    ],
+    perjalanan: [
+      ['Arah Rizki', navigation?.arah_rizki, 'Rule kelompok bulan'],
+      ['Gagalang', gagalang?.direction, gagalang?.next_pasaran ? `Pasaran berikutnya: ${gagalang.next_pasaran}` : null],
+      ['Keselamatan', navigation?.hari_keselamatan?.join(' · ') || '—', 'Hari keselamatan'],
+      ['Pantangan', navigation?.pantangan_hari?.join(' · ') || '—', 'Hari pantangan'],
+    ],
+    waktu: [
+      ['Naktu Wedal', naktu?.wedal, naktu?.formula || '—'],
+      ['Hari', calendar?.hari, 'Konteks hari aktif'],
+      ['Pasaran', calendar?.pasaran, 'Konteks pasaran aktif'],
+    ],
+  }[view] || []
+
+  if (view) return <DetailView view={view} data={data} selectedDate={selectedDate} displayName={displayName} locationName={locationName} />
+
+  return (
+    <section className="mx-auto max-w-[1180px] px-5 py-7 sm:px-7 lg:py-9">
+      <a href="/dashboard/palintangan" className="text-xs font-semibold text-[#22D3EE] hover:text-white">← Kembali ke Palintangan</a>
+      <header className="mt-5 mb-6">
+        <div className="text-[10px] font-bold uppercase tracking-[0.16em] text-[#22D3EE]">Palintangan Sunda · Perhitungan</div>
+        <h1 className="mt-2 text-2xl font-semibold tracking-tight text-white sm:text-3xl">{title}</h1>
+        <p className="mt-2 max-w-2xl text-sm leading-6 text-[#8FA4B8]">{description}</p>
+      </header>
+
+      <section className="rounded-2xl border border-cyan-300/10 bg-[#0A1723] p-5 sm:p-6">
+        <div className="text-[10px] font-bold uppercase tracking-[0.14em] text-[#536A7D]">Konteks Personal</div>
+        <div className="mt-2 text-lg font-semibold text-white">{displayName}</div>
+        <div className="mt-1 text-xs text-[#71869A]">{locationName} · {formatDate(selectedDate)}</div>
+      </section>
+
+      <div className="mt-5 grid gap-4 sm:grid-cols-2">
+        {detail.map(([label, value, sub]) => (
+          <SummaryCard key={label} label={label} value={value} sub={sub} />
+        ))}
+      </div>
+
+      <section className="mt-5 rounded-2xl border border-white/[0.07] bg-[#0A1723] p-5 sm:p-6">
+        <div className="text-sm font-semibold text-white">Navigasi lanjutan</div>
+        <p className="mt-2 text-xs leading-5 text-[#71869A]">
+          Perhitungan detail akan mengikuti data sumber yang sudah tersedia. Formula yang belum terverifikasi tidak diisi dengan inferensi.
+        </p>
+        <a href="/dashboard/palintangan" className="mt-4 inline-flex rounded-xl border border-white/[0.08] bg-white/[0.04] px-4 py-2.5 text-xs font-semibold text-[#A9BDCF] hover:bg-white/[0.07] hover:text-white">
+          Pilih perhitungan lain
+        </a>
+      </section>
+    </section>
+  )
+}
+
 export default function PalintanganPage() {
   const { user } = useAuth()
   const { selectedDate, location, apiData } = useTodayContext()
   const isoDate = toDateISO(selectedDate)
+  const view = new URLSearchParams(window.location.search).get('view')
   const [data, setData] = useState(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
