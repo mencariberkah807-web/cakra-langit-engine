@@ -428,17 +428,10 @@ export default function PalintanganPage() {
                   </div>
                   <div>
                     <div className="text-xl font-bold text-white">{navigation?.status_hari || '—'}</div>
-                    <div className="mt-1 text-[11px] text-[#71869A]">{navigation?.interpretation || 'Status rule belum tersedia.'}</div>
+                    <div className="mt-1 text-[11px] leading-4 text-[#71869A]">Status ini berasal dari rule tanggal: Pernaasan dan pantangan/keselamatan berdasarkan kelompok bulan.</div>
                   </div>
                 </div>
-
-                <div className="mt-6 border-t border-white/[0.06] pt-5">
-                  <div className="text-[10px] font-bold uppercase tracking-[0.12em] text-[#536A7D]">Watek</div>
-                  <div className="mt-2 text-lg font-semibold text-white">{watekPatokan?.watek || '—'}</div>
-                  <div className={`mt-2 inline-flex rounded-full border px-2 py-0.5 text-[10px] font-bold ${toneClass(watekMeaning.tone)}`}>{watekMeaning.tone}</div>
-                  <p className="mt-3 text-xs leading-5 text-[#A9BDCF]">{watekMeaning.meaning}</p>
-                </div>
-              </div>
+              </div></div>
             </div>
 
             <div className="mt-5">
@@ -486,25 +479,33 @@ export default function PalintanganPage() {
               </div>
             </div>
 
-            {gagalangPoe?.watek?.length > 0 && (
-              <div className="mt-5 rounded-xl border border-white/[0.06] bg-[#07111C] p-5">
-                <div className="text-[10px] font-bold uppercase tracking-[0.12em] text-[#536A7D]">Gagalang Poe</div>
-                <div className="mt-3 grid gap-3 sm:grid-cols-2">
-                  {watekDetails.map((item) => (
-                    <div key={item.name} className="rounded-xl border border-white/[0.06] bg-[#0A1723] p-4">
-                      <div className="flex items-center justify-between gap-3">
-                        <div className="text-base font-semibold text-white">{item.name}</div>
-                        <span className={`inline-flex rounded-full border px-2 py-0.5 text-[10px] font-bold ${toneClass(item.tone)}`}>{item.tone}</span>
-                      </div>
-                      <div className="mt-2 text-xs leading-5 text-[#A9BDCF]">{item.meaning}</div>
-                    </div>
-                  ))}
-                </div>
-                {gagalangPoe?.month_patokan?.watek && (
-                  <div className="mt-3 text-[11px] text-[#71869A]">Patokan bulan: <span className="text-[#A9BDCF]">{gagalangPoe.month_patokan.watek}</span></div>
-                )}
+            <div className="mt-5 grid gap-5 lg:grid-cols-2">
+              <div className="rounded-xl border border-white/[0.06] bg-[#07111C] p-5">
+                <div className="text-[10px] font-bold uppercase tracking-[0.12em] text-[#536A7D]">Watek Patokan Bulan</div>
+                <div className="mt-2 text-xs text-[#71869A]">{watekPatokan?.month || 'Bulan aktif'}</div>
+                <div className="mt-3 text-xl font-semibold text-white">{watekPatokan?.watek || '—'}</div>
+                <div className={`mt-2 inline-flex rounded-full border px-2 py-0.5 text-[10px] font-bold ${toneClass(watekMeaning.tone)}`}>{watekMeaning.tone}</div>
+                <p className="mt-3 text-xs leading-5 text-[#A9BDCF]">{watekMeaning.meaning}</p>
+                <div className="mt-4 border-t border-white/[0.06] pt-3 text-[11px] leading-4 text-[#71869A]">Ini adalah <span className="text-[#A9BDCF]">patokan bulan</span>, bukan hasil Gagalang Poe hari ini.</div>
               </div>
-            )}
+              {gagalangPoe?.watek?.length > 0 && (
+                <div className="rounded-xl border border-white/[0.06] bg-[#07111C] p-5">
+                  <div className="text-[10px] font-bold uppercase tracking-[0.12em] text-[#536A7D]">Gagalang Poe · Berdasarkan Hari</div>
+                  <div className="mt-2 text-xs text-[#71869A]">Hari aktif: <span className="text-[#A9BDCF]">{calendar?.hari || '—'}</span></div>
+                  <div className="mt-3 grid gap-3 sm:grid-cols-2">
+                    {watekDetails.map((item) => (
+                      <div key={item.name} className="rounded-xl border border-white/[0.06] bg-[#0A1723] p-4">
+                        <div className="flex items-center justify-between gap-3">
+                          <div className="text-base font-semibold text-white">{item.name}</div>
+                          <span className={`inline-flex rounded-full border px-2 py-0.5 text-[10px] font-bold ${toneClass(item.tone)}`}>{item.tone}</span>
+                        </div>
+                        <div className="mt-2 text-xs leading-5 text-[#A9BDCF]">{item.meaning}</div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </section>
