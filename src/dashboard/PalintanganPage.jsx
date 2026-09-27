@@ -201,7 +201,7 @@ function DetailView({ view, data, selectedDate, displayName, locationName }) {
     <section className="mx-auto max-w-[1180px] px-5 py-7 sm:px-7 lg:py-9">
       <a href="/dashboard/palintangan" className="text-xs font-semibold text-[#22D3EE] hover:text-white">← Kembali ke Palintangan</a>
       <header className="mt-5 mb-6">
-        <div className="text-[10px] font-bold uppercase tracking-[0.16em] text-[#22D3EE]">Palintangan Sunda · Perhitungan</div>
+        <div className="text-[10px] font-bold uppercase tracking-[0.16em] text-[#22D3EE]">Paririmbon Sunda · Engine Palintangan</div>
         <h1 className="mt-2 text-2xl font-semibold tracking-tight text-white sm:text-3xl">{title}</h1>
         <p className="mt-2 max-w-2xl text-sm leading-6 text-[#8FA4B8]">{description}</p>
       </header>
@@ -310,7 +310,7 @@ export default function PalintanganPage() {
     <section className="mx-auto max-w-[1180px] px-5 py-7 sm:px-7 lg:py-9">
       <header className="mb-6">
         <div className="text-[10px] font-bold uppercase tracking-[0.16em] text-[#22D3EE]">Cakra Langit · Sunda</div>
-        <h1 className="mt-2 text-2xl font-semibold tracking-tight text-white sm:text-3xl">Palintangan Sunda</h1>
+        <h1 className="mt-2 text-2xl font-semibold tracking-tight text-white sm:text-3xl">Paririmbon Sunda</h1>
         <p className="mt-2 max-w-2xl text-sm leading-6 text-[#8FA4B8]">
           Peta hari pribadi berdasarkan profil dan tanggal yang diperiksa. Hasil dijelaskan dengan bahasa yang mudah dibaca sebelum Anda memilih perhitungan lain.
         </p>
