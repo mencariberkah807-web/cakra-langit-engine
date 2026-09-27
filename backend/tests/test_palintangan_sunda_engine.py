@@ -71,7 +71,7 @@ class PalintanganJayaApesTests(unittest.TestCase):
     def test_locked_pernaasan_and_navigation_groups(self):
         self.assertEqual(PERNAASAN["Muharam"], [3, 12, 20])
         self.assertEqual(PERNAASAN["Puasa"], [9, 20, 29])
-        self.assertEqual(PERNAASAN["Sawal"], [])
+        self.assertEqual(PERNAASAN["Sawal"], [2, 1, 20])
         self.assertEqual(MONTH_RULES["Muharam"]["rizki_direction"], "Tenggara")
         self.assertEqual(MONTH_RULES["Rabiulakhir"]["rizki_direction"], "Barat Laut")
         self.assertEqual(MONTH_RULES["Rajab"]["rizki_direction"], "Barat Daya")
