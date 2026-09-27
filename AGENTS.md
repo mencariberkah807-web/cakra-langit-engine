@@ -1003,3 +1003,63 @@ Current execution gate:
 ```
 
 This checkpoint is a lock, not permission for unrelated refactoring. The next approved scope is the Paririmbon source audit only.
+
+
+## 25. PARIRIMBON SOURCE AUDIT — 27 SEP 2026
+
+Phase 3 source audit was performed against the authorized primary source:
+
+`PARIRIMBON SUNDA (JAWA BARAT).pdf`
+
+The source audit confirms the following.
+
+### Source-backed / verified data
+
+| Domain | Finding | Source location |
+|---|---|---|
+| Naktu Pasaran | Kaliwon/Keliwon = 8; Manis = 5; Pahing = 9; Pon = 7; Wage = 4 | naskah p.52 and p.36 |
+| Pernaasan | 12 monthly lookup rows are explicitly documented | naskah p.67 / p.21 |
+| Watek Patokan | 12 month-to-Watek mappings are explicitly documented | naskah p.71 / p.36 |
+| Gagalang Pasaran | Five-stage direction rotation is explicitly documented | naskah p.70–71 / p.36 |
+| Gagalang Poe | 12 month-to-weekday/Watek mappings are explicitly documented | naskah p.70–71 |
+| Monthly Kala groups | Four monthly groups, pantangan, keselamatan, and rizki direction are documented | naskah p.21 / p.68–69 |
+
+### Important source discrepancy
+
+The repository currently contains an incorrect/incomplete Pernaasan row for **Sawal**:
+
+- Primary source: **2 - 1 - 20**.
+- Current frontend table: **— / — / —**.
+- Current engine table: **[]**.
+
+This is a source-data defect and must be repaired from the primary source before the Paririmbon engine is considered complete.
+
+### Important source ambiguity
+
+For the fourth monthly Kala group (Sawal, Dulkaidah, Rayagung), the primary source contains two nearby descriptions:
+
+- naskah p.67–68 states safety on **Monday and Tuesday**;
+- naskah p.79 summarizes the group as safety on **Monday**.
+
+Therefore the engine must not silently choose one interpretation and label it universally verified. Preserve the source discrepancy until the rule is explicitly resolved.
+
+### Protected / not verified as formula
+
+- Pernaasan formation formula: source explicitly says the author did not obtain the method; lookup data may be used, but no generation formula may be invented.
+- Jaya / Apes: the current repository contains a Cakra Langit reconstruction marked `CAKRA_LANGIT_RECONSTRUCTED`; this is **not** a verified manuscript formula and must not be promoted to VERIFIED.
+- Pancasuda Universal, Kala Alit, Kala Ageung: remain NOT LOCKED.
+- Watek Jam full interval model: remains PARTIAL.
+
+### Source-policy result
+
+The authorized source is sufficient to lock the documented lookup data above, but it is **not** sufficient to authorize undocumented derivation formulas. The next phase is a targeted engine repair/audit, beginning with the Sawal Pernaasan source-data defect and preserving unresolved source ambiguities.
+
+Current execution gate:
+
+```text
+[✓] Phase 0 — Baseline Lock
+[✓] Phase 1 — Restore Natural Layer
+[✓] Phase 2 — Lock Global Snapshot
+[✓] Phase 3 — Audit Paririmbon Source
+[ ] Phase 4 — Complete/Repair Paririmbon Engine
+```
