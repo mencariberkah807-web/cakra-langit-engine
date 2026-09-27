@@ -15,7 +15,7 @@ const pageMap = {
   '/dashboard/natural': ['Natural Layer', 'Eksplorasi lapisan perhitungan alam.'],
   '/dashboard/birth-converter': ['Birth Converter', 'Konversi data kelahiran untuk kalkulasi personal.'],
   '/dashboard/bazi': ['BaZi', 'Kalkulasi dan informasi BaZi.'],
-  '/dashboard/paririmbon': ['Paririmbon', 'Kalkulasi dan referensi Paririmbon.'],
+  '/dashboard/paririmbon': ['Paririmbon Sunda', 'Kalkulasi Paririmbon Sunda dengan engine Palintangan.'],
   '/dashboard/palelintangan': ['Palelintangan Bali', 'Kalkulasi dan referensi Palelintangan Bali.'],
   '/dashboard/almanac': ['Almanac', 'Informasi almanak personal.'],
   '/dashboard/history': ['Riwayat', 'Riwayat kalkulasi personal.'],
@@ -51,7 +51,7 @@ function UserDashboardContent({ user }) {
   }
 
   if (path === '/dashboard/paririmbon') {
-    return <ParirimbonPage />
+    return <PalintanganPage />
   }
 
   if (path === '/dashboard/palintangan') {
