@@ -1,8 +1,8 @@
 # AGENTS.md
 
-# CAKRA LANGIT — AGENT OPERATING CONTRACT
+# CAKRA LANGIT — CODEX OPERATING CONTRACT
 
-This document is the operational contract for AI agents working on the repository. It defines the current locked architecture, domain boundaries, source-of-truth rules, and implementation workflow.
+This document is the operational contract for Codex/AI agents working on the repository. It defines the current locked product concept, architecture, domain boundaries, source-of-truth rules, execution order, and validation requirements.
 
 ## 1. PRIMARY WORKFLOW
 
@@ -22,114 +22,305 @@ Rules:
 - Validate every applied change.
 - Keep unrelated files and behavior untouched.
 - If an architectural change is requested, update this contract before implementing dependent code.
+- Work in explicit checkpoints. Do not combine unrelated phases into one change.
 
-## 2. PROJECT IDENTITY
+## 2. PROJECT IDENTITY — CAKRA LANGIT IS THE ROOT
 
-Cakra Langit is a Personal Almanac application combining:
+Cakra Langit is a **Global Personal Almanac / Meta-System**.
 
-- calendar systems,
-- traditional knowledge,
-- personal birth-profile systems,
-- time/action systems,
-- spatial/harmony systems,
-- astronomical computation,
-- natural phenomena.
+It is NOT one calendar, one primbon, one cultural calculation system, or one traditional method.
 
-It is not a simple date converter.
+Cakra Langit is the root system that can:
 
-The system is organized around four functional layers:
+- provide shared temporal, location, natural, and profile context;
+- execute independent calculation methods;
+- preserve each method's original rules and identity;
+- normalize results into common application contracts;
+- compile multiple method results into a Global Snapshot;
+- present the combined snapshot through the Global Dashboard;
+- expand to additional traditions and calculation systems without replacing the root architecture.
+
+Conceptually:
+
+```text
+                         CAKRA LANGIT
+                       GLOBAL ROOT SYSTEM
+                              │
+                     METHOD / ENGINE LIBRARY
+                              │
+             ┌────────────────┼────────────────┐
+             │                │                │
+          PENANGGALAN    CETAK BIRU       STRATEGI &
+                          DIRI              AKSI
+             │                │                │
+             └────────────────┼────────────────┘
+                              │
+                       HARMONI TATA RUANG
+                              │
+                       NATURAL CONTEXT
+                              │
+                              ↓
+                     NORMALIZED RESULTS
+                              ↓
+                     GLOBAL SNAPSHOT
+                              ↓
+                    GLOBAL DASHBOARD
+```
+
+The term "compile" is architectural/product language. It means Cakra Langit orchestrates different systems without rewriting their internal rules into one universal formula.
+
+### Core principle
+
+> Different traditions remain different systems. Cakra Langit integrates their outputs into one contextual view.
+
+Therefore:
+
+- Primbon remains Primbon.
+- Paririmbon remains Paririmbon.
+- BaZi remains BaZi.
+- Wariga remains Wariga.
+- Hijriah remains Hijriah.
+- Kalacakra remains Kalacakra.
+- Maya remains Maya.
+- Aztec remains Aztec.
+- Future systems remain their own systems.
+
+Do not flatten them into one generic calculation.
+
+## 3. FUNCTIONAL TAXONOMY
+
+The current functional taxonomy is:
 
 ```text
 CAKRA LANGIT
 │
 ├── 01 PENANGGALAN
-│   └── Establishes the temporal/calendar context.
+│   └── Establishes temporal/calendar context.
 │
 ├── 02 CETAK BIRU DIRI
-│   └── Establishes the personal birth/profile context.
+│   └── Establishes personal birth/profile context.
 │
 ├── 03 STRATEGI WAKTU & AKSI
 │   └── Reads timing, direction, selection, and action context.
 │
 └── 04 HARMONI TATA RUANG
-    └── Reads place, orientation, and environmental/spatial context.
+    └── Reads place, orientation, and spatial/environmental context.
 ```
 
-These four layers are a product/domain taxonomy. They do not require every layer to have a completed engine before the architecture can be represented.
+Natural/Astronomical context is a cross-cutting contextual layer supporting the Global Snapshot. It is not a replacement for the four functional domains.
 
-## 3. CULTURAL / DOMAIN MAPPING
+These four layers are a product/domain taxonomy. They do not require every layer to have a completed engine before the architecture can represent it.
 
-Cakra Langit provides a common application architecture while keeping each tradition's calculation system independent.
+## 4. METHOD / CULTURAL SYSTEM MAPPING
 
-### 3.1 Penanggalan
+Cakra Langit provides a common integration architecture while keeping each tradition's calculation system independent.
+
+### 4.1 Jawa
 
 ```text
-PENANGGALAN
-│
-├── Gregorian / Solar
-├── Lunar / Chinese calendar
-├── Hijri
-├── Jawa
-├── Sunda / Saka Sunda
-├── Bali
-└── Kalacakra
+JAWA
+└── PRIMBON
+    ├── Weton
+    ├── Neptu
+    ├── Petungan
+    └── other verified methods
 ```
 
-Calendar systems must remain independent. A calendar result may provide context to another engine, but one tradition's calendar arithmetic must never be silently substituted for another's.
+Primbon is a Jawa knowledge system. Do not treat it as a generic label for all traditional calculation systems.
 
-### 3.2 Cetak Biru Diri
+### 4.2 Sunda
 
 ```text
-CETAK BIRU DIRI
-│
-├── BaZi / Four Pillars
-├── Weton Jawa / Petungan Neptu
-└── Candra Bhumi / Weton Sunda
+SUNDA
+└── PARIRIMBON
+    ├── Naktu
+    ├── Watek
+    ├── Pernaasan
+    ├── Palintangan
+    └── other verified methods
 ```
 
-The personal layer consumes a birth profile. It must not be reconstructed from today's date alone.
+Paririmbon is the Sunda knowledge/source system. Palintangan is a calculation/method domain within that knowledge where verified rules exist.
 
-Birth-profile data is separate from `TodayContext`.
-
-### 3.3 Strategi Waktu & Aksi
+### 4.3 China
 
 ```text
-STRATEGI WAKTU & AKSI
-│
-├── Palintangan / Paririmbon Sunda
-├── Qi Men / comparable time-action systems
-└── other explicitly verified timing/action methods
+CHINA
+└── TRADITIONAL METAPHYSICS / SHU SHU
+    ├── BaZi
+    ├── Qi Men Dun Jia
+    ├── Zi Wei Dou Shu
+    └── other explicitly verified systems
 ```
 
-This layer may consume:
+Do not collapse Chinese calendar arithmetic, BaZi, Qi Men, or other systems into one engine.
 
-- Penanggalan context,
-- personal profile context,
-- location context,
-- selected date/time.
-
-It must not alter the underlying calendar or personal-profile engines.
-
-### 3.4 Harmoni Tata Ruang
+### 4.4 Bali
 
 ```text
-HARMONI TATA RUANG
-│
-├── Feng Shui / spatial systems
-└── other explicitly verified spatial/environmental methods
+BALI
+└── WARIGA
+    ├── Wewaran
+    ├── Pawukon
+    ├── Ala Ayuning Dewasa
+    └── other verified methods
 ```
 
-Spatial calculations consume location/orientation/environmental context where required. They must remain independent from calendar arithmetic and personal birth calculations.
+Wariga is a Bali knowledge system. Individual calendar and timing methods remain independently implemented.
 
-Do not implement undocumented formulas merely to fill a UI slot.
+### 4.5 Islamic / Hijri
 
-## 4. CORE CONTEXT ARCHITECTURE
+```text
+ISLAMIC / HIJRI
+├── Hijri Calendar
+├── Hisab
+├── Rukyah
+└── Ilmu Falak / related astronomical methods
+```
 
-The application has two distinct context classes.
+Calendar calculation and broader astronomical methodology must remain conceptually distinct.
 
-### 4.1 TodayContext — temporal/live context
+### 4.6 Kalacakra
 
-`TodayContext` is the SSOT for the active temporal observation context.
+Kalacakra is **one system inside Cakra Langit**, not the root of Cakra Langit.
+
+```text
+CAKRA LANGIT
+└── PENANGGALAN / OTHER METHOD DOMAINS
+    └── KALACAKRA
+```
+
+Kalacakra must retain its own rules, anchors, and engine.
+
+### 4.7 Maya, Aztec, and future systems
+
+The architecture must be able to add:
+
+```text
+Maya
+Aztec
+Mesopotamian
+Egyptian
+Tibetan
+Indian
+Japanese
+Nusantara
+...
+```
+
+without changing the identity of Cakra Langit or merging their rules.
+
+Only verified systems and rules may be implemented.
+
+## 5. GLOBAL DASHBOARD AND COMPLETE SNAPSHOT
+
+The Dashboard is the **Global Dashboard of Cakra Langit**.
+
+It is not a Jawa dashboard, Sunda dashboard, China dashboard, or Natural Layer dashboard.
+
+Its purpose is to show a complete contextual snapshot assembled from available engines and methods.
+
+Conceptually:
+
+```text
+CONTEXT
+  │
+  ├── selected date
+  ├── selected time
+  ├── location
+  ├── natural/astronomical context
+  └── personal profile when applicable
+           │
+           ↓
+     METHOD / ENGINE LIBRARY
+           │
+           ↓
+    NORMALIZED RESULTS
+           │
+           ↓
+      GLOBAL SNAPSHOT
+           │
+           ↓
+     CAKRA LANGIT
+       DASHBOARD
+```
+
+The current dashboard may contain snapshots such as:
+
+- Jawa
+- Saka Sunda
+- Kalacakra
+- Bali
+- Chinese Lunar
+- Hijri
+- Solar events
+- Lunar events
+- Sky
+- Earth/natural context
+- Tide
+- Paririmbon / Palintangan
+- personal blueprint results
+- future Maya/Aztec and other systems
+
+The dashboard must not calculate domain formulas itself.
+
+It consumes normalized results.
+
+Adding a new method must not require turning the dashboard into a method-specific page.
+
+## 6. COMPLETE SNAPSHOT PRINCIPLE
+
+A Global Snapshot is a collection of independent observations for a common context.
+
+Example:
+
+```text
+GLOBAL SNAPSHOT
+│
+├── CALENDAR
+│   ├── Gregorian
+│   ├── Jawa
+│   ├── Saka Sunda
+│   ├── Bali
+│   ├── Chinese Lunar
+│   ├── Hijri
+│   ├── Kalacakra
+│   ├── Maya
+│   └── Aztec
+│
+├── PERSONAL
+│   ├── BaZi
+│   ├── Weton Jawa
+│   └── Candra Bhumi / Weton Sunda
+│
+├── TIME / ACTION
+│   ├── Palintangan
+│   ├── Qi Men
+│   └── other verified methods
+│
+├── SPATIAL / HARMONY
+│   ├── Feng Shui
+│   └── other verified methods
+│
+└── NATURAL / ASTRONOMICAL
+    ├── Sun
+    ├── Moon
+    ├── Sky
+    ├── Eclipse
+    ├── Earth
+    ├── Tide
+    └── other verified natural context
+```
+
+A missing provider or unavailable method must degrade gracefully. It must not corrupt unrelated snapshot sections.
+
+## 7. CORE CONTEXT ARCHITECTURE
+
+The application has distinct context classes.
+
+### 7.1 TodayContext — temporal/live context
+
+`TodayContext` is the SSOT for active temporal observation context.
 
 It may contain:
 
@@ -144,17 +335,15 @@ calendar context
 natural context
 ```
 
-Its responsibility is to answer:
+It answers:
 
 > What is the temporal and environmental context for the date, time, and location currently being inspected?
 
 It must not become the permanent store for a user's birth identity.
 
-### 4.2 Personal Profile Context — identity/birth context
+### 7.2 Personal Profile Context
 
 Personal birth/profile data is a separate conceptual context.
-
-Target dependency:
 
 ```text
 User / Profile
@@ -164,17 +353,17 @@ Personal Profile Context
 BaZi / Weton / Candra Bhumi / personal methods
 ```
 
-Do not place birth date, birth time, birth location, or permanent personal calculation inputs into `TodayContext` merely for convenience.
+Do not place birth date, birth time, birth location, or permanent personal calculation inputs into TodayContext merely for convenience.
 
-If a `ProfileContext` is introduced, it must own personal identity/profile state while consuming `TodayContext` only where a calculation requires current temporal context.
+If ProfileContext is introduced, it owns personal identity/profile state while consuming TodayContext only where current temporal context is required.
 
-### 4.3 Location Context
+### 7.3 Location Context
 
 Location is a shared contextual input but remains distinct from personal identity.
 
 ```text
 Location
-├── temporal timezone / local date-time
+├── timezone / local date-time
 ├── natural observation
 ├── spatial/harmony calculations
 └── location-sensitive traditional calculations
@@ -182,21 +371,9 @@ Location
 
 Manual location selection takes precedence over automatic geolocation.
 
-## 5. DOMAIN DEPENDENCY DIRECTION
+## 8. DEPENDENCY DIRECTION
 
-The protected dependency direction is:
-
-```text
-ENGINE
-  ↓
-ADAPTER
-  ↓
-NORMALIZED RESULT
-  ↓
-DOMAIN / UI
-```
-
-For cross-layer calculations:
+Protected dependency direction:
 
 ```text
 CONTEXT
@@ -207,7 +384,7 @@ ADAPTER
   ↓
 NORMALIZED RESULT
   ↓
-UI
+GLOBAL SNAPSHOT / UI
 ```
 
 Rules:
@@ -220,10 +397,11 @@ Rules:
 - Calendar engines must not alter personal-profile calculations.
 - Personal-profile engines must not silently alter timing/action rules.
 - Spatial engines must not silently alter calendar or birth calculations.
+- The dashboard must consume normalized results rather than reproduce calculations.
 
-## 6. ENGINE / ADAPTER / REGISTRY ARCHITECTURE
+## 9. ENGINE / ADAPTER / REGISTRY ARCHITECTURE
 
-The existing repository already uses an adapter pattern.
+The repository uses an adapter pattern.
 
 ```text
 src/core/
@@ -252,18 +430,18 @@ src/adapters/
 
 When adding a new engine:
 
-1. Keep the calculation in the appropriate engine/domain layer.
+1. Keep calculation in the appropriate engine/domain layer.
 2. Create or extend an adapter where appropriate.
 3. Normalize the result through the existing result contract.
 4. Register it explicitly.
 5. Consume the normalized result from UI.
 6. Do not bypass the adapter merely because the UI needs one field.
 
-The registry taxonomy may expand to reflect the four Cakra Langit functional layers, but this does not authorize rewriting existing engines.
+Do not refactor working adapters or registry structure merely to make a new feature convenient.
 
-## 7. CURRENT BACKEND DOMAIN ENGINES
+## 10. CURRENT BACKEND ENGINES
 
-The repository currently contains established backend engines including:
+Established backend engines include:
 
 ```text
 backend/engines/
@@ -286,16 +464,55 @@ Existing engine behavior is protected.
 In particular:
 
 - `bazi_engine.py` belongs to Cetak Biru Diri.
-- `jawa_engine.py` belongs to the Jawa calendar/personal domain according to its actual output.
+- `jawa_engine.py` belongs to the Jawa calendar/personal domain according to actual output.
 - `palintangan_sunda_engine.py` belongs to Strategi Waktu & Aksi.
 - calendar engines belong to Penanggalan.
-- natural/astronomical engines provide contextual data and must remain separate from traditional calendar arithmetic.
+- natural/astronomical engines provide contextual data and remain separate from traditional calendar arithmetic.
 
 Do not infer undocumented formulas from names alone. Inspect the authoritative implementation and source material.
 
-## 8. PARIRIMBON / PALINTANGAN BOUNDARY
+## 11. NATURAL LAYER — PROTECTED RECOVERY TARGET
 
-Paririmbon Sunda is a knowledge/source layer and Palintangan Sunda is an implementation/calculation layer where verified rules exist.
+Natural Layer is a working contextual subsystem and must be treated as protected functionality.
+
+It includes, where implemented:
+
+- Sky Overview
+- Sun position
+- Moon position and illumination
+- Solar events
+- Lunar events
+- Eclipse context
+- Earth Space
+- Tide
+- atmospheric/environmental providers
+- weather
+- geomagnetic/radiation
+- air quality
+- volcanic/seismic/ocean data where supported
+
+Natural Layer is contextual data. It must not rewrite or modify calendar calculations.
+
+### Current known issue
+
+The current dashboard has a broken Natural Layer state after recent changes. The recovery task is to restore the previously working behavior, not to redesign Natural Layer from scratch.
+
+Expected recovery behavior:
+
+- identify the change that caused the break;
+- recover from the last known-working implementation where possible;
+- restore existing contracts;
+- preserve graceful provider failure;
+- validate dashboard rendering;
+- do not introduce unrelated architecture changes.
+
+Do not replace working natural engines with speculative new providers during recovery.
+
+## 12. PARIRIMBON / PALINTANGAN BOUNDARY
+
+Paririmbon Sunda is the knowledge/source system.
+
+Palintangan Sunda is a calculation/method implementation layer where verified rules exist.
 
 ```text
 PARIRIMBON SUNDA
@@ -305,13 +522,14 @@ PARIRIMBON SUNDA
 ├── calendar components
 ├── Pernaasan data
 ├── Watek
+├── Palintangan
 └── method/source status
           ↓
 PALINTANGAN SUNDA ENGINE
           ↓
 NORMALIZED RESULT
           ↓
-UI
+GLOBAL SNAPSHOT / UI
 ```
 
 Rules:
@@ -320,50 +538,202 @@ Rules:
 - A documented data table is not automatically a formula.
 - If a formula is unknown, preserve the data without inventing the derivation.
 - Do not convert incomplete research into authoritative calculation.
+- `Naktu` is the SSOT numeric term where the project has explicitly established it.
 - `UGA KALA.pdf` remains explicitly excluded; see Source Protection.
 
-## 9. LOCKED UX ARCHITECTURE
+## 13. MASTER IMPLEMENTATION ORDER
+
+The following sequence is the default execution roadmap for the current project.
+
+### Phase 0 — Baseline Lock
+
+- Freeze current repository state.
+- Scan actual GitHub `main`.
+- Identify the change that caused Natural Layer breakage.
+- Identify affected engines, routes, adapters, components, and contracts.
+- Establish dashboard regression baseline.
+- Do not refactor unrelated code.
+
+**Gate:** existing dashboard behavior is understood and protected.
+
+### Phase 1 — Restore Natural Layer
+
+- Restore known-working Natural Layer implementation.
+- Restore backend natural engines where changed.
+- Restore API routes where changed.
+- Restore frontend adapters/data contracts where changed.
+- Restore Sky Overview.
+- Restore Solar events.
+- Restore Lunar events.
+- Restore Earth Space.
+- Restore Tide integration.
+- Preserve graceful provider failure.
+- Build and validate.
+
+**Gate:** Natural Layer is functional again before Paririmbon work begins.
+
+### Phase 2 — Lock Global Snapshot
+
+- Audit TodayContext.
+- Audit location context.
+- Audit resultRegistry.
+- Audit adapter contracts.
+- Confirm normalized-result flow.
+- Confirm dashboard does not perform domain arithmetic.
+- Confirm Natural Layer is independent from calendar arithmetic.
+- Confirm new methods can be added without turning the dashboard into a method-specific architecture.
+
+**Gate:** Global Snapshot contract is stable.
+
+### Phase 3 — Audit Paririmbon Source
+
+- Inspect the authorized Paririmbon source material.
+- Separate documented data from documented formulas.
+- Identify Naktu, Watek, Pernaasan, calendar components, and other verified material.
+- Mark verified, partial, and unknown sections.
+- Never invent undocumented formulas.
+
+**Gate:** Paririmbon knowledge model is locked.
+
+### Phase 4 — Complete/Repair Paririmbon Engine
+
+- Audit `palintangan_sunda_engine.py`.
+- Implement only verified rules.
+- Implement verified lookup tables.
+- Keep calculation and interpretation distinct.
+- Produce normalized output.
+- Test known values and edge cases.
+
+**Gate:** Paririmbon/Palintangan engine is verified.
+
+### Phase 5 — API and Adapter
+
+- Lock backend API input/output contract.
+- Validate error handling.
+- Update/create the Paririmbon adapter.
+- Normalize the response.
+- Register the result.
+- Remove direct calculation/API coupling from UI.
+
+**Gate:** source → engine → API → adapter → normalized result works.
+
+### Phase 6 — Paririmbon UI
+
+- Audit `ParirimbonPage.jsx`.
+- Separate source/knowledge presentation from calculated results.
+- Show source/method status.
+- Consume normalized result.
+- Do not calculate in UI.
+- Validate loading/error states.
+
+**Gate:** Paririmbon page is complete.
+
+### Phase 7 — Paririmbon Global Snapshot
+
+- Define compact Paririmbon snapshot fields.
+- Register them in the Global Snapshot.
+- Display them on the Global Dashboard where appropriate.
+- Validate selected date, location, and profile dependencies.
+- Confirm unrelated calendar/natural snapshots remain unchanged.
+
+**Gate:** Paririmbon is integrated into the Global Dashboard.
+
+### Phase 8 — Personal Profile Context
+
+- Audit personal profile architecture.
+- Separate birth inputs from TodayContext.
+- Validate Weton.
+- Validate BaZi.
+- Validate Candra Bhumi/Weton Sunda.
+- Define normalized personal results.
+- Integrate only where the Global Snapshot requires them.
+
+**Gate:** personal blueprint calculations are context-correct.
+
+### Phase 9 — Method Library Expansion
+
+Only after the core is stable, expand the method library:
+
+- Jawa / Primbon
+- Sunda / Paririmbon
+- China / Chinese systems
+- Bali / Wariga
+- Hijri / Islamic calendar and astronomy
+- Kalacakra
+- Maya
+- Aztec
+- other explicitly verified systems
+
+The architecture must support these systems without merging their formulas.
+
+### Phase 10 — Global Snapshot Completion
+
+Validate the complete dashboard as an aggregation of:
+
+```text
+Calendar
++ Personal Blueprint
++ Time / Action
++ Spatial / Harmony
++ Natural / Astronomical Context
++ Future verified methods
+```
+
+**Gate:** Cakra Langit Global Dashboard represents the integrated system without corrupting independent methods.
+
+### Phase 11 — Final Regression
+
+- Existing routes remain intact.
+- Existing engines remain intact.
+- Natural Layer remains intact.
+- Paririmbon calculations remain intact.
+- Adapter contracts remain intact.
+- Registry remains intact.
+- Dashboard snapshot remains intact.
+- Profile context remains separate.
+- No undocumented formula was introduced.
+- Build passes.
+- Relevant backend/API tests pass.
+- Regression dates pass.
+- Git diff is reviewed for unrelated changes.
+
+## 14. LOCKED UX ARCHITECTURE
 
 ```text
 CAKRA LANGIT
 │
 ├── /                         PUBLIC PAGE
-│
 ├── /login                    AUTHENTICATION PAGE
-│
-├── /dashboard/*              PERSONAL / USER EXPERIENCE
-│
+├── /dashboard/*              GLOBAL / PERSONAL USER EXPERIENCE
 └── /saehu                    PRIVATE ADMIN CMS
 ```
 
 Rules:
 
-- `/` is the public face of the application.
-- `/login` is the authentication boundary.
-- `/dashboard/*` is the authenticated personal-user experience.
-- `/saehu` is the private admin CMS entry point.
+- `/` is the public face.
+- `/login` is authentication.
+- `/dashboard/*` is the authenticated Cakra Langit Global Dashboard experience.
+- `/saehu` is the private admin CMS.
 - `/calculation/*` is legacy and redirects to `/dashboard`.
-- Do not introduce an `/admin/login` route.
+- Do not introduce `/admin/login`.
 - Do not add public admin links or menus.
-- URL obscurity is not security; backend `role=admin` authorization is the real admin boundary.
+- Backend role authorization is the real admin boundary.
 
-The authenticated user experience must not literally wrap `PublicConverterLayer`; it may reuse shared Cakra components and data.
-
-## 10. UI ARCHITECTURE
+## 15. UI ARCHITECTURE
 
 Target separation:
 
 ```text
 LAYOUT
   ↓
-DOMAIN PAGE / COMPONENT
+GLOBAL / DOMAIN PAGE
   ↓
 ADAPTER / NORMALIZED RESULT
   ↓
 ENGINE
 ```
 
-The repository may use the current physical structure while the domain architecture evolves:
+The current physical structure may remain:
 
 ```text
 src/
@@ -380,105 +750,16 @@ src/
 
 Do not force a directory migration solely to satisfy the conceptual taxonomy.
 
-Layouts own page structure. Reusable components own presentation primitives. Domain components consume domain data. Calculation engines remain below this layer.
+## 16. LOCATION POLICY
 
-## 11. PUBLIC PAGE SSOT
+Browser geolocation is preferred when available.
 
-The public page visual baseline is locked.
+- Coordinates are resolved to the nearest supported Indonesian city for user-facing location.
+- Manual location selection takes precedence over automatic geolocation.
+- Latitude/longitude are internal metadata unless explicitly required.
+- Location resolution must not be used to infer personal identity.
 
-Header contains:
-
-- Cakra Langit logo/brand
-- Beranda
-- Almanac
-- Natural Layer
-- Kalender
-- Tentang
-- Search
-- Guest: Masuk + Daftar
-- Authenticated: Akun Saya
-
-The header is locked. Do not alter it unless explicitly requested.
-
-Public page structure:
-
-```text
-Public Navigation
-↓
-Ticker
-↓
-Hero
-↓
-Today / Natural Summary
-↓
-4 Feature Highlights
-↓
-Footer
-```
-
-Feature Highlights are a signup/conversion hook and their current enlarged typography is intentional.
-
-## 12. AUTHENTICATION
-
-The frontend uses the existing authentication context and token conventions. Do not redesign authentication casually.
-
-Admin login must verify the backend user role. Current known admin validation:
-
-```text
-serialize_user(user).role === "admin"
-```
-
-The admin entry is `/saehu`.
-
-## 13. ADMIN CMS — LOCKED SCOPE
-
-The CMS scope is exactly:
-
-```text
-Brand
-├── site_name
-├── tagline
-├── logo
-└── favicon
-
-Public Hero
-├── hero_image
-├── hero_title
-├── hero_description
-├── primary_cta_label
-└── secondary_cta_label
-
-Feature Highlights
-├── feature_1_title
-├── feature_1_description
-├── feature_2_title
-├── feature_2_description
-├── feature_3_title
-├── feature_3_description
-├── feature_4_title
-└── feature_4_description
-
-Login
-└── login_image
-
-SEO
-├── page_title
-└── meta_description
-```
-
-CMS must not modify calculation engines.
-
-## 14. LOCATION POLICY
-
-Browser geolocation is preferred when available. Coordinates are resolved to the nearest supported Indonesian city for user-facing location.
-
-Manual location selection takes precedence over automatic geolocation.
-
-Latitude and longitude are internal metadata unless explicitly required by a feature.
-
-Location resolution must not be used to infer personal identity.
-
-## 15. DAY-BOUNDARY POLICY
+## 17. DAY-BOUNDARY POLICY
 
 There is no global calendar boundary.
 
@@ -496,7 +777,7 @@ Each engine owns its effective-date rule.
 
 Never globally force all engines to midnight.
 
-## 16. LOCKED CALENDAR BASELINES
+## 18. LOCKED CALENDAR BASELINES
 
 ### Saka Sunda / Surya Kala
 
@@ -522,7 +803,7 @@ Month structure and Hapitkayu extra-day behavior are protected.
 
 Kalacakra behavior is protected. Integrate through an adapter and validate known anchors; do not rewrite the engine for UI convenience.
 
-## 17. REGRESSION BASELINE
+## 19. REGRESSION BASELINE
 
 Use 27–28 August 2026 as a regression event case where applicable:
 
@@ -532,12 +813,14 @@ Jawa: Kamis Legi / 13 Mulud 1960 / Wuku Maktal
 Chinese: Lunar 7/15 / Zhongyuan
 Hindu: Shravana Purnima (tradition/location dependent)
 Astronomy: near/full Moon period
-28 August 2026: partial lunar eclipse; project baseline says not visible from Indonesia
+
+28 August 2026:
+partial lunar eclipse; project baseline says not visible from Indonesia
 ```
 
 Do not collapse a calendar date and an exact astronomical event instant into one concept.
 
-## 18. SOURCE PROTECTION
+## 20. SOURCE PROTECTION
 
 `UGA KALA.pdf` is explicitly excluded from all project source-of-truth, reference, rule, and calculation work.
 
@@ -554,14 +837,16 @@ ENGINE IMPLEMENTATION
         ↓
 ADAPTER
         ↓
-UI
+NORMALIZED RESULT
+        ↓
+GLOBAL SNAPSHOT / UI
 ```
 
 If a source only documents an output but not its derivation, preserve the output as source-backed data and do not invent a formula.
 
-## 19. VALIDATION
+## 21. VALIDATION
 
-Before marking implementation complete:
+Before marking any implementation phase complete:
 
 ```bash
 npm run build
@@ -571,16 +856,18 @@ Run relevant tests when available.
 
 For backend/database changes, validate the affected API, migration, or persistence behavior as appropriate.
 
-A successful build is mandatory before claiming a frontend phase complete.
-
 For architecture changes, also verify:
 
 - existing routes remain intact;
 - existing engine outputs remain intact;
 - adapter contracts remain intact;
+- registry contracts remain intact;
+- dashboard snapshot remains intact;
 - no unrelated calculation behavior changed.
 
-## 20. CHANGE SAFETY
+A successful build is mandatory before claiming a frontend phase complete.
+
+## 22. CHANGE SAFETY
 
 Before editing:
 
@@ -593,9 +880,11 @@ Before editing:
 
 Do not silently expand scope.
 
-Architecture updates must not be used as permission for unrelated refactoring.
+Architecture updates do not authorize unrelated refactoring.
 
-## 21. CURRENT REPOSITORY BASELINE
+When recovering broken behavior, prefer restoration of the last known-working implementation over redesign.
+
+## 23. CURRENT REPOSITORY BASELINE
 
 The current GitHub `main` baseline includes:
 
@@ -626,13 +915,48 @@ Natural/Astronomical engines: established
 
 The repository's current baseline must be treated as working code, not raw material for unrelated refactoring.
 
-The four-layer taxonomy is now the architectural direction:
+The architectural direction is:
 
 ```text
-01 PENANGGALAN
-02 CETAK BIRU DIRI
-03 STRATEGI WAKTU & AKSI
-04 HARMONI TATA RUANG
+CAKRA LANGIT
+│
+├── GLOBAL SNAPSHOT
+│
+├── 01 PENANGGALAN
+├── 02 CETAK BIRU DIRI
+├── 03 STRATEGI WAKTU & AKSI
+├── 04 HARMONI TATA RUANG
+└── NATURAL / ASTRONOMICAL CONTEXT
 ```
 
-This taxonomy organizes existing and future capabilities; it does not authorize replacing working engines or inventing missing domain rules.
+The four-layer taxonomy organizes existing and future capabilities. It does not authorize replacing working engines or inventing missing domain rules.
+
+**Primary implementation order:**
+
+```text
+RESTORE NATURAL LAYER
+        ↓
+LOCK GLOBAL SNAPSHOT
+        ↓
+PARIRIMBON SOURCE
+        ↓
+PARIRIMBON ENGINE
+        ↓
+API
+        ↓
+ADAPTER
+        ↓
+REGISTRY
+        ↓
+PARIRIMBON UI
+        ↓
+GLOBAL DASHBOARD
+        ↓
+PERSONAL PROFILE
+        ↓
+METHOD LIBRARY EXPANSION
+        ↓
+FINAL GLOBAL SNAPSHOT
+        ↓
+REGRESSION / BUILD
+```
