@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { CalendarDays, Check, Edit3, Save, Sparkles, X } from 'lucide-react'
 import { useAuth } from '../auth/AuthContext'
+import NaturalFutureEngines from '../cakra-ui/NaturalFutureEngines'
 import { useTodayContext } from '../core/TodayContext'
 
 const API_BASE = import.meta.env.VITE_API_BASE_URL || ''
@@ -168,6 +169,10 @@ export default function ProfilePage() {
           <SnapshotCard title="BaZi" eyebrow="Birth Engine" headline="Belum ada data kelahiran" sub="Isi konteks kelahiran untuk menampilkan Four Pillars." fields={[['Status', 'Menunggu data'], ['Engine', 'BaZi']]} />
         </div>
       </section>
+
+      <div className="mt-7">
+        <NaturalFutureEngines />
+      </div>
 
       <section className="mt-7 rounded-2xl border border-white/[0.07] bg-[#0A1723] p-5 sm:p-6">
         <div className="flex items-start gap-3">
