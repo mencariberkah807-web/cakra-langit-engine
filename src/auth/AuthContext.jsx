@@ -94,6 +94,17 @@ export function AuthProvider({ children }) {
     window.location.assign('/dashboard')
   }, [])
 
+  const updateProfile = useCallback(async (profile) => {
+    const payload = await request('/api/auth/profile', {
+      method: 'PUT',
+      body: JSON.stringify(profile),
+      headers: token ? { Authorization: `Bearer ${token}` } : {},
+    })
+    setUser(payload)
+    window.localStorage.setItem(USER_KEY, JSON.stringify(payload))
+    return payload
+  }, [token])
+
   const value = useMemo(
     () => ({
       token,
@@ -102,6 +113,7 @@ export function AuthProvider({ children }) {
       isAuthenticated: Boolean(token && user),
       login,
       register,
+      updateProfile,
       logout: clearSession,
       apiBase: API_BASE,
     }),
