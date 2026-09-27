@@ -56,12 +56,13 @@ function Card({ icon: Icon, title, description, href }) {
   )
 }
 
-function SummaryCard({ label, value, sub }) {
+function SummaryCard({ label, value, sub, meaning }) {
   return (
     <div className="rounded-xl border border-white/[0.06] bg-[#07111C] p-4">
       <div className="text-[10px] font-bold uppercase tracking-[0.1em] text-[#536A7D]">{label}</div>
       <div className="mt-2 text-lg font-semibold text-white">{value || '—'}</div>
       {sub && <div className="mt-1 text-[11px] text-[#71869A]">{sub}</div>}
+      {meaning && <div className="mt-2 text-[11px] leading-4 text-[#8FA4B8]">{meaning}</div>}
     </div>
   )
 }
@@ -234,21 +235,25 @@ export default function PalintanganPage() {
             label="Hari · Pasaran"
             value={calendar ? `${calendar.hari} · ${calendar.pasaran}` : null}
             sub={calendar?.wuku ? `Wuku ${calendar.wuku}` : null}
+            meaning="Identitas hari yang menjadi dasar pembacaan Palintangan."
           />
           <SummaryCard
             label="Hijriah"
             value={calendar?.hijri ? `${calendar.hijri.day} ${calendar.hijri.month}` : null}
             sub={calendar?.hijri?.year ? `${calendar.hijri.year} H` : null}
+            meaning="Menentukan bulan dan kelompok aturan Palintangan yang sedang berlaku."
           />
           <SummaryCard
             label="Watek Patokan"
             value={watekPatokan?.watek}
             sub={watekPatokan?.month ? `Bulan ${watekPatokan.month}` : null}
+            meaning="Watek yang menjadi patokan karakter bulan menurut sumber."
           />
           <SummaryCard
             label="Status Hari"
             value={navigation?.status_hari}
             sub={navigation?.interpretation}
+            meaning="NORMAL berarti tidak masuk pantangan atau hari selamet khusus; NAAS dan SELAMET mengikuti rule bulan."
           />
         </div>
 
@@ -257,35 +262,39 @@ export default function PalintanganPage() {
             label="Gagalang Pasaran"
             value={gagalang?.direction}
             sub={gagalang?.next_pasaran ? `Berikutnya: ${gagalang.next_pasaran}` : null}
+            meaning="Arah yang ditunjukkan oleh rotasi pasaran dalam rule Gagalang."
           />
           <SummaryCard
             label="Gagalang Poe"
             value={gagalangPoe?.watek?.join(' · ') || '—'}
             sub={gagalangPoe?.month_patokan?.watek ? `Patokan: ${gagalangPoe.month_patokan.watek}` : null}
+            meaning="Watek yang dikaitkan sumber dengan pasangan hari patokan bulan."
           />
           <SummaryCard
             label="Pernaasan"
             value={pernaasan?.is_today ? 'PERNAASAN' : 'Bukan pernaasan'}
             sub={pernaasan?.dates?.length ? `Tanggal: ${pernaasan.dates.join(' · ')}` : null}
+            meaning="Menunjukkan apakah tanggal ini termasuk tanggal yang ditandai Pernaasan pada bulan tersebut."
           />
           <SummaryCard
             label="Jaya · Apes"
             value={jayaApes ? `${jayaApes.jaya} · ${jayaApes.apes}` : null}
             sub={jayaApes?.status === 'CAKRA_LANGIT_RECONSTRUCTED' ? 'Rekonstruksi Cakra Langit' : jayaApes?.status}
+            meaning="Posisi siklus Jaya dan Apes. Hasil ini diberi label rekonstruksi, bukan klaim formula manuskrip tunggal."
           />
         </div>
 
         <div className="mt-3 rounded-xl border border-white/[0.06] bg-[#07111C] p-4">
           <div className="text-[10px] font-bold uppercase tracking-[0.1em] text-[#536A7D]">Navigasi Hari Ini</div>
           <div className="mt-3 grid gap-3 sm:grid-cols-3">
-            <SummaryCard label="Pantangan" value={navigation?.pantangan_hari?.join(' · ') || '—'} />
-            <SummaryCard label="Keselamatan" value={navigation?.hari_keselamatan?.join(' · ') || '—'} />
-            <SummaryCard label="Arah Rizki" value={navigation?.arah_rizki} sub={navigation?.month_group ? `Kelompok bulan ${navigation.month_group}` : null} />
+            <SummaryCard label="Pantangan" value={navigation?.pantangan_hari?.join(' · ') || '—'} meaning="Hari yang ditandai sebagai hari pantangan dalam kelompok bulan ini." />
+            <SummaryCard label="Keselamatan" value={navigation?.hari_keselamatan?.join(' · ') || '—'} meaning="Hari yang ditandai sebagai hari selamet dalam kelompok bulan ini." />
+            <SummaryCard label="Arah Rizki" value={navigation?.arah_rizki} sub={navigation?.month_group ? `Kelompok bulan ${navigation.month_group}` : null} meaning="Arah yang ditunjukkan rule kelompok bulan; bukan jaminan hasil atau keputusan otomatis." />
           </div>
         </div>
 
         <p className="mt-4 text-xs leading-5 text-[#71869A]">
-          Peta memberi pituduh; nu nyetir tetep urang. Detail formula dan jejak perhitungan ditempatkan di halaman perhitungan masing-masing.
+          Peta ini menjawab “hari ini posisinya bagaimana?” sebelum Anda memilih perhitungan berikutnya. Nilai di atas adalah pembacaan rule Palintangan; pengguna tetap menentukan tindakan dan keputusan.
         </p>
       </section>
 
@@ -296,12 +305,12 @@ export default function PalintanganPage() {
         </div>
 
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          <Card icon={UserRound} title="Kelahiran" description="Baca konteks kelahiran, naktu, watek, Gagalang, Pernaasan, dan Jaya / Apes." href="/dashboard/palintangan?view=kelahiran" />
-          <Card icon={Moon} title="Hitung Nama" description="Masuk ke perhitungan naktu nama dan Pancaka yang mapping-nya sudah terverifikasi." href="/dashboard/palintangan?view=nama" />
-          <Card icon={HeartHandshake} title="Repok / Jodoh" description="Ruang untuk membandingkan dua konteks personal dalam perhitungan yang relevan." href="/dashboard/palintangan?view=jodoh" />
-          <Card icon={Leaf} title="Tanam / Panen" description="Gunakan tanggal dan rule Palintangan yang berkaitan dengan tanam, panen, dan hasil." href="/dashboard/palintangan?view=tanam-panen" />
-          <Card icon={Route} title="Perjalanan / Arah" description="Baca Gagalang, arah, pantangan, dan keselamatan untuk konteks perjalanan." href="/dashboard/palintangan?view=perjalanan" />
-          <Card icon={Compass} title="Waktu / Jam" description="Masuk ke perhitungan berbasis waktu dan jam ketika rule sumber sudah tersedia." href="/dashboard/palintangan?view=waktu" />
+          <Card icon={UserRound} title="Kelahiran" description="Untuk membaca karakter dan konteks seseorang dari tanggal kelahiran: hari, pasaran, naktu, watek, dan hasil terkait." href="/dashboard/palintangan?view=kelahiran" />
+          <Card icon={Moon} title="Hitung Nama" description="Untuk menghitung naktu dari nama dan membaca hasil Pancaka yang mapping sumbernya sudah tersedia." href="/dashboard/palintangan?view=nama" />
+          <Card icon={HeartHandshake} title="Repok / Jodoh" description="Untuk membandingkan dua profil personal ketika rule perbandingan yang relevan digunakan." href="/dashboard/palintangan?view=jodoh" />
+          <Card icon={Leaf} title="Tanam / Panen" description="Untuk membaca tanggal dan rule yang berkaitan dengan waktu menanam, memanen, dan hasil." href="/dashboard/palintangan?view=tanam-panen" />
+          <Card icon={Route} title="Perjalanan / Arah" description="Untuk membaca arah Gagalang serta hari pantangan dan keselamatan sebelum melakukan perjalanan." href="/dashboard/palintangan?view=perjalanan" />
+          <Card icon={Compass} title="Waktu / Jam" description="Untuk membaca perhitungan yang memakai waktu atau jam ketika rule sumbernya tersedia." href="/dashboard/palintangan?view=waktu" />
         </div>
       </section>
     </section>
