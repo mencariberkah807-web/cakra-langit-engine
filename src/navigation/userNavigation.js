@@ -19,7 +19,6 @@ export const primaryNav = [
   [Sparkles, 'Weton', '/dashboard/weton'],
   [CircleUserRound, 'BaZi', '/dashboard/bazi'],
   [ListChecks, 'Paririmbon', '/dashboard/paririmbon'],
-  [Sun, 'Palintangan', '/dashboard/palintangan'],
   [Moon, 'Almanac', '/dashboard/almanac'],
   [CalendarDays, 'Riwayat', '/dashboard/history'],
 ]
