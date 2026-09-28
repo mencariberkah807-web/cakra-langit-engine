@@ -1175,3 +1175,68 @@ Current execution gate:
 ```
 
 Phase 7 closes the currently authorized implementation cycle. Further engine/rule work requires a new scoped approval and must not infer unresolved Paririmbon formulas.
+
+
+## 28. PHASE 8A — PROFILE CONTEXT BOUNDARY — 28 SEP 2026
+
+Phase 8A establishes the personal-profile boundary without integrating or modifying existing domain engines.
+
+### Locked boundary
+
+```text
+TodayContext
+  = current temporal / live context
+
+ProfileContext
+  = personal profile and birth inputs
+```
+
+`ProfileContext` owns:
+
+- profile id
+- display name
+- birth date
+- birth time
+- birth location
+
+Birth inputs must not be placed into `TodayContext` merely for convenience.
+
+### Adapter contract
+
+A `createProfileResult()` contract is now available for future profile-domain adapters. No BaZi, Jawa, or Candra Bhumi engine has been modified by Phase 8A.
+
+### Existing-engine audit result
+
+- BaZi engine: existing and protected.
+- Jawa engine: existing and protected; current calendar integration remains unchanged.
+- Candra Bhumi / Weton Sunda: no standalone engine found in the repository; no formula was invented.
+- Profile UI is not treated as a profile calculation engine.
+
+### Scope protection
+
+Phase 8A does **not**:
+
+- duplicate the Jawa engine;
+- move Jawa calendar results out of the calendar layer;
+- add BaZi calculations to the frontend;
+- create a Candra Bhumi formula;
+- add personal inputs to TodayContext;
+- register profile engines before their adapters and data contracts are explicitly scoped.
+
+Current execution gate:
+
+```text
+[✓] Phase 0 — Baseline Lock
+[✓] Phase 1 — Natural Layer
+[✓] Phase 2 — Global Snapshot
+[✓] Phase 3 — Source Audit
+[✓] Phase 4A — Sawal Pernaasan
+[✓] Phase 4B — Source/Data Validation
+[✓] Phase 5 — Remaining Gap Audit
+[✓] Phase 6 — Adapter + Registry Integration
+[✓] Phase 7 — Final UI / Global Snapshot Regression
+[✓] Phase 8A — Profile Context Boundary
+[ ] Phase 8B — Profile Engine Integration
+```
+
+Phase 8A is complete. Further profile-engine integration requires a separately scoped approval.
