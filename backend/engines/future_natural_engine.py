@@ -23,7 +23,7 @@ WEATHER_URL = "https://api.open-meteo.com/v1/forecast"
 AIR_QUALITY_URL = "https://air-quality-api.open-meteo.com/v1/air-quality"
 GEOMAG_URL = "https://services.swpc.noaa.gov/json/planetary_k_index_1m.json"
 RADIATION_URL = "https://simplemap.safecast.org/ogc/collections/sensors/items"
-VOLCANO_URL = "https://webservices.volcano.si.edu/geoserver/GVP-VOTW/ows"
+VOLCANO_URL = "https://webservices.volcano.si.edu/geoserver/GVP-VOTW/wfs"
 EARTHQUAKE_URL = "https://earthquake.usgs.gov/fdsnws/event/1/query"
 MARINE_URL = "https://marine-api.open-meteo.com/v1/marine"
 
