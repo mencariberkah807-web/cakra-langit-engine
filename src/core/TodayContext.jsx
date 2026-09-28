@@ -102,6 +102,8 @@ export function TodayProvider({ children }) {
     return null
   })
   const [apiData, setApiData] = useState(null)
+  const [palintanganLoading, setPalintanganLoading] = useState(false)
+  const [palintanganError, setPalintanganError] = useState('')
 
   useEffect(() => {
     let cancelled = false
@@ -178,6 +180,39 @@ export function TodayProvider({ children }) {
     return () => { cancelled = true }
   }, [selectedLocation, almanacFetchKey, liveMode])
 
+  const palintanganDateISO = getLocalDateISO(activeDate, activeTimezone)
+
+  useEffect(() => {
+    let cancelled = false
+
+    setPalintanganLoading(true)
+    setPalintanganError('')
+
+    fetch(`${getApiBase()}/api/palintangan/sunda?date_value=${palintanganDateISO}`)
+      .then((response) => {
+        if (!response.ok) throw new Error(`Palintangan API error: ${response.status}`)
+        return response.json()
+      })
+      .then((result) => {
+        if (!cancelled) {
+          setApiData((current) => ({
+            ...(current || {}),
+            palintangan: result,
+          }))
+        }
+      })
+      .catch((error) => {
+        if (!cancelled) {
+          setPalintanganError(error.message || 'Gagal memuat Palintangan Sunda.')
+        }
+      })
+      .finally(() => {
+        if (!cancelled) setPalintanganLoading(false)
+      })
+
+    return () => { cancelled = true }
+  }, [selectedLocation, palintanganDateISO])
+
   function setSelectedDate(date) {
     if (!date) {
       setSelectedDateState(null)
@@ -238,6 +273,8 @@ export function TodayProvider({ children }) {
       location,
       locations: getPopularLocations(100),
       apiData,
+      palintanganLoading,
+      palintanganError,
       now,
       selectedDate: activeDate,
       selectedTime,
@@ -252,7 +289,7 @@ export function TodayProvider({ children }) {
         setSelectedTimeState(null)
       },
     }
-  }, [activeDate, now, selectedLocation, apiData, selectedTime, liveMode])
+  }, [activeDate, now, selectedLocation, apiData, palintanganLoading, palintanganError, selectedTime, liveMode])
 
   return <TodayContext.Provider value={value}>{children}</TodayContext.Provider>
 }
