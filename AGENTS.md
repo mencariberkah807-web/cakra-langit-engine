@@ -1063,3 +1063,59 @@ Current execution gate:
 [✓] Phase 3 — Audit Paririmbon Source
 [ ] Phase 4 — Complete/Repair Paririmbon Engine
 ```
+
+
+## 26. PARIRIMBON GAP AUDIT — 28 SEP 2026
+
+Phase 5 reviewed the remaining Paririmbon gaps against the authorized source inventory before any further engine changes.
+
+### Watek Jam — protected gap
+
+The primary source verifies that:
+
+- an hour-specific Watek calculation exists;
+- the source gives a verified example: **Minggu 09:00 → baik**;
+- the source describes approximately five classifications across 24 hours.
+
+However, the exact interval boundaries and calculation formula were not recovered. The source inventory therefore classifies the Watek Jam rule as **NOT LOCKED**.
+
+Implementation rule:
+
+- do not create five time slots by inference;
+- do not infer a day/time formula from the single Minggu 09:00 example;
+- do not promote candidate Wanci intervals from comparative working material to SSOT;
+- the verified Minggu 09:00 example may be retained as a regression fixture only.
+
+### Jam → tanggal / keselamatan / rizki
+
+A separate source rule maps Jam 1–10 to tanggal, keselamatan, and rizki time. This is a distinct rule family from Watek Jam and remains **PARTIAL**. It must not be merged into Watek Jam.
+
+### Remaining protected gaps
+
+The following remain outside implementation scope until source evidence is sufficient:
+
+- Pancasuda Universal
+- Kala Alit
+- Kala Ageung
+- Pernaasan formation formula
+- Jaya / Apes manuscript formula
+- complete Watek Jam interval/formula
+- complete Jam → tanggal/keselamatan/rizki rule
+
+### Phase 5 conclusion
+
+No new calculation formula is authorized by this audit. The next implementation target is only a source-backed improvement if additional primary-source evidence becomes available.
+
+Current execution gate:
+
+```text
+[✓] Phase 0 — Baseline Lock
+[✓] Phase 1 — Restore Natural Layer
+[✓] Phase 2 — Lock Global Snapshot
+[✓] Phase 3 — Audit Paririmbon Source
+[✓] Phase 4A — Repair Sawal Pernaasan
+[✓] Phase 4B — Source/Data Validation
+[✓] Phase 5 — Audit Remaining Paririmbon Gaps
+[ ] Phase 6 — API / Adapter / Registry Validation
+[ ] Phase 7 — Final UI / Global Snapshot Regression
+```
