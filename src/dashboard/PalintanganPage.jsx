@@ -13,14 +13,7 @@ import {
 } from 'lucide-react'
 import { useTodayContext } from '../core/TodayContext'
 import { useAuth } from '../auth/AuthContext'
-
-const ENV_API_BASE = import.meta.env.VITE_API_BASE_URL || ''
-
-function getApiBase() {
-  if (typeof window !== 'undefined' && window.location.hostname.includes('-5173.app.github.dev')) return ''
-  if (ENV_API_BASE) return ENV_API_BASE
-  return 'http://127.0.0.1:8000'
-}
+import { getResultsByGroup } from '../core/resultRegistry'
 
 function toDateISO(date) {
   if (!date) return ''
@@ -233,12 +226,9 @@ function DetailView({ view, data, selectedDate, displayName, locationName }) {
 
 export default function PalintanganPage() {
   const { user } = useAuth()
-  const { selectedDate, location, apiData } = useTodayContext()
+  const { selectedDate, location, apiData, setSelectedDate, palintanganLoading, palintanganError } = useTodayContext()
   const [inspectionDate, setInspectionDate] = useState(selectedDate || new Date())
   const [profileLabel, setProfileLabel] = useState('')
-  const [data, setData] = useState(null)
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState('')
 
   const view = new URLSearchParams(window.location.search).get('view')
   const displayName = user?.display_name || user?.email?.split('@')[0] || 'Pengguna'
@@ -250,29 +240,11 @@ export default function PalintanganPage() {
     if (selectedDate) setInspectionDate(selectedDate)
   }, [selectedDate])
 
-  useEffect(() => {
-    if (!isoDate) return
-    let cancelled = false
-    setLoading(true)
-    setError('')
-
-    fetch(`${getApiBase()}/api/palintangan/sunda?date_value=${isoDate}`)
-      .then((response) => {
-        if (!response.ok) throw new Error(`Palintangan API error: ${response.status}`)
-        return response.json()
-      })
-      .then((result) => {
-        if (!cancelled) setData(result)
-      })
-      .catch((err) => {
-        if (!cancelled) setError(err.message || 'Gagal memuat Palintangan Sunda.')
-      })
-      .finally(() => {
-        if (!cancelled) setLoading(false)
-      })
-
-    return () => { cancelled = true }
-  }, [isoDate])
+  const palintanganResult = getResultsByGroup('strategy', { apiData })
+    .find((result) => result.id === 'palintangan-sunda') || null
+  const data = palintanganResult?.detail || null
+  const loading = palintanganLoading
+  const error = palintanganError
 
   const calendar = data?.calendar_context
   const naktu = data?.naktu
@@ -364,7 +336,10 @@ export default function PalintanganPage() {
                 value={isoDate}
                 onChange={(event) => {
                   const next = parseDateInput(event.target.value)
-                  if (next) setInspectionDate(next)
+                  if (next) {
+                    setInspectionDate(next)
+                    setSelectedDate(next)
+                  }
                 }}
                 className="w-full rounded-xl border border-white/[0.08] bg-[#07111C] px-3.5 py-2.5 text-sm text-white outline-none focus:border-cyan-300/30"
               />
