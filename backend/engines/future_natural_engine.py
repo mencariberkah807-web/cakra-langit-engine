@@ -31,6 +31,18 @@ MARINE_URL = "https://marine-api.open-meteo.com/v1/marine"
 # a secondary coastal signal when the administrative location metadata is false.
 MARINE_COASTAL_RADIUS_KM = 30.0
 
+# Static GVP catalog fallback. This is catalog metadata, not live volcanic activity.
+# Coordinates and volcano number are from the Smithsonian Global Volcanism Program.
+GVP_CATALOG = (
+    {
+        "name": "Tangkuban Parahu",
+        "number": "263090",
+        "latitude": -6.77,
+        "longitude": 107.60,
+    },
+)
+
+
 
 WMO_CODES = {
     0: "Clear sky",
@@ -323,59 +335,93 @@ def _fetch_radiation(latitude, longitude):
 
 def _fetch_volcanic(latitude, longitude):
     span = 5.0
-    data = _get_json(
-        VOLCANO_URL,
-        {
-            "service": "WFS",
-            "version": "1.0.0",
-            "request": "GetFeature",
-            "typeName": "GVP-VOTW:Smithsonian_VOTW_Holocene_Volcanoes",
-            "outputFormat": "application/json",
-            "maxFeatures": 100,
-            "bbox": f"{longitude - span},{latitude - span},{longitude + span},{latitude + span}",
-        },
-    )
-    features = data.get("features") or []
-    candidates = []
-    for feature in features:
-        props = feature.get("properties") or {}
-        geometry = feature.get("geometry") or {}
-        coords = geometry.get("coordinates") or []
-        if len(coords) < 2:
-            continue
-        try:
-            distance = _distance_km(latitude, longitude, float(coords[1]), float(coords[0]))
-            candidates.append((distance, props))
-        except (TypeError, ValueError):
-            continue
+    try:
+        data = _get_json(
+            VOLCANO_URL,
+            {
+                "service": "WFS",
+                "version": "1.0.0",
+                "request": "GetFeature",
+                "typeName": "GVP-VOTW:Smithsonian_VOTW_Holocene_Volcanoes",
+                "outputFormat": "application/json",
+                "maxFeatures": 100,
+                "bbox": f"{longitude - span},{latitude - span},{longitude + span},{latitude + span}",
+            },
+        )
+        features = data.get("features") or []
+        candidates = []
+        for feature in features:
+            props = feature.get("properties") or {}
+            geometry = feature.get("geometry") or {}
+            coords = geometry.get("coordinates") or []
+            if len(coords) < 2:
+                continue
+            try:
+                distance = _distance_km(latitude, longitude, float(coords[1]), float(coords[0]))
+                candidates.append((distance, props))
+            except (TypeError, ValueError):
+                continue
 
-    if not candidates:
+        if candidates:
+            distance, props = min(candidates, key=lambda item: item[0])
+            name = props.get("Volcano_Name") or props.get("Volcano_Name_") or "Unnamed volcano"
+            number = props.get("Volcano_Number") or "—"
+            return _available(
+                "volcanic",
+                "Volcanic",
+                str(name),
+                f"{distance:.0f} km · Holocene volcano · LIVE",
+                [
+                    {"label": "Volcano number", "value": str(number)},
+                    {"label": "Distance", "value": f"{distance:.0f} km"},
+                    {"label": "Dataset", "value": "VOTW Holocene volcanoes"},
+                ],
+                "Smithsonian Global Volcanism Program",
+            )
+
         return _available(
             "volcanic",
             "Volcanic",
             "No nearby volcano record",
-            "Smithsonian GVP",
+            "Smithsonian GVP · LIVE",
             [{"label": "Search radius", "value": "≈ 550 km"}],
             "Smithsonian Global Volcanism Program",
         )
+    except Exception as exc:
+        catalog_candidates = []
+        for volcano in GVP_CATALOG:
+            distance = _distance_km(
+                latitude,
+                longitude,
+                volcano["latitude"],
+                volcano["longitude"],
+            )
+            catalog_candidates.append((distance, volcano))
 
-    distance, props = min(candidates, key=lambda item: item[0])
-    name = props.get("Volcano_Name") or props.get("Volcano_Name_") or "Unnamed volcano"
-    number = props.get("Volcano_Number") or "—"
+        if catalog_candidates:
+            distance, volcano = min(catalog_candidates, key=lambda item: item[0])
+            return _available(
+                "volcanic",
+                "Volcanic",
+                volcano["name"],
+                f"{distance:.0f} km · GVP catalog",
+                [
+                    {"label": "Volcano number", "value": volcano["number"]},
+                    {"label": "Distance", "value": f"{distance:.0f} km"},
+                    {"label": "Status", "value": "Catalog fallback; not a live activity reading"},
+                    {"label": "Provider status", "value": f"Unavailable: {exc}"},
+                ],
+                "Smithsonian Global Volcanism Program · catalog fallback",
+            )
 
-    return _available(
-        "volcanic",
-        "Volcanic",
-        str(name),
-        f"{distance:.0f} km · Holocene volcano",
-        [
-            {"label": "Volcano number", "value": str(number)},
-            {"label": "Distance", "value": f"{distance:.0f} km"},
-            {"label": "Dataset", "value": "VOTW Holocene volcanoes"},
-        ],
-        "Smithsonian Global Volcanism Program",
-    )
-
+        return _available(
+            "volcanic",
+            "Volcanic",
+            "Provider unavailable",
+            "Smithsonian GVP",
+            [{"label": "Status", "value": str(exc)}],
+            "Smithsonian Global Volcanism Program",
+        )
 
 def _fetch_seismic(latitude, longitude, timezone, target_date):
     start = datetime.combine(target_date, datetime.min.time())
