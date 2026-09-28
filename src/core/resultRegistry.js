@@ -5,6 +5,7 @@ import { adaptBaliCalendar } from '../adapters/bali.adapter.js'
 import { adaptKalacakraCalendar } from '../adapters/kalacakra.adapter.js'
 import { adaptChineseLunar } from '../adapters/chineseLunar.adapter.js'
 import { adaptHijri } from '../adapters/hijri.adapter.js'
+import { adaptPalintanganSunda } from '../adapters/palintanganSunda.adapter.js'
 
 import { adaptSun } from '../adapters/sun.adapter.js'
 import { adaptMoon } from '../adapters/moon.adapter.js'
@@ -48,6 +49,12 @@ export const RESULT_REGISTRY = [
     id: 'hijri',
     group: 'calendar',
     adapt: adaptHijri,
+  },
+
+  {
+    id: 'palintangan-sunda',
+    group: 'strategy',
+    adapt: adaptPalintanganSunda,
   },
 
   {
