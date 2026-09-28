@@ -21,10 +21,10 @@ export default function WetonPage() {
   return (
     <section className="mx-auto max-w-[1180px] px-5 py-7 sm:px-7 lg:py-9">
       <header className="mb-7">
-        <div className="text-[10px] font-bold uppercase tracking-[0.16em] text-[#22D3EE]">Cakra Langit · Jawa · Engine Weton</div>
-        <h1 className="mt-2 text-2xl font-semibold tracking-tight text-white sm:text-3xl">Primbon Jawa</h1>
+        <div className="text-[10px] font-bold uppercase tracking-[0.16em] text-[#22D3EE]">Cakra Langit · Jawa</div>
+        <h1 className="mt-2 text-2xl font-semibold tracking-tight text-white sm:text-3xl">Weton Jawa</h1>
         <p className="mt-2 max-w-2xl text-sm leading-6 text-[#8FA4B8]">
-          Workspace Primbon Jawa dengan engine Weton sebagai dasar perhitungan kalender dan metode terkait.
+          Workspace untuk menghitung dan membaca data Weton berdasarkan metode yang tersedia.
         </p>
       </header>
 
@@ -76,7 +76,7 @@ export default function WetonPage() {
         </div>
 
         <div className="space-y-5">
-          <SectionCard title="Hasil Primbon" eyebrow="Result">
+          <SectionCard title="Hasil Weton" eyebrow="Result">
             <div className="rounded-xl border border-white/[0.07] bg-[#07111C] p-5 text-center sm:p-7">
               <div className="text-[10px] font-bold uppercase tracking-[0.16em] text-[#536A7D]">Belum ada data</div>
               <div className="mt-2 text-lg font-semibold text-white">Masukkan data kelahiran</div>
