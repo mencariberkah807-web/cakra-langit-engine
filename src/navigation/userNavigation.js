@@ -16,9 +16,10 @@ export const primaryNav = [
   [Sun, 'Kalkulasi Hari Ini', '/dashboard/today'],
   [Leaf, 'Natural Layer', '/dashboard/natural'],
   [WandSparkles, 'Birth Converter', '/dashboard/birth-converter'],
-  [Sparkles, 'Primbon', '/dashboard/weton'],
+  [Sparkles, 'Weton', '/dashboard/weton'],
   [CircleUserRound, 'BaZi', '/dashboard/bazi'],
   [ListChecks, 'Paririmbon', '/dashboard/paririmbon'],
+  [Sun, 'Palintangan', '/dashboard/palintangan'],
   [Moon, 'Almanac', '/dashboard/almanac'],
   [CalendarDays, 'Riwayat', '/dashboard/history'],
 ]
