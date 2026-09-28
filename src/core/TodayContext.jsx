@@ -171,7 +171,7 @@ export function TodayProvider({ children }) {
 
     fetchAlmanac(selectedLocation, almanacFetchDate, liveMode)
       .then((result) => {
-        if (!cancelled) setApiData(result)
+        if (!cancelled) setApiData((current) => ({ ...result, palintangan: current?.palintangan || null }))
       })
       .catch(() => {
         if (!cancelled) setApiData(null)
@@ -187,6 +187,7 @@ export function TodayProvider({ children }) {
 
     setPalintanganLoading(true)
     setPalintanganError('')
+    setApiData((current) => ({ ...(current || {}), palintangan: null }))
 
     fetch(`${getApiBase()}/api/palintangan/sunda?date_value=${palintanganDateISO}`)
       .then((response) => {
