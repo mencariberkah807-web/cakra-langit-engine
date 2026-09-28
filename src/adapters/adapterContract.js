@@ -49,3 +49,30 @@ export function createStrategyResult({
     meta,
   }
 }
+
+
+export function createProfileResult({
+  id,
+  title,
+  primary = '',
+  secondary = '',
+  details = [],
+  detail = null,
+  effectiveDate = null,
+  boundary = 'PROFILE_INPUT',
+  events = [],
+  meta = {},
+}) {
+  return {
+    id,
+    title,
+    primary,
+    secondary,
+    details,
+    detail,
+    effectiveDate,
+    boundary,
+    events,
+    meta,
+  }
+}
