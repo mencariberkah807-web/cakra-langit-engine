@@ -1119,3 +1119,59 @@ Current execution gate:
 [ ] Phase 6 — API / Adapter / Registry Validation
 [ ] Phase 7 — Final UI / Global Snapshot Regression
 ```
+
+
+## 27. PHASE 6–7 GLOBAL SNAPSHOT VALIDATION — 28 SEP 2026
+
+Phase 6 adapter/registry integration was applied after explicit approval.
+
+Validated integration path:
+
+```text
+Palintangan Engine
+    ↓
+/api/palintangan/sunda
+    ↓
+TodayContext
+    ↓
+Palintangan Sunda Adapter
+    ↓
+Result Registry
+    ↓
+strategy / palintangan-sunda
+    ↓
+Palintangan UI
+```
+
+The Palintangan page no longer owns a direct Palintangan API request. It consumes the normalized registry result while preserving the engine result as the adapter detail payload.
+
+### Phase 7 validation
+
+GitHub Actions validation for commit `0c40f7fc6f10e2a1ea095f437bebb08f9c9e5abf` completed successfully:
+
+- Cakra Langit Validation: **success**
+  - Frontend build: success
+  - Backend install: success
+  - Backend compile: success
+  - Authentication end-to-end smoke test: success
+- Weton Regression: **success**
+  - Backend dependency installation: success
+  - Jawa/Weton regression tests: success
+
+No new calculation formula was introduced during Phase 6–7. Existing Paririmbon protected gaps remain unchanged.
+
+Current execution gate:
+
+```text
+[✓] Phase 0 — Baseline Lock
+[✓] Phase 1 — Natural Layer
+[✓] Phase 2 — Global Snapshot
+[✓] Phase 3 — Source Audit
+[✓] Phase 4A — Sawal Pernaasan
+[✓] Phase 4B — Source/Data Validation
+[✓] Phase 5 — Remaining Gap Audit
+[✓] Phase 6 — Adapter + Registry Integration
+[✓] Phase 7 — Final UI / Global Snapshot Regression
+```
+
+Phase 7 closes the currently authorized implementation cycle. Further engine/rule work requires a new scoped approval and must not infer unresolved Paririmbon formulas.
