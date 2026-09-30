@@ -13,8 +13,8 @@ export function adaptBaziProfile(context) {
   }
 
   const pillars = result.pillars || {}
-  const primary = result.day_master?.name || result.dayMaster?.name || ''
-  const secondary = Object.values(pillars).map((pillar) => pillar?.name || pillar?.ganZhi || '').filter(Boolean).join(' · ')
+  const primary = result.eightChar || ''
+  const secondary = Object.values(pillars).map((pillar) => pillar?.selected || pillar?.ganzhi || '').filter(Boolean).join(' · ')
 
   return createProfileResult({
     id: 'bazi-profile',
@@ -22,7 +22,7 @@ export function adaptBaziProfile(context) {
     primary,
     secondary,
     details: [
-      { label: 'Day Master', value: primary },
+      { label: 'Eight Characters', value: primary },
       { label: 'Pillars', value: secondary },
     ],
     detail: result,
