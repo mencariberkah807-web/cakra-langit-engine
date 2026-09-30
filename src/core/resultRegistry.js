@@ -6,6 +6,8 @@ import { adaptKalacakraCalendar } from '../adapters/kalacakra.adapter.js'
 import { adaptChineseLunar } from '../adapters/chineseLunar.adapter.js'
 import { adaptHijri } from '../adapters/hijri.adapter.js'
 import { adaptPalintanganSunda } from '../adapters/palintanganSunda.adapter.js'
+import { adaptBaziProfile } from '../adapters/baziProfile.adapter.js'
+import { adaptJawaProfile } from '../adapters/jawaProfile.adapter.js'
 
 import { adaptSun } from '../adapters/sun.adapter.js'
 import { adaptMoon } from '../adapters/moon.adapter.js'
@@ -55,6 +57,17 @@ export const RESULT_REGISTRY = [
     id: 'palintangan-sunda',
     group: 'strategy',
     adapt: adaptPalintanganSunda,
+  },
+
+  {
+    id: 'bazi-profile',
+    group: 'profile',
+    adapt: adaptBaziProfile,
+  },
+  {
+    id: 'jawa-profile',
+    group: 'profile',
+    adapt: adaptJawaProfile,
   },
 
   {
