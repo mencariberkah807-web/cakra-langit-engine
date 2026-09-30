@@ -15,6 +15,7 @@ from engines.eclipse_engine import get_eclipse_data
 from engines.future_natural_engine import get_future_natural_data
 from engines.earth_engine import get_earth_data
 from engines.hijri_engine import get_hijri_data
+from engines.jawa_engine import get_jawa_data
 from engines.location_engine import (
     find_location,
     find_location_by_id,
@@ -190,6 +191,48 @@ def natural_future(
         raise HTTPException(status_code=400, detail=f"Invalid date_value: {exc}")
 
     return get_future_natural_data(location, target_date)
+
+
+@app.get("/api/profile/blueprint")
+def profile_blueprint(
+    current_user: CurrentUser,
+    birth_date: str,
+    birth_time: str = "00:00:00",
+    day_boundary: str = "MIDNIGHT",
+):
+    try:
+        birth = date.fromisoformat(birth_date)
+        parts = birth_time.split(":")
+        if len(parts) not in (2, 3):
+            raise ValueError("Invalid birth_time")
+        hour = int(parts[0])
+        minute = int(parts[1])
+        second = int(parts[2]) if len(parts) == 3 else 0
+        datetime(birth.year, birth.month, birth.day, hour, minute, second)
+        bazi = get_bazi_data(
+            year=birth.year,
+            month=birth.month,
+            day=birth.day,
+            hour=hour,
+            minute=minute,
+            second=second,
+            day_boundary=day_boundary,
+        )
+        jawa = get_jawa_data(birth)
+        return {
+            "profile": {
+                "birth": {
+                    "date": birth.isoformat(),
+                    "time": f"{hour:02d}:{minute:02d}:{second:02d}",
+                }
+            },
+            "bazi": bazi,
+            "jawa": jawa,
+        }
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=f"Invalid birth input: {exc}")
+    except RuntimeError as exc:
+        raise HTTPException(status_code=500, detail=str(exc))
 
 
 @app.get("/api/bazi")
