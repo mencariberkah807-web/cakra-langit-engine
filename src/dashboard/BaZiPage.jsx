@@ -4,6 +4,56 @@ import { adaptBaziProfile } from "../adapters/baziProfile.adapter.js";
 const API_BASE = import.meta.env.VITE_API_BASE_URL || "";
 const TOKEN_KEY = "cakra-langit:access-token";
 
+const STEMS = {
+  "甲": { pinyin: "Jia", element: "Wood", polarity: "Yang" },
+  "乙": { pinyin: "Yi", element: "Wood", polarity: "Yin" },
+  "丙": { pinyin: "Bing", element: "Fire", polarity: "Yang" },
+  "丁": { pinyin: "Ding", element: "Fire", polarity: "Yin" },
+  "戊": { pinyin: "Wu", element: "Earth", polarity: "Yang" },
+  "己": { pinyin: "Ji", element: "Earth", polarity: "Yin" },
+  "庚": { pinyin: "Geng", element: "Metal", polarity: "Yang" },
+  "辛": { pinyin: "Xin", element: "Metal", polarity: "Yin" },
+  "壬": { pinyin: "Ren", element: "Water", polarity: "Yang" },
+  "癸": { pinyin: "Gui", element: "Water", polarity: "Yin" },
+};
+
+const BRANCHES = {
+  "子": { pinyin: "Zi", animal: "Rat", element: "Water" },
+  "丑": { pinyin: "Chou", animal: "Ox", element: "Earth" },
+  "寅": { pinyin: "Yin", animal: "Tiger", element: "Wood" },
+  "卯": { pinyin: "Mao", animal: "Rabbit", element: "Wood" },
+  "辰": { pinyin: "Chen", animal: "Dragon", element: "Earth" },
+  "巳": { pinyin: "Si", animal: "Snake", element: "Fire" },
+  "午": { pinyin: "Wu", animal: "Horse", element: "Fire" },
+  "未": { pinyin: "Wei", animal: "Goat", element: "Earth" },
+  "申": { pinyin: "Shen", animal: "Monkey", element: "Metal" },
+  "酉": { pinyin: "You", animal: "Rooster", element: "Metal" },
+  "戌": { pinyin: "Xu", animal: "Dog", element: "Earth" },
+  "亥": { pinyin: "Hai", animal: "Pig", element: "Water" },
+};
+
+const PILLAR_NAMES = {
+  id: { year: "Pilar Tahun", month: "Pilar Bulan", day: "Pilar Hari", hour: "Pilar Jam", stem: "Batang Langit", branch: "Cabang Bumi", element: { Wood: "Kayu", Fire: "Api", Earth: "Tanah", Metal: "Logam", Water: "Air" }, polarity: { Yin: "Yin", Yang: "Yang" }, animal: { Rat: "Tikus", Ox: "Kerbau", Tiger: "Harimau", Rabbit: "Kelinci", Dragon: "Naga", Snake: "Ular", Horse: "Kuda", Goat: "Kambing", Monkey: "Monyet", Rooster: "Ayam", Dog: "Anjing", Pig: "Babi" }, pinyin: "Pinyin" },
+  en: { year: "Year Pillar", month: "Month Pillar", day: "Day Pillar", hour: "Hour Pillar", stem: "Heavenly Stem", branch: "Earthly Branch", element: { Wood: "Wood", Fire: "Fire", Earth: "Earth", Metal: "Metal", Water: "Water" }, polarity: { Yin: "Yin", Yang: "Yang" }, animal: { Rat: "Rat", Ox: "Ox", Tiger: "Tiger", Rabbit: "Rabbit", Dragon: "Dragon", Snake: "Snake", Horse: "Horse", Goat: "Goat", Monkey: "Monkey", Rooster: "Rooster", Dog: "Dog", Pig: "Pig" }, pinyin: "Pinyin" },
+};
+
+function describePillar(ganzhi, language) {
+  if (!ganzhi || [...ganzhi].length < 2) return null;
+  const chars = [...ganzhi];
+  const stem = STEMS[chars[0]];
+  const branch = BRANCHES[chars[1]];
+  if (!stem || !branch) return null;
+  const labels = PILLAR_NAMES[language];
+  return {
+    characters: chars.slice(0, 2).join(""),
+    pinyin: `${stem.pinyin} ${branch.pinyin}`,
+    stem: `${labels.polarity[stem.polarity]} ${labels.element[stem.element]}`,
+    branch: `${labels.animal[branch.animal]} · ${labels.element[branch.element]}`,
+    stemLabel: labels.stem,
+    branchLabel: labels.branch,
+  };
+}
+
 const COPY = {
   id: {
     eyebrow: "CAKRA LANGIT · CETAK BIRU DIRI",
@@ -27,6 +77,8 @@ const COPY = {
     characters: "Delapan Karakter",
     pillars: "Empat Pilar",
     original: "Notasi asli engine",
+    translated: "Pembacaan dalam Bahasa Indonesia",
+    year: "Pilar Tahun", month: "Pilar Bulan", day: "Pilar Hari", hour: "Pilar Jam", stem: "Batang Langit", branch: "Cabang Bumi",
   },
   en: {
     eyebrow: "CAKRA LANGIT · PERSONAL BLUEPRINT",
@@ -50,10 +102,12 @@ const COPY = {
     characters: "Eight Characters",
     pillars: "Four Pillars",
     original: "Original engine notation",
+    translated: "English reading",
+    year: "Year Pillar", month: "Month Pillar", day: "Day Pillar", hour: "Hour Pillar", stem: "Heavenly Stem", branch: "Earthly Branch",
   },
 };
 
-function ResultCard({ result, copy }) {
+function ResultCard({ result, copy, language }) {
   const details = [
     { label: copy.characters, value: result.details?.find((item) => item.label === "Eight Characters")?.value || result.primary },
     { label: copy.pillars, value: result.details?.find((item) => item.label === "Pillars")?.value || result.secondary },
@@ -68,7 +122,7 @@ function ResultCard({ result, copy }) {
         <>
           <p className="mt-3 text-xl font-semibold text-white">{result.primary || "—"}</p>
           <p className="mt-1 text-xs text-[#8FA4B8]">{copy.original}: {result.secondary || "—"}</p>
-          <div className="mt-4 grid gap-2 sm:grid-cols-2">
+          <h3 className="mt-5 text-sm font-semibold text-white">{copy.translated}</h3>\n          <div className="mt-3 grid gap-3 sm:grid-cols-2">\n            {pillarItems.map((item) => (\n              <div key={item.key} className="rounded-xl border border-white/[0.06] bg-[#07111C] p-4">\n                <div className="text-[10px] uppercase tracking-[0.1em] text-[#536A7D]">{item.label}</div>\n                <div className="mt-2 flex items-baseline gap-2">\n                  <span className="text-lg font-semibold text-white">{item.description.characters}</span>\n                  <span className="text-sm text-[#A9BDCF]">{item.description.pinyin}</span>\n                </div>\n                <div className="mt-3 text-xs text-[#8FA4B8]">{item.description.stemLabel}: <span className="text-[#D3E1EC]">{item.description.stem}</span></div>\n                <div className="mt-1 text-xs text-[#8FA4B8]">{item.description.branchLabel}: <span className="text-[#D3E1EC]">{item.description.branch}</span></div>\n              </div>\n            ))}\n          </div>\n          <h3 className="mt-5 text-sm font-semibold text-white">{copy.original}</h3>\n          <div className="mt-3 grid gap-2 sm:grid-cols-2">
             {details.map((item) => (
               <div key={item.label} className="rounded-lg border border-white/[0.06] bg-[#07111C] p-3">
                 <div className="text-[10px] uppercase tracking-[0.1em] text-[#536A7D]">{item.label}</div>
@@ -175,7 +229,7 @@ export default function BaZiPage() {
         <button type="submit" disabled={loading} className="mt-5 rounded-xl bg-[#174461] px-5 py-3 text-sm font-semibold text-white hover:bg-[#205878] disabled:opacity-60">{loading ? copy.loading : copy.submit}</button>
       </form>
 
-      {result && <div className="mt-5"><ResultCard result={result} copy={copy} /></div>}
+      {result && <div className="mt-5"><ResultCard result={result} copy={copy} language={language} /></div>}
     </section>
   );
 }
