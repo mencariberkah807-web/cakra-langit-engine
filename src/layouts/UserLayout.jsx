@@ -3,7 +3,7 @@ import { Home, CalendarDays, Sparkles, Compass, UserRound } from 'lucide-react'
 
 const mobileNav = [
   [Home, 'Dashboard', '/dashboard'],
-  [CalendarDays, 'Penanggalan', '/dashboard/almanac'],
+  [CalendarDays, 'Penanggalan', '/dashboard#calendar-systems-section'],
   [Sparkles, 'Blueprint', '/dashboard/weton'],
   [Compass, 'Strategi', '/dashboard/palintangan'],
   [UserRound, 'Profil', '/dashboard/profile'],
@@ -11,6 +11,7 @@ const mobileNav = [
 
 export default function UserLayout({ user, onLogout, children }) {
   const currentPath = window.location.pathname
+  const currentHash = window.location.hash
 
   return (
     <div className="min-h-screen bg-[#07111C] font-sans text-white antialiased">
@@ -27,11 +28,14 @@ export default function UserLayout({ user, onLogout, children }) {
       >
         <div className="mx-auto flex max-w-xl items-center justify-around gap-1">
           {mobileNav.map(([Icon, label, href]) => {
-            const active = href === '/dashboard'
-              ? currentPath === href
-              : href === '/dashboard/weton'
-                ? ['/dashboard/weton', '/dashboard/bazi', '/dashboard/paririmbon', '/dashboard/palelintangan'].includes(currentPath)
-                : currentPath === href || currentPath.startsWith(`${href}/`)
+            const [targetPath, targetHash = ''] = href.split('#')
+            const active = targetHash
+              ? currentPath === targetPath && currentHash === `#${targetHash}`
+              : href === '/dashboard'
+                ? currentPath === href && !currentHash
+                : href === '/dashboard/weton'
+                  ? ['/dashboard/weton', '/dashboard/bazi', '/dashboard/paririmbon', '/dashboard/palelintangan'].includes(currentPath)
+                  : currentPath === href || currentPath.startsWith(`${href}/`)
 
             return (
               <a
