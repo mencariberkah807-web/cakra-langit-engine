@@ -54,6 +54,7 @@ export default function CalendarSystems({ data }) {
       initial="hidden"
       animate="show"
       className="rounded-[20px] border border-[#173B5D] bg-[linear-gradient(145deg,#06182B_0%,#071D32_55%,#061525_100%)] p-5 shadow-[0_20px_55px_rgba(2,12,27,0.22)]"
+      id="calendar-systems-section"
       data-testid="calendar-systems-section"
     >
       <div className="mb-4 flex items-end justify-between gap-4">
