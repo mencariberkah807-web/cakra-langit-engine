@@ -3,13 +3,17 @@ import { LogOut } from 'lucide-react'
 
 export default function AppSidebar({ user, onLogout }) {
   const currentPath = window.location.pathname
+  const currentHash = window.location.hash
   const displayName = user?.display_name || user?.email?.split('@')[0] || 'Pengguna'
   const initials = displayName.slice(0, 2).toUpperCase()
 
   const renderItem = ([Icon, label, href]) => {
-    const active = href === '/dashboard'
-      ? currentPath === href
-      : currentPath === href || currentPath.startsWith(`${href}/`)
+    const [targetPath, targetHash = ''] = href.split('#')
+    const active = targetHash
+      ? currentPath === targetPath && currentHash === `#${targetHash}`
+      : href === '/dashboard'
+        ? currentPath === href && !currentHash
+        : currentPath === href || currentPath.startsWith(`${href}/`)
 
     return (
       <a
