@@ -122,7 +122,22 @@ function ResultCard({ result, copy, language }) {
         <>
           <p className="mt-3 text-xl font-semibold text-white">{result.primary || "—"}</p>
           <p className="mt-1 text-xs text-[#8FA4B8]">{copy.original}: {result.secondary || "—"}</p>
-          <h3 className="mt-5 text-sm font-semibold text-white">{copy.translated}</h3>\n          <div className="mt-3 grid gap-3 sm:grid-cols-2">\n            {pillarItems.map((item) => (\n              <div key={item.key} className="rounded-xl border border-white/[0.06] bg-[#07111C] p-4">\n                <div className="text-[10px] uppercase tracking-[0.1em] text-[#536A7D]">{item.label}</div>\n                <div className="mt-2 flex items-baseline gap-2">\n                  <span className="text-lg font-semibold text-white">{item.description.characters}</span>\n                  <span className="text-sm text-[#A9BDCF]">{item.description.pinyin}</span>\n                </div>\n                <div className="mt-3 text-xs text-[#8FA4B8]">{item.description.stemLabel}: <span className="text-[#D3E1EC]">{item.description.stem}</span></div>\n                <div className="mt-1 text-xs text-[#8FA4B8]">{item.description.branchLabel}: <span className="text-[#D3E1EC]">{item.description.branch}</span></div>\n              </div>\n            ))}\n          </div>\n          <h3 className="mt-5 text-sm font-semibold text-white">{copy.original}</h3>\n          <div className="mt-3 grid gap-2 sm:grid-cols-2">
+          <h3 className="mt-5 text-sm font-semibold text-white">{copy.translated}</h3>
+          <div className="mt-3 grid gap-3 sm:grid-cols-2">
+            {pillarItems.map((item) => (
+              <div key={item.key} className="rounded-xl border border-white/[0.06] bg-[#07111C] p-4">
+                <div className="text-[10px] uppercase tracking-[0.1em] text-[#536A7D]">{item.label}</div>
+                <div className="mt-2 flex items-baseline gap-2">
+                  <span className="text-lg font-semibold text-white">{item.description.characters}</span>
+                  <span className="text-sm text-[#A9BDCF]">{item.description.pinyin}</span>
+                </div>
+                <div className="mt-3 text-xs text-[#8FA4B8]">{item.description.stemLabel}: <span className="text-[#D3E1EC]">{item.description.stem}</span></div>
+                <div className="mt-1 text-xs text-[#8FA4B8]">{item.description.branchLabel}: <span className="text-[#D3E1EC]">{item.description.branch}</span></div>
+              </div>
+            ))}
+          </div>
+          <h3 className="mt-5 text-sm font-semibold text-white">{copy.original}</h3>
+          <div className="mt-3 grid gap-2 sm:grid-cols-2">
             {details.map((item) => (
               <div key={item.label} className="rounded-lg border border-white/[0.06] bg-[#07111C] p-3">
                 <div className="text-[10px] uppercase tracking-[0.1em] text-[#536A7D]">{item.label}</div>
