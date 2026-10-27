@@ -67,10 +67,17 @@ export default function BaZiPage() {
         profile: { birth: payload.profile?.birth || { date: birthDate, time: birthTime } },
         profileData: { bazi: payload.bazi || null, jawa: payload.jawa || null },
       };
-      setResults({
+      const profileResults = {
         bazi: adaptBaziProfile(context),
         jawa: adaptJawaProfile(context),
-      });
+      };
+      setResults(profileResults);
+      window.localStorage.setItem("cakra-langit:profile-blueprint", JSON.stringify({
+        birthDate,
+        birthTime,
+        dayBoundary,
+        results: profileResults,
+      }));
     } catch (err) {
       setError(err.message || "Gagal memuat hasil profil.");
     } finally {
