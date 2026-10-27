@@ -1,7 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { CalendarDays, Check, Edit3, Save, Sparkles, X } from 'lucide-react'
 import { useAuth } from '../auth/AuthContext'
-import NaturalFutureEngines from '../cakra-ui/NaturalFutureEngines'
 import { useTodayContext } from '../core/TodayContext'
 
 const API_BASE = import.meta.env.VITE_API_BASE_URL || ''
@@ -51,6 +50,10 @@ export default function ProfilePage() {
   const [saved, setSaved] = useState(false)
   const [error, setError] = useState('')
   const [palintangan, setPalintangan] = useState(null)
+  const [birthSnapshot] = useState(() => {
+    try { return JSON.parse(window.localStorage.getItem('cakra-langit:profile-blueprint') || 'null') }
+    catch { return null }
+  })
 
   useEffect(() => {
     setDisplayName(user?.display_name || '')
@@ -165,16 +168,9 @@ export default function ProfilePage() {
           <SnapshotCard title="Paririmbon Sunda" eyebrow="Sunda Calendar" headline={saka?.headline || hijri?.headline} sub={saka?.sub || 'Konteks kalender Sunda'} fields={saka?.fields?.map((item) => [item.k, item.v])} tone={saka ? 'ready' : 'default'} />
           <SnapshotCard title="Palintangan Sunda" eyebrow="Palintangan Engine" headline={palintangan?.calendar_context ? palintangan.calendar_context.hari + ' ' + palintangan.calendar_context.pasaran : 'Memuat output…'} sub={palintangan?.watek_patokan?.watek ? 'Watek: ' + palintangan.watek_patokan.watek : 'Peta hari belum tersedia'} fields={palintangan ? [['Naktu Wedal', palintangan.naktu?.wedal], ['Status Hari', palintangan.navigation?.status_hari], ['Pernaasan', palintangan.pernaasan?.is_today ? 'PERNAASAN' : 'Bukan pernaasan'], ['Jaya · Apes', palintangan.jaya_apes ? palintangan.jaya_apes.jaya + ' · ' + palintangan.jaya_apes.apes : '—']] : []} tone={palintangan ? 'ready' : 'default'} />
           <SnapshotCard title="Kalacakra" eyebrow="Cycle Engine" headline={kalacakra?.headline} sub={kalacakra?.sub} fields={kalacakra?.fields?.map((item) => [item.k, item.v])} tone={kalacakra ? 'ready' : 'default'} />
-          <SnapshotCard title="Natural Layer" eyebrow="Natural Engine" headline={apiData?.natural?.sun?.sunrise ? 'Sunrise ' + apiData.natural.sun.sunrise : 'Natural context'} sub={apiData?.natural?.moon?.phase ? 'Moon: ' + apiData.natural.moon.phase : 'Output natural layer'} fields={apiData?.natural?.earth ? [['Day of Year', apiData.natural.earth.day_of_year], ['Annual', apiData.natural.earth.annual_pct], ['Moon', apiData.natural.moon?.phase], ['Illumination', apiData.natural.moon?.illumination ? apiData.natural.moon.illumination + '%' : '—']] : []} tone={apiData?.natural ? 'ready' : 'default'} />
-          <SnapshotCard title="BaZi" eyebrow="Birth Engine" headline="Belum ada data kelahiran" sub="Isi konteks kelahiran untuk menampilkan Four Pillars." fields={[['Status', 'Menunggu data'], ['Engine', 'BaZi']]} />
+          <SnapshotCard title="BaZi" eyebrow="Birth Engine" headline={birthSnapshot?.results?.bazi?.primary || "Belum ada data kelahiran"} sub={birthSnapshot ? `Tanggal lahir ${birthSnapshot.birthDate} · ${birthSnapshot.birthTime}` : "Hitung profil melalui halaman BaZi untuk membuat snapshot."} fields={birthSnapshot?.results?.bazi?.details?.slice(0, 4).map((item) => [item.label, item.value]) || [["Status", "Menunggu data"], ["Engine", "BaZi"]]} tone={birthSnapshot?.results?.bazi?.meta?.status === "UNAVAILABLE" ? "default" : birthSnapshot ? "ready" : "default"} />
         </div>
-      </section>
-
-      <div className="mt-7">
-        <NaturalFutureEngines />
-      </div>
-
-      <section className="mt-7 rounded-2xl border border-white/[0.07] bg-[#0A1723] p-5 sm:p-6">
+      </section>\n<section className="mt-7 rounded-2xl border border-white/[0.07] bg-[#0A1723] p-5 sm:p-6">
         <div className="flex items-start gap-3">
           <CalendarDays size={18} className="mt-0.5 shrink-0 text-[#22D3EE]" />
           <div>
