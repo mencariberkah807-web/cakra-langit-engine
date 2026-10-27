@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { CalendarDays } from "lucide-react";
+import { CalendarDays, ArrowUpRight, Info } from "lucide-react";
 
 const container = {
   hidden: {},
@@ -21,18 +21,18 @@ const CALENDAR_ORDER = [
   "hijri",
 ];
 
+// Only point to pages that actually exist. Do not invent Blueprint pages
+// for engines that have not yet been implemented.
 const CALENDAR_ROUTES = {
-  bali: "/dashboard/palelintangan",
-  jawa: "/dashboard/weton",
-  "chinese-lunar": "/dashboard/bazi",
-  "saka-sunda": "/dashboard/paririmbon",
+  jawa: { href: "/dashboard/weton", label: "Buka Blueprint Weton Jawa" },
+  "saka-sunda": { href: "/dashboard/paririmbon", label: "Buka Paririmbon Sunda" },
+  "chinese-lunar": { href: "/dashboard/bazi", label: "Buka Blueprint BaZi" },
+  bali: { href: "/dashboard/palelintangan", label: "Buka Palelintangan Bali" },
 };
 
-const CALENDAR_LABELS = {
-  bali: "Palelintangan →",
-  jawa: "Weton →",
-  "chinese-lunar": "BaZi →",
-  "saka-sunda": "Paririmbon →",
+const CALENDAR_NEXT_STEPS = {
+  kalacakra: "Detail kalender tersedia. Blueprint Kala Cakra khusus belum terdaftar sebagai halaman terpisah.",
+  hijri: "Detail kalender tersedia. Blueprint Hijriah khusus belum terdaftar sebagai halaman terpisah.",
 };
 
 export default function CalendarSystems({ data }) {
@@ -66,7 +66,7 @@ export default function CalendarSystems({ data }) {
             <p className="mt-1 text-xs text-[#7894AF]">Today calculation snapshot</p>
           </div>
         </div>
-        <span className="hidden text-[9px] font-semibold uppercase tracking-[0.12em] text-[#587690] sm:block">Signature collection</span>
+        <span className="hidden text-[9px] font-semibold uppercase tracking-[0.12em] text-[#587690] sm:block">6 independent systems</span>
       </div>
 
       {!data ? (
@@ -88,6 +88,7 @@ export default function CalendarSystems({ data }) {
                   whileHover={{ y: -2 }}
                   onClick={() => toggleCalendar(cal.id)}
                   aria-expanded={expanded}
+                  aria-controls={`calendar-detail-${cal.id}`}
                   data-testid={`calendar-snapshot-${cal.id}`}
                   className={`group min-w-0 rounded-xl border p-3 text-left transition-[border-color,background,box-shadow,transform] duration-200 focus:outline-none focus:ring-2 focus:ring-[#36C8FF] ${expanded ? "border-[#2C78A8] bg-[#0B2B48] shadow-[0_12px_28px_rgba(0,20,45,0.28)]" : "border-[#1B4568] bg-[#0A2239]/90 hover:border-[#2C78A8] hover:bg-[#0B2742]"}`}
                 >
@@ -104,6 +105,7 @@ export default function CalendarSystems({ data }) {
 
           {expandedCalendar && (
             <motion.div
+              id={`calendar-detail-${expandedCalendar.id}`}
               key={expandedCalendar.id}
               initial={{ opacity: 0, height: 0, y: -6 }}
               animate={{ opacity: 1, height: "auto", y: 0 }}
@@ -118,10 +120,11 @@ export default function CalendarSystems({ data }) {
                 </div>
                 {CALENDAR_ROUTES[expandedCalendar.id] && (
                   <a
-                    href={CALENDAR_ROUTES[expandedCalendar.id]}
-                    className="shrink-0 text-[10px] font-bold uppercase tracking-[0.08em] text-[#55CCFF] hover:text-[#8EDFFF]"
+                    href={CALENDAR_ROUTES[expandedCalendar.id].href}
+                    className="inline-flex shrink-0 items-center gap-2 rounded-lg border border-[#1F5277] bg-[#0B2B48] px-3 py-2 text-[10px] font-bold uppercase tracking-[0.06em] text-[#55CCFF] transition-colors hover:border-[#55CCFF] hover:text-[#A5E8FF]"
                   >
-                    {CALENDAR_LABELS[expandedCalendar.id]}
+                    {CALENDAR_ROUTES[expandedCalendar.id].label}
+                    <ArrowUpRight size={14} />
                   </a>
                 )}
               </div>
@@ -133,6 +136,12 @@ export default function CalendarSystems({ data }) {
                   </div>
                 ))}
               </div>
+              {CALENDAR_NEXT_STEPS[expandedCalendar.id] && (
+                <p className="mt-3 flex items-start gap-2 border-t border-[#163A5C] pt-3 text-[11px] leading-relaxed text-[#91A9BE]">
+                  <Info size={14} className="mt-0.5 shrink-0 text-[#55CCFF]" />
+                  {CALENDAR_NEXT_STEPS[expandedCalendar.id]}
+                </p>
+              )}
             </motion.div>
           )}
         </>
