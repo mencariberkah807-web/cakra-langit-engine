@@ -10,18 +10,17 @@ import {
   UserRound,
   WandSparkles,
   CircleUserRound,
-  Clock3,
   Map,
 } from 'lucide-react'
 
 // Grouped by Cakra Langit's four functional domains.
-// Only routes already supported by the application are linked here.
+// Penanggalan opens the actual six-engine snapshot on the Dashboard.
 export const navigationGroups = [
   {
     label: 'Personal Hub',
     items: [
       [Home, 'Dashboard', '/dashboard'],
-      [CalendarDays, 'Penanggalan', '/dashboard/almanac'],
+      [CalendarDays, 'Penanggalan', '/dashboard#calendar-systems-section'],
       [Sun, 'Peta Hari Ini', '/dashboard/today'],
     ],
   },
@@ -39,7 +38,6 @@ export const navigationGroups = [
     label: 'Strategi Waktu & Aksi',
     items: [
       [Compass, 'Palintangan', '/dashboard/palintangan'],
-      [Clock3, 'Almanac', '/dashboard/almanac'],
     ],
   },
   {
