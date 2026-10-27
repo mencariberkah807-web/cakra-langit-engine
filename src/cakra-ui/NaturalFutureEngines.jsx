@@ -23,7 +23,7 @@ function EngineCard({ id, Icon, label, result, loading, expanded }) {
       <div className="flex items-start justify-between gap-2">
         <Icon className={`h-5 w-5 ${available ? "text-[#58C7E8]" : "text-[#E4B95C]"}`} strokeWidth={1.8} />
         <span className={`rounded-full px-2 py-1 text-[9px] font-semibold uppercase tracking-wide ${loading ? "bg-[#10283A] text-[#7896AA]" : available ? "bg-cyan-400/10 text-cyan-300" : "bg-amber-400/10 text-amber-300"}`}>
-          {loading ? "Loading" : available ? "Live" : "No data"}
+          {loading ? "Loading" : available ? "Result" : "No data"}
         </span>
       </div>
 
