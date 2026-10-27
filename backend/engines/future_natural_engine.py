@@ -370,11 +370,12 @@ def _fetch_volcanic(latitude, longitude):
                 "volcanic",
                 "Volcanic",
                 str(name),
-                f"{distance:.0f} km · Holocene volcano · LIVE",
+                f"{distance:.0f} km · Holocene volcano catalog",
                 [
                     {"label": "Volcano number", "value": str(number)},
                     {"label": "Distance", "value": f"{distance:.0f} km"},
                     {"label": "Dataset", "value": "VOTW Holocene volcanoes"},
+                    {"label": "Status", "value": "Catalog record; does not indicate current volcanic activity"},
                 ],
                 "Smithsonian Global Volcanism Program",
             )
@@ -383,7 +384,7 @@ def _fetch_volcanic(latitude, longitude):
             "volcanic",
             "Volcanic",
             "No nearby volcano record",
-            "Smithsonian GVP · LIVE",
+            "Smithsonian GVP catalog query completed",
             [{"label": "Search radius", "value": "≈ 550 km"}],
             "Smithsonian Global Volcanism Program",
         )
