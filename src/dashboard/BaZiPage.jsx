@@ -108,6 +108,14 @@ const COPY = {
 };
 
 function ResultCard({ result, copy, language }) {
+  const rawPillars = result.detail?.pillars || {};
+  const pillarItems = [
+    { key: "year", label: copy.year, value: rawPillars.year?.selected || rawPillars.year?.ganzhi },
+    { key: "month", label: copy.month, value: rawPillars.month?.selected || rawPillars.month?.ganzhi },
+    { key: "day", label: copy.day, value: rawPillars.day?.selected || rawPillars.day?.ganzhi },
+    { key: "hour", label: copy.hour, value: rawPillars.hour?.selected || rawPillars.hour?.ganzhi },
+  ].map((item) => ({ ...item, description: describePillar(item.value, language) }))
+    .filter((item) => item.description);
   const details = [
     { label: copy.characters, value: result.details?.find((item) => item.label === "Eight Characters")?.value || result.primary },
     { label: copy.pillars, value: result.details?.find((item) => item.label === "Pillars")?.value || result.secondary },
