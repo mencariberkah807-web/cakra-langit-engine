@@ -170,7 +170,9 @@ export default function ProfilePage() {
           <SnapshotCard title="Kalacakra" eyebrow="Cycle Engine" headline={kalacakra?.headline} sub={kalacakra?.sub} fields={kalacakra?.fields?.map((item) => [item.k, item.v])} tone={kalacakra ? 'ready' : 'default'} />
           <SnapshotCard title="BaZi" eyebrow="Birth Engine" headline={birthSnapshot?.results?.bazi?.primary || "Belum ada data kelahiran"} sub={birthSnapshot ? `Tanggal lahir ${birthSnapshot.birthDate} · ${birthSnapshot.birthTime}` : "Hitung profil melalui halaman BaZi untuk membuat snapshot."} fields={birthSnapshot?.results?.bazi?.details?.slice(0, 4).map((item) => [item.label, item.value]) || [["Status", "Menunggu data"], ["Engine", "BaZi"]]} tone={birthSnapshot?.results?.bazi?.meta?.status === "UNAVAILABLE" ? "default" : birthSnapshot ? "ready" : "default"} />
         </div>
-      </section>\n<section className="mt-7 rounded-2xl border border-white/[0.07] bg-[#0A1723] p-5 sm:p-6">
+      </section>
+
+      <section className="mt-7 rounded-2xl border border-white/[0.07] bg-[#0A1723] p-5 sm:p-6">
         <div className="flex items-start gap-3">
           <CalendarDays size={18} className="mt-0.5 shrink-0 text-[#22D3EE]" />
           <div>
